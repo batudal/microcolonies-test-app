@@ -2,16 +2,14 @@
 	import Router from 'svelte-spa-router'
 	import Dashboard from "./Components/Dashboard.svelte"
 	import Navbar from './Components/Navbar.svelte'
-	import { location } from 'svelte-spa-router';
 	const routes = {
 		'/': Dashboard,
 	}
 </script>
 
 <main>
-	{#if $location != "/"}
-		<Navbar/>
-	{/if}
+	<Navbar/>
+	<div style="height: 24px"></div>
 	<Router {routes}/>
 </main>
 

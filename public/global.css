@@ -119,3 +119,34 @@ input {
   width: 100%;
   padding: 4px 8px;
 }
+
+.card {
+  border: 1px solid #ffffff;
+  padding: 32px 40px;
+  gap: 8px;
+}
+.line {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.header {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+}
+.buttons {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+}

@@ -7,8 +7,8 @@
     <div class="bar">
         <a href="#/dashboard"><img src="/images/logo.svg" alt=""></a>
         <div class="filler"></div>
-        <a href="#/marketplace"><p class="nav">marketplace</p></a>
-        <a href="#/createlisting"><p class="nav">listing</p></a>
+        <a href="#/marketplace"><p class="nav">token</p></a>
+        <a href="#/createlisting"><p class="nav">marketplace</p></a>
         <p>|</p>
         <p class="nav" on:click={$userConnected ? disconnectWallet : connectWallet}>
             {#if $userConnected}
@@ -32,7 +32,7 @@
         display: flex;
         flex-direction: row;
         align-items: center;
-        width:400px;
+        width:1240px;
         justify-content: space-between;
         gap:16px
     }
