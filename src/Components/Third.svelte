@@ -47,12 +47,12 @@
     })
 
     const feedLarva = async () => {
-        const larvaContract = new ethers.Contract(addr.larva, abiLarva, $networkSigner);
-        await larvaContract.feedLarva(larvaInput)
+        const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+        await antContract.feedLarva(larvaInput)
     }
     const hatch = async () => {
-        const larvaContract = new ethers.Contract(addr.larva, abiLarva, $networkSigner);
-        await larvaContract.hatch(larvaInput)
+        const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+        await antContract.hatch(larvaInput)
     }
     const feedQueen = async () => {
         const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
