@@ -71,7 +71,7 @@ if (web3Modal.cachedProvider) {
 
 export const connectNode = async () => {
   const provider = new ethers.providers.JsonRpcProvider(
-    "https://eth-goerli.alchemyapi.io/v2/G0AmdAOEKoIachkcZeAvt7q06jOxL6PC"
+    "https://rpc.ftm.tools"
   );
   nodeProvider.set(provider);
 };
