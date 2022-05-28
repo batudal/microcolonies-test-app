@@ -26,7 +26,7 @@
     let princessBalance = "N/A";
     let totalPopulation = "N/A";
 
-    let mateInput, queenInput;
+    let mateInput, queenInput, buildingInput;
     let claimableQueens = "N/A";
 
     let blocks= [];
@@ -51,11 +51,11 @@
             const princessContract = new ethers.Contract(addr.princess, abiPrincess, $networkProvider);
             princessBalance = parseInt(await princessContract.balanceOf($userAddress));
             totalPopulation = workerBalance + soldierBalance + queenBalance + larvaBalance + maleBalance;
-            claimableQueens = await princessContract.getMatedPrincesses();
+            claimableQueens = await princessContract.getMatedPrincesses($userAddress);
             claimableQueens = claimableQueens.length > 0 ? parseInt(claimableQueens) : 0;
             
             const buildingContract = new ethers.Contract(addr.buildingblock, abiBB, $networkProvider);
-            blocks = await buildingContract.getBuildingBlocks()
+            blocks = await buildingContract.getBuildingBlocks($userAddress)
             for (let i; i < blocks.length; i++) {
                 blockCapacities[i] = await buildingContract.idToCapacity(blocks[i])
             }
@@ -76,6 +76,10 @@
         const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
         await antContract.claimQueen(queenInput)
     }
+    const houseWorkers = async () => {
+        const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+        await antContract.houseWorkers(buildingInput)
+    }
 </script>
 
 <div class="container">
@@ -87,11 +91,9 @@
         <Line title="Funghi" value={funghiBalance}></Line>
         <Line title="Feromons" value={feromonBalance}></Line>
         <Line title="Population" value={totalPopulation}></Line>
-        <!-- <Line title="Fertility rate" value="1.2/day"></Line>
-        <Line title="Production rate" value="2.1/day"></Line>
-        <Line title="Building rate" value="0.3day"></Line> -->
     </main>
     <div style="height:24px"></div>
+
     <main class="card">
         <div class="header">
             <h3>Mating</h3>
@@ -118,9 +120,9 @@
         {/each}
         <p class="detail" style="margin-top:8px">--------------------------------------------</p>
         <p class="detail">Worker Ants need housing to hatch. 1 block houses 10 Worker Ants. </p>
-        <input type='text' placeholder="Id of Building Block" style="margin-top:8px">
+        <input type='text' placeholder="Id of Building Block" bind:value={buildingInput} style="margin-top:8px">
         <div class="buttons" style="margin-top:8px">
-            <div class="button-small">start building</div>
+            <div class="button-small" on:click={houseWorkers}>start building</div>
             <div class="detail">--> and then --></div>
             <div class="button-small">merge</div>
         </div>

@@ -27,11 +27,10 @@
     const fetchUserData = async () => {
         if($userConnected) {
             const larvaContract = new ethers.Contract(addr.larva, abiLarva, $networkProvider);
-            totalLarva = (await larvaContract.getLarvae()).length;
-            totalLarva = totalLarva > 0 ? totalLarva : 0;
+            totalLarva = await larvaContract.balanceOf($userAddress);
 
             const queenContract = new ethers.Contract(addr.queen, abiQueen, $networkProvider);
-            queens = await queenContract.getQueens();
+            queens = await queenContract.getQueens($userAddress);
 
             for (let i; i < queens.length; i++) {
                 queenLevels[i] = await queenContract.idToLevel(queens[i]);
@@ -78,7 +77,7 @@
             <h3>Larvae</h3>
         </div>
         <Line title="Total larvae:" value={totalLarva}></Line>
-        <!-- <Line title="Ready to hatch::" value="3"></Line> -->
+        <!-- <Line title="Ready to hatch:" value="3"></Line> -->
         <p class="detail">--------------------------------------------</p>
         <p class="detail">All larvae will be incubated for 3 days. User can feed the upcoming larvae to hatch to boost their chances to improve offspring rarity.</p>
         <div class="inputs-container">
@@ -100,13 +99,13 @@
         {/each}
         <p class="detail">--------------------------------------------</p>
         <p class="detail">Boosting Queen Ant’s fertility costs $FUNGHI. For 1% increase it costs ~12 $FUNGHI.</p>
-        <input type='text' placeholder="Id of Queen Ant" bind:value={queenInput} style="margin-top:8px">
+        <input type='text' placeholder="Id of Queen" bind:value={queenInput} style="margin-top:8px">
         <div class="buttons" style="margin-top:8px">
             <div class="button-small" on:click={feedQueen}>feed queen</div>
             <div class="detail">--> to increase her fertility</div>
         </div>
         <div class="buttons">
-            <div class="button-small" on:click={layEggs}>claim larva</div>
+            <div class="button-small" on:click={layEggs}>lay eggs</div>
             <div class="detail">--> to mint larva</div>
         </div>
         <div class="buttons">

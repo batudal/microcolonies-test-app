@@ -118,18 +118,7 @@ export const abiANT = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_indexToEnlarge",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "_indexToBurn",
-        type: "uint256",
-      },
-    ],
+    inputs: [],
     name: "claimUpgradedBuilding",
     outputs: [],
     stateMutability: "nonpayable",
@@ -300,6 +289,13 @@ export const abiANT = [
   },
   {
     inputs: [],
+    name: "mergeBBs",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "princess",
     outputs: [
       {
@@ -322,6 +318,19 @@ export const abiANT = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_index",
+        type: "uint256",
+      },
+    ],
+    name: "queenLevelUp",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -556,6 +565,11 @@ export const abiBB = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+      {
         internalType: "uint256",
         name: "_index",
         type: "uint256",
@@ -582,14 +596,9 @@ export const abiBB = [
   {
     inputs: [
       {
-        internalType: "uint256",
-        name: "_indexToEnlarge",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "_indexToBurn",
-        type: "uint256",
+        internalType: "address",
+        name: "_user",
+        type: "address",
       },
     ],
     name: "finishConstruction",
@@ -605,6 +614,25 @@ export const abiBB = [
         internalType: "address",
         name: "",
         type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getActiveBuildingBlocks",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]",
       },
     ],
     stateMutability: "view",
@@ -630,8 +658,33 @@ export const abiBB = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "getBuildingBlocks",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getPassiveBuildingBlocks",
     outputs: [
       {
         internalType: "uint256[]",
@@ -838,6 +891,19 @@ export const abiBB = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "_index",
+        type: "uint256",
+      },
+    ],
+    name: "increaseLevel",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "owner",
         type: "address",
@@ -860,7 +926,13 @@ export const abiBB = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "mint",
     outputs: [],
     stateMutability: "nonpayable",
@@ -1025,7 +1097,13 @@ export const abiBB = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "startConstruction",
     outputs: [],
     stateMutability: "nonpayable",
@@ -1364,6 +1442,11 @@ export const abiFeromon = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+      {
         internalType: "uint256",
         name: "_amount",
         type: "uint256",
@@ -1669,7 +1752,13 @@ export const abiFunghi = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "burst",
     outputs: [],
     stateMutability: "nonpayable",
@@ -1738,6 +1827,11 @@ export const abiFunghi = [
   },
   {
     inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
       {
         internalType: "uint256",
         name: "_amount",
@@ -2080,6 +2174,11 @@ export const abiLarva = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+      {
         internalType: "uint256",
         name: "_id",
         type: "uint256",
@@ -2156,7 +2255,13 @@ export const abiLarva = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "getLarvae",
     outputs: [
       {
@@ -2232,6 +2337,11 @@ export const abiLarva = [
   },
   {
     inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
       {
         internalType: "uint256",
         name: "_amount",
@@ -2433,6 +2543,25 @@ export const abiLarva = [
         internalType: "string",
         name: "",
         type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "temp",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -2647,6 +2776,11 @@ export const abiMale = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+      {
         internalType: "uint256",
         name: "_index",
         type: "uint256",
@@ -2690,7 +2824,13 @@ export const abiMale = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "getMales",
     outputs: [
       {
@@ -2703,7 +2843,13 @@ export const abiMale = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "getMatedMales",
     outputs: [
       {
@@ -2778,7 +2924,13 @@ export const abiMale = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "mint",
     outputs: [],
     stateMutability: "nonpayable",
@@ -3196,6 +3348,11 @@ export const abiPrincess = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+      {
         internalType: "uint256",
         name: "_index",
         type: "uint256",
@@ -3239,7 +3396,13 @@ export const abiPrincess = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "getMatedPrincesses",
     outputs: [
       {
@@ -3252,7 +3415,13 @@ export const abiPrincess = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "getPrincesses",
     outputs: [
       {
@@ -3327,7 +3496,13 @@ export const abiPrincess = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "mint",
     outputs: [],
     stateMutability: "nonpayable",
@@ -3788,7 +3963,13 @@ export const abiQueen = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "getQueens",
     outputs: [
       {
@@ -3882,7 +4063,13 @@ export const abiQueen = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "mint",
     outputs: [],
     stateMutability: "nonpayable",
@@ -4410,7 +4597,13 @@ export const abiSoldier = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "getAvailableSoldiers",
     outputs: [
       {
@@ -4423,7 +4616,32 @@ export const abiSoldier = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getInfectedSoldiers",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "getSoldiers",
     outputs: [
       {
@@ -4436,7 +4654,13 @@ export const abiSoldier = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "getZombieSoldiers",
     outputs: [
       {
@@ -4619,7 +4843,13 @@ export const abiSoldier = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "mint",
     outputs: [],
     stateMutability: "nonpayable",
@@ -5133,6 +5363,11 @@ export const abiWorker = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+      {
         internalType: "uint256",
         name: "_index",
         type: "uint256",
@@ -5176,7 +5411,13 @@ export const abiWorker = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "getAvailableWorkers",
     outputs: [
       {
@@ -5189,7 +5430,32 @@ export const abiWorker = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "uint256[]",
+        name: "_workersList",
+        type: "uint256[]",
+      },
+    ],
+    name: "getHomelessCount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "_homeless",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "getUnHousedWorkers",
     outputs: [
       {
@@ -5202,7 +5468,13 @@ export const abiWorker = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "getWorkers",
     outputs: [
       {
@@ -5372,7 +5644,13 @@ export const abiWorker = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "mint",
     outputs: [],
     stateMutability: "nonpayable",
@@ -5449,6 +5727,11 @@ export const abiWorker = [
   },
   {
     inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
       {
         internalType: "uint256",
         name: "_index",

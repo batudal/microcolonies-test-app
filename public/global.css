@@ -13,6 +13,10 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* background-image: url("images/gradient.png");
+  background-position: top;
+  background-repeat: no-repeat;
+  background-size: cover; */
 }
 
 a {
@@ -79,11 +83,11 @@ h3 {
 }
 
 .button:hover {
-  background-color: #00ff62;
+  background-color: #ffee00;
 }
 
 .button-small:hover {
-  background-color: #00ff62;
+  background-color: #ffee00;
 }
 
 span {
@@ -121,9 +125,15 @@ input {
 }
 
 .card {
+  /* background-color: rgba(7, 7, 7, 0.2); */
   border: 1px solid #ffffff;
   padding: 32px 40px;
   gap: 8px;
+  transition: all 0.2s ease;
+}
+.card:hover {
+  box-shadow: 6px 6px 0px #ffee00;
+  /* transform: scale(1.005); */
 }
 .line {
   width: 100%;

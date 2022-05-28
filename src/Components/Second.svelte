@@ -31,13 +31,13 @@
         if($userConnected) {
             const workerContract = new ethers.Contract(addr.worker, abiWorker, $networkProvider);
             totalWorkers = parseInt(await workerContract.balanceOf($userAddress));
-            availableWorkers = parseInt(await workerContract.getAvailableWorkers());
+            availableWorkers = parseInt(await workerContract.getAvailableWorkers($userAddress));
             availableWorkers = availableWorkers > 0 ? availableWorkers.length : 0;
 
             const soldierContract = new ethers.Contract(addr.soldier, abiSoldier, $networkProvider);
-            totalSoldiers = (await soldierContract.getSoldiers()).length;
-            availableSoldiers = (await soldierContract.getAvailableSoldiers()).length;
-            zombieSoldiers = (await soldierContract.getZombieSoldiers()).length;
+            totalSoldiers = (await soldierContract.getSoldiers($userAddress)).length;
+            availableSoldiers = (await soldierContract.getAvailableSoldiers($userAddress)).length;
+            zombieSoldiers = (await soldierContract.getZombieSoldiers($userAddress)).length;
         }
     }
     setInterval(() => {
@@ -99,7 +99,7 @@
         <p class="detail">--------------------------------------------</p>
         <p class="detail">Gathering building parts occupy your worker ants for 7 days. Gathering food occupy your worker ants for 1 day. Each mission reduces worker health points by 2.<br/><br/>Soldier can be sent along with worker ants for protection which mitigates 50% of damage taken by worker ants. A soldier can protect up to 10 worker ants.</p>
         <div class="inputs-container">
-            <input type='text' placeholder="Worker Amount" bind:value={workerInput} style="margin-top:8px; width:320px">
+            <input type='text' placeholder="Amount of Workers" bind:value={workerInput} style="margin-top:8px; width:320px">
         </div>
 
         <div class="buttons" style="margin-top:8px">
@@ -126,7 +126,7 @@
 
         <p class="detail">--------------------------------------------</p>
         <p class="detail">You can heal infected soldiers but if you ignore them more than 3 days, they will turn into zombie ants, only to be harvested as $FUNGHI.</p>
-        <input type='text' placeholder="Amount of Soldier Ants" bind:value={soldierInput} style="margin-top:8px">
+        <input type='text' placeholder="Amount of Soldiers" bind:value={soldierInput} style="margin-top:8px">
         <div class="buttons" style="margin-top:8px">
             <div class="button-small" on:click={sendToRaid}>send to raid</div>
             <div class="detail">--> and then --></div>
