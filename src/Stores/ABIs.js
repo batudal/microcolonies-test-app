@@ -52,19 +52,6 @@ export const abiANT = [
   },
   {
     inputs: [],
-    name: "DECIMAL",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "buildingblock",
     outputs: [
       {
@@ -2249,6 +2236,25 @@ export const abiLarva = [
         internalType: "address",
         name: "",
         type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getHatchersLength",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "hatchersLength",
+        type: "uint256",
       },
     ],
     stateMutability: "view",

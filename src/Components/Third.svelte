@@ -17,23 +17,28 @@
         abiBB } from "../Stores/ABIs"
 
     let totalLarva;
+    let larvaToHatch;
 
     let larvaInput;
     let queens = [];
     let queenLevels = [];
+    let queenEggs = [];
 
     let queenInput;
 
     const fetchUserData = async () => {
         if($userConnected) {
             const larvaContract = new ethers.Contract(addr.larva, abiLarva, $networkProvider);
-            totalLarva = await larvaContract.balanceOf($userAddress);
-
+            totalLarva = (await larvaContract.getLarvae($userAddress)).length;
+            larvaToHatch = parseInt(await larvaContract.getHatchersLength($userAddress));
             const queenContract = new ethers.Contract(addr.queen, abiQueen, $networkProvider);
             queens = await queenContract.getQueens($userAddress);
 
-            for (let i; i < queens.length; i++) {
+            for (let i = 0; i < queens.length; i++) {
                 queenLevels[i] = await queenContract.idToLevel(queens[i]);
+                queenEggs[i] = await queenContract.idToEggs(queens[i]);
+                console.log(queenLevels[i])
+
             }
 
         }
@@ -46,6 +51,13 @@
     })
 
     const feedLarva = async () => {
+        const funghiContract = new ethers.Contract(addr.funghi, abiFunghi, $networkSigner);
+        const approved = parseFloat(ethers.utils.formatEther(await funghiContract.allowance($userAddress, addr.ant)));
+        console.log(approved)
+        if (approved < larvaInput * 80) {
+            const approval = await funghiContract.approve(addr.ant,ethers.constants.MaxUint256);
+            await approval.wait();
+        }
         const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
         await antContract.feedLarva(larvaInput)
     }
@@ -54,6 +66,12 @@
         await antContract.hatch(larvaInput)
     }
     const feedQueen = async () => {
+        const funghiContract = new ethers.Contract(addr.funghi, abiFunghi, $networkSigner);
+        const approved = parseFloat(ethers.utils.formatEther(await funghiContract.allowance($userAddress, addr.ant)));
+        if (approved < larvaInput * 240) {
+            const approval = await funghiContract.approve(addr.ant,ethers.constants.MaxUint256);
+            await approval.wait();
+        }
         const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
         await antContract.feedQueen(queenInput)
     }
@@ -77,7 +95,7 @@
             <h3>Larvae</h3>
         </div>
         <Line title="Total larvae:" value={totalLarva}></Line>
-        <!-- <Line title="Ready to hatch:" value="3"></Line> -->
+        <Line title="Ready to hatch:" value={larvaToHatch}></Line>
         <p class="detail">--------------------------------------------</p>
         <p class="detail">All larvae will be incubated for 3 days. User can feed the upcoming larvae to hatch to boost their chances to improve offspring rarity.</p>
         <div class="inputs-container">
@@ -95,7 +113,7 @@
             <h3>Queen Ants</h3>
         </div>
         {#each queens as queen, index}
-            <Line title={`Queen #${queen}`} value={`Level ${queenLevels[index]}- Eggs`}></Line>
+            <Line title={`Queen #${queen}`} value={`Level ${queenLevels[index]} - ${queenEggs[index]} Eggs`}></Line>
         {/each}
         <p class="detail">--------------------------------------------</p>
         <p class="detail">Boosting Queen Ant’s fertility costs $FUNGHI. For 1% increase it costs ~12 $FUNGHI.</p>

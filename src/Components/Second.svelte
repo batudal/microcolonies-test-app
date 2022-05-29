@@ -15,29 +15,38 @@
         abiLarva,
         abiANT,
         abiBB } from "../Stores/ABIs"
-
-    let totalWorkers;
-    let availableWorkers = [];
-    $: occupiedWorkers = totalWorkers - availableWorkers
     
     let workerInput;
     let soldierInput;
+    let availableWorkers = "N/A";
+    let homelessWorkers = "N/A"
+    let totalWorkers = "N/A";
+    let totalSoldiers  = "N/A";
+    let availableSoldiers  = "N/A";
 
-    let totalSoldiers;
-    let availableSoldiers;
-    let zombieSoldiers;
+    let zombieSoldiers  = "N/A";
+    let infectedSoldiers = "N/A"
+
+    $: occupiedWorkers = totalWorkers - availableWorkers
+    $: occupiedSoldiers = totalSoldiers - availableSoldiers - zombieSoldiers
 
     const fetchUserData = async () => {
         if($userConnected) {
             const workerContract = new ethers.Contract(addr.worker, abiWorker, $networkProvider);
-            totalWorkers = parseInt(await workerContract.balanceOf($userAddress));
-            availableWorkers = parseInt(await workerContract.getAvailableWorkers($userAddress));
-            availableWorkers = availableWorkers > 0 ? availableWorkers.length : 0;
+            totalWorkers = (await workerContract.getWorkers($userAddress)).length;
+            availableWorkers = (await workerContract.getAvailableWorkers($userAddress)).length;
+            homelessWorkers = (await workerContract.getUnHousedWorkers($userAddress)).length;
 
             const soldierContract = new ethers.Contract(addr.soldier, abiSoldier, $networkProvider);
             totalSoldiers = (await soldierContract.getSoldiers($userAddress)).length;
+            console.log("Total soldiers: ", totalSoldiers)
             availableSoldiers = (await soldierContract.getAvailableSoldiers($userAddress)).length;
+            console.log("Available soldiers: ", availableSoldiers)
             zombieSoldiers = (await soldierContract.getZombieSoldiers($userAddress)).length;
+            console.log("Zombie soldiers: ", zombieSoldiers)
+            infectedSoldiers = (await soldierContract.getInfectedSoldiers($userAddress)).length;
+            console.log("Infected soldiers: ", infectedSoldiers)
+
         }
     }
     setInterval(() => {
@@ -58,8 +67,24 @@
     }
 
     const gatherFood = async () => {
+        const workerContract = new ethers.Contract(addr.worker, abiWorker, $networkSigner);
+        const approved = await workerContract.isApprovedForAll($userAddress, addr.ant);
+        if (!approved) {
+            const approval = await workerContract.setApprovalForAll(addr.ant,true);
+            await approval.wait();
+        }
         const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
         await antContract.stakeWorker(workerInput);
+    }
+    const gatherProtectedFood = async () => {
+        const workerContract = new ethers.Contract(addr.worker, abiWorker, $networkSigner);
+        const approved = await workerContract.isApprovedForAll($userAddress, addr.ant);
+        if (!approved) {
+            const approval = await workerContract.setApprovalForAll(addr.ant,true);
+            await approval.wait();
+        }
+        const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+        await antContract.stakeProtectedWorker(workerInput);
     }
     const claimFunghi = async () => {
         const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
@@ -67,6 +92,12 @@
     }
 
     const sendToRaid = async () => {
+        const soldierContract = new ethers.Contract(addr.soldier, abiSoldier, $networkSigner);
+        const approved = await soldierContract.isApprovedForAll($userAddress, addr.ant);
+        if (!approved) {
+            const approval = await soldierContract.setApprovalForAll(addr.ant,true);
+            await approval.wait();
+        }
         const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
         await antContract.sendSoldierToRaid(soldierInput);
     }
@@ -96,6 +127,8 @@
         <Line title="Total worker ants:" value={totalWorkers}></Line>
         <Line title="Available worker ants:" value={availableWorkers}></Line>
         <Line title="Occupied worker ants:" value={occupiedWorkers}></Line>
+        <Line title="Homeless worker ants:" value={homelessWorkers}></Line>
+
         <p class="detail">--------------------------------------------</p>
         <p class="detail">Gathering building parts occupy your worker ants for 7 days. Gathering food occupy your worker ants for 1 day. Each mission reduces worker health points by 2.<br/><br/>Soldier can be sent along with worker ants for protection which mitigates 50% of damage taken by worker ants. A soldier can protect up to 10 worker ants.</p>
         <div class="inputs-container">
@@ -108,10 +141,18 @@
             <div class="button-small" on:click={claimBlocks}>claim blocks</div>
         </div>
         <div class="buttons">
-            <div class="button-small" on:click={gatherFood}>gather food</div>
-            <div class="detail">--> and then --></div>
-            <div class="button-small" on:click={claimFunghi}>claim $funghi</div>
+            <div class="button-small" on:click={gatherProtectedFood}>gather food</div>
+            <div class="detail">--> with soldier protection</div>
         </div>
+        <div class="buttons">
+            <div class="button-small" on:click={gatherFood}>gather food</div>
+            <div class="detail">--> without soldier protection</div>
+        </div>
+        <div class="buttons">
+            <div class="button-small" on:click={claimFunghi}>claim $funghi</div>
+            <div class="detail">--> to get your rewards</div>
+        </div>
+
     </main>
     <div style="height:24px"></div>
     <main class="card">
@@ -120,8 +161,8 @@
         </div>
         <Line title="Total soldier ants: " value={totalSoldiers}></Line>
         <Line title="Available soldier ants:" value={availableSoldiers}></Line>
-        <!-- <Line title="Occupied soldier ants:" value="9"></Line>
-        <Line title="Infected soldier ants:" value="3"></Line> -->
+        <Line title="Occupied soldier ants:" value={occupiedSoldiers}></Line>
+        <Line title="Infected soldier ants:" value={infectedSoldiers}></Line>
         <Line title="Zombie soldier ants:" value={zombieSoldiers}></Line>
 
         <p class="detail">--------------------------------------------</p>
