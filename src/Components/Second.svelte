@@ -1,20 +1,12 @@
 <script>
-    import { onMount } from "svelte"
     import Line from "./Line.svelte";
     import { userConnected, userAddress, networkProvider, networkSigner} from '../Stores/Network'
     import { ethers } from 'ethers'
     import { addr } from "../Stores/Addresses"
     import { 
-        abiFunghi, 
-        abiFeromon, 
         abiWorker, 
         abiSoldier,
-        abiMale,
-        abiPrincess,
-        abiQueen,
-        abiLarva,
-        abiANT,
-        abiBB } from "../Stores/ABIs"
+        abiANT} from "../Stores/ABIs"
     
     let workerInput;
     let soldierInput;
@@ -27,6 +19,7 @@
     let zombieSoldiers  = "N/A";
     let infectedSoldiers = "N/A"
 
+    $: $userConnected ? fetchUserData() : "";
     $: occupiedWorkers = totalWorkers - availableWorkers
     $: occupiedSoldiers = totalSoldiers - availableSoldiers - zombieSoldiers
 
@@ -52,9 +45,6 @@
     setInterval(() => {
         fetchUserData();
     }, 10000);
-    onMount(async () => {
-        await fetchUserData();
-    })
 
     const gatherBlocks = async () => {
         const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
@@ -137,8 +127,7 @@
 
         <div class="buttons" style="margin-top:8px">
             <div class="button-small" on:click={gatherBlocks}>gather blocks</div>
-            <div class="detail">-> and then -></div>
-            <div class="button-small" on:click={claimBlocks}>claim blocks</div>
+            <div class="detail">--> to have more workers</div>
         </div>
         <div class="buttons">
             <div class="button-small" on:click={gatherProtectedFood}>gather food</div>
@@ -148,9 +137,14 @@
             <div class="button-small" on:click={gatherFood}>gather food</div>
             <div class="detail">--> without soldier protection</div>
         </div>
+        <p class="detail">--------------------------------------------</p>
+        <div class="buttons">
+            <div class="button-small" on:click={claimBlocks}>claim blocks</div>
+            <div class="detail">--> 0 claimable</div>
+        </div>
         <div class="buttons">
             <div class="button-small" on:click={claimFunghi}>claim $funghi</div>
-            <div class="detail">--> to get your rewards</div>
+            <div class="detail">--> 0 claimable</div>
         </div>
 
     </main>
@@ -170,13 +164,19 @@
         <input type='text' placeholder="Amount of Soldiers" bind:value={soldierInput} style="margin-top:8px">
         <div class="buttons" style="margin-top:8px">
             <div class="button-small" on:click={sendToRaid}>send to raid</div>
-            <div class="detail">--> and then --></div>
+            <div class="detail">-> to steal larva</div>
+        </div>
+        <div class="buttons">
             <div class="button-small" on:click={claimLarva}>claim larva</div>
+            <div class="detail">-> 0 claimable</div>
         </div>
         <div class="buttons">
             <div class="button-small" on:click={healInfected}>heal infected</div>
-            <div class="detail">-/ or /-</div>
+            <div class="detail">-> to stop spread</div>
+        </div>
+        <div class="buttons">
             <div class="button-small" on:click={harvestZombie}>harvest zombie</div>
+            <div class="detail">-> to get $funghi rewards</div>
         </div>
     </main>
 </div>
@@ -188,6 +188,7 @@
         align-items: center;
         justify-content: flex-start;
         max-width: 320px;
+        
     }
     .inputs-container{
         width: 100%;

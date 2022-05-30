@@ -1,5 +1,4 @@
 <script>
-    import { onMount } from "svelte"
     import Line from "./Line.svelte";
     import { userConnected, userAddress, networkProvider, networkSigner} from '../Stores/Network'
     import { ethers } from 'ethers'
@@ -66,9 +65,7 @@
     setInterval(() => {
         fetchUserData();
     }, 10000);
-    onMount(async () => {
-        await fetchUserData();
-    })
+    $: $userConnected ? fetchUserData() : "";
 
     const mate = async () => {
         const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
@@ -135,11 +132,11 @@
         <input type='text' placeholder="Amount of Ant Pairs / Queens" style="margin-top:8px" bind:value={mateInput}>
         <div class="buttons" style="margin-top:8px">
             <div class="button-small" on:click={mate}>mate pair</div>
-            <div class="detail">--> to create queens</div>
+            <div class="detail">--> to create a queen</div>
         </div>
         <div class="buttons">
             <div class="button-small" on:click={claimQueen}>claim queen</div>
-            <div class="detail">--> 0 claimable</div>
+            <div class="detail">--> and start producing</div>
         </div>
     </main>
     <div style="height:24px"></div>
@@ -154,15 +151,15 @@
         <p class="detail">Worker Ants need housing to hatch. 1 block houses 10 Worker Ants. </p>
         <input type='text' placeholder="Id of Building Block" bind:value={buildingInput} style="margin-top:8px">
         <div class="buttons" style="margin-top:8px">
-            <div class="button-small" on:click={houseWorkers}>start building</div>
-            <div class="detail">--> and then --></div>
+            <div class="button-small" on:click={houseWorkers}>house workers</div>
+            <div class="detail">--> to create space for more</div>
         </div>
         <div class="buttons">
-            <div class="button-small" on:click={merge}>merge</div>
-            <div class="detail">--> to increase capacity</div>
+            <div class="button-small" on:click={merge}>start merge</div>
+            <div class="detail">--> to construct bigger nest</div>
         </div>
         <div class="buttons">
-            <div class="button-small" on:click={claimBuilding}>claim building</div>
+            <div class="button-small" on:click={claimBuilding}>claim merged</div>
             <div class="detail">--> to increase capacity</div>
         </div>
     </main>

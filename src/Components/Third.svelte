@@ -1,30 +1,22 @@
 <script>
     import Line from "./Line.svelte";
-    import { onMount } from "svelte"
     import { userConnected, userAddress, networkProvider, networkSigner} from '../Stores/Network'
     import { ethers } from 'ethers'
     import { addr } from "../Stores/Addresses"
     import { 
         abiFunghi, 
-        abiFeromon, 
-        abiWorker, 
-        abiSoldier,
-        abiMale,
-        abiPrincess,
         abiQueen,
         abiLarva,
-        abiANT,
-        abiBB } from "../Stores/ABIs"
+        abiANT } from "../Stores/ABIs"
 
     let totalLarva;
     let larvaToHatch;
-
-    let larvaInput;
+    let larvaInput,queenInput;
     let queens = [];
     let queenLevels = [];
     let queenEggs = [];
 
-    let queenInput;
+    $: $userConnected ? fetchUserData() : "";
 
     const fetchUserData = async () => {
         if($userConnected) {
@@ -46,9 +38,6 @@
     setInterval(() => {
         fetchUserData();
     }, 10000);
-    onMount(async () => {
-        await fetchUserData();
-    })
 
     const feedLarva = async () => {
         const funghiContract = new ethers.Contract(addr.funghi, abiFunghi, $networkSigner);
@@ -103,8 +92,11 @@
         </div>
         <div class="buttons" style="margin-top:8px">
             <div class="button-small" on:click={feedLarva}>feed larva</div>
-            <div class="detail">-> and then -></div>
+            <div class="detail">-> for better ants</div>
+        </div>
+        <div class="buttons">
             <div class="button-small" on:click={hatch}>hatch</div>
+            <div class="detail">-> to get new ants</div>
         </div>
     </main>
     <div style="height:24px"></div>
@@ -140,6 +132,7 @@
         align-items: center;
         justify-content: flex-start;
         max-width: 320px;
+        
     }
     .inputs-container{
         width: 100%;

@@ -10,6 +10,7 @@
     <Third />
 </main>
 
+
 <style>
     main{
         display:flex;
@@ -17,5 +18,6 @@
         gap: 20px;
         flex-wrap: wrap;
         justify-content: center;
+        max-width: 95%;
     }
 </style>
