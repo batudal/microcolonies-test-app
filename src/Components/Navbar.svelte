@@ -26,13 +26,16 @@
     main{
         display:flex;
         flex-direction: column;
+        width: 100%;
+        align-items: center;
     }
     .bar{
+        width: 1240px;
+        max-width: 90%;
         height: 28px;
         display: flex;
         flex-direction: row;
         align-items: center;
-        width:1240px;
         justify-content: space-between;
         gap:16px
     }

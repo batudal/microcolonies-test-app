@@ -132,7 +132,7 @@
         <p class="detail">--------------------------------------------</p>
         <p class="detail">Gathering building parts occupy your worker ants for 7 days. Gathering food occupy your worker ants for 1 day. Each mission reduces worker health points by 2.<br/><br/>Soldier can be sent along with worker ants for protection which mitigates 50% of damage taken by worker ants. A soldier can protect up to 10 worker ants.</p>
         <div class="inputs-container">
-            <input type='text' placeholder="Amount of Workers" bind:value={workerInput} style="margin-top:8px; width:320px">
+            <input type='text' placeholder="Amount of Workers" bind:value={workerInput} style="margin-top:8px; max-width:320px">
         </div>
 
         <div class="buttons" style="margin-top:8px">
@@ -187,7 +187,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
-        width: 320px;
+        max-width: 320px;
     }
     .inputs-container{
         width: 100%;

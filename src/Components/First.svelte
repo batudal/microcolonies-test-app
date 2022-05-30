@@ -111,6 +111,7 @@
         <Line title="Feromons" value={feromonBalance}></Line>
         <Line title="Population" value={totalPopulation}></Line>
         <p class="detail">--------------------------------------------</p>
+        <p class="detail">Welcome Fren. This game is alpha test mode. Feel free to mint some larvae and start multiplying.</p>
         <input type='text' placeholder="Amount of Larvae" style="margin-top:8px" bind:value={mintInput}>
         <div class="buttons" style="margin-top:8px">
             <div class="button-small" on:click={genesisMint}>genesis mint</div>
@@ -134,8 +135,11 @@
         <input type='text' placeholder="Amount of Ant Pairs / Queens" style="margin-top:8px" bind:value={mateInput}>
         <div class="buttons" style="margin-top:8px">
             <div class="button-small" on:click={mate}>mate pair</div>
-            <div class="detail">--> and then --></div>
+            <div class="detail">--> to create queens</div>
+        </div>
+        <div class="buttons">
             <div class="button-small" on:click={claimQueen}>claim queen</div>
+            <div class="detail">--> 0 claimable</div>
         </div>
     </main>
     <div style="height:24px"></div>
@@ -152,12 +156,14 @@
         <div class="buttons" style="margin-top:8px">
             <div class="button-small" on:click={houseWorkers}>start building</div>
             <div class="detail">--> and then --></div>
-            <div class="button-small" on:click={merge}>merge</div>
         </div>
-        <div class="buttons" style="margin-top:8px">
+        <div class="buttons">
+            <div class="button-small" on:click={merge}>merge</div>
+            <div class="detail">--> to increase capacity</div>
+        </div>
+        <div class="buttons">
             <div class="button-small" on:click={claimBuilding}>claim building</div>
             <div class="detail">--> to increase capacity</div>
-
         </div>
     </main>
 </div>
@@ -168,6 +174,6 @@
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
-        width: 320px;
+        max-width: 320px;
     }
 </style>

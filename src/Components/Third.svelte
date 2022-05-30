@@ -139,7 +139,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
-        width: 320px;
+        max-width: 320px;
     }
     .inputs-container{
         width: 100%;
