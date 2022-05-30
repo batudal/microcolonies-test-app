@@ -29,6 +29,7 @@
 </script>
 
 {#if $userConnected && $chainID != 250}
+<div class="container">
     <main class="card">
         <p class="detail">You're not on the correct network.</p>
         <div class="buttons" style="margin-top:8px">
@@ -36,4 +37,16 @@
             <div class="detail">--> do it</div>
         </div>
     </main>
+</div>
+    
 {/if}
+
+<style>
+    .container{
+        width: 100%;
+        height: 100%;
+        display:flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>

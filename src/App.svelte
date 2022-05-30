@@ -3,6 +3,7 @@
 	import Dashboard from "./Components/Dashboard.svelte"
 	import Navbar from './Components/Navbar.svelte'
 	import Warning from './Components/Warning.svelte'
+	import { userConnected, chainID } from './Stores/Network'
 	const routes = {
 		'/': Dashboard,
 	}
@@ -11,7 +12,9 @@
 <main>
 	<Navbar/>
 	<Warning/>
-	<Router {routes}/>
+	{#if !$userConnected || $chainID == 250}
+		<Router {routes}/>
+	{/if}
 </main>
 
 <style>

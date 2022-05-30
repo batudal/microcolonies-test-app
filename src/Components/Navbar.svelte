@@ -5,7 +5,7 @@
 <main>
     <div style="height: 24px"></div>
     <div class="bar">
-        <a href="#/dashboard"><img src="/images/logo.svg" alt=""></a>
+        <a href="#/"><img src="/images/logo.svg" alt=""></a>
         <div class="filler"></div>
         <a href="#/marketplace"><p class="nav">token</p></a>
         <a href="#/createlisting"><p class="nav">marketplace</p></a>
