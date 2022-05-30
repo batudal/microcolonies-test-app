@@ -2,6 +2,7 @@
 	import Router from 'svelte-spa-router'
 	import Dashboard from "./Components/Dashboard.svelte"
 	import Navbar from './Components/Navbar.svelte'
+	import Warning from './Components/Warning.svelte'
 	const routes = {
 		'/': Dashboard,
 	}
@@ -9,7 +10,7 @@
 
 <main>
 	<Navbar/>
-	<div style="height: 24px"></div>
+	<Warning/>
 	<Router {routes}/>
 </main>
 

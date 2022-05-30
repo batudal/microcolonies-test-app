@@ -7,30 +7,22 @@ export let userAddress = writable("");
 export let nodeProvider = writable();
 export let networkProvider = writable("");
 export let networkSigner = writable("");
+export let networkInstance = writable("");
 export let chainID = writable("");
 
 const WalletConnectProvider = window.WalletConnectProvider.default;
 const providerOptions = {
   walletconnect: {
     package: WalletConnectProvider,
-    display: {
-      logo: "/images/walletConnect.png",
-      name: "WalletConnect",
-      description: " ",
-    },
     options: {
+      rpc: {
+        250: "https://rpc.ftm.tools/",
+      },
       qrcodeModalOptions: {
         mobileLinks: ["rainbow", "metamask", "argent", "trust"],
       },
+      network: "fantom",
     },
-  },
-  injected: {
-    display: {
-      logo: "/images/metamask.png",
-      name: "Metamask",
-      description: " ",
-    },
-    package: null,
   },
 };
 
@@ -51,13 +43,16 @@ export const disconnectWallet = () => {
   userAddress.set("");
   networkProvider.set("");
   networkSigner.set("");
+  networkInstance.set("");
   chainID.set("");
+  window.location.reload();
 };
 
 export const connectWallet = async () => {
   const instance = await web3Modal.connect();
-  const provider = new ethers.providers.Web3Provider(instance);
+  const provider = new ethers.providers.Web3Provider(instance, "any");
   const signer = provider.getSigner();
+  networkInstance.set(instance);
   networkProvider.set(provider);
   networkSigner.set(signer);
   userAddress.set(await signer.getAddress());

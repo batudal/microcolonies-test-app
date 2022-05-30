@@ -18,6 +18,7 @@
             {/if}
         </p>
     </div>
+    <div style="height:24px; width: 100%"></div>
 </main>
 
 
@@ -25,7 +26,6 @@
     main{
         display:flex;
         flex-direction: column;
-        z-index: 1;
     }
     .bar{
         height: 28px;

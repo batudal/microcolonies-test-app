@@ -140,7 +140,6 @@
         align-items: center;
         justify-content: flex-start;
         width: 320px;
-        z-index: 11;
     }
     .inputs-container{
         width: 100%;

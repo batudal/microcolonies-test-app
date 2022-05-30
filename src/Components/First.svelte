@@ -103,20 +103,14 @@
 
 <div class="container">
     <div class="header">
-        <h3>STATS</h3>
+        <h3>GENESIS ROUND</h3>
     </div>
     <div style="height:8px"></div>
     <main class="card">
         <Line title="Funghi" value={funghiBalance}></Line>
         <Line title="Feromons" value={feromonBalance}></Line>
         <Line title="Population" value={totalPopulation}></Line>
-    </main>
-    <div style="height:24px"></div>
-    <div class="header">
-        <h3>STATS</h3>
-    </div>
-    <div style="height:8px"></div>
-    <main class="card">
+        <p class="detail">--------------------------------------------</p>
         <input type='text' placeholder="Amount of Larvae" style="margin-top:8px" bind:value={mintInput}>
         <div class="buttons" style="margin-top:8px">
             <div class="button-small" on:click={genesisMint}>genesis mint</div>
@@ -175,6 +169,5 @@
         align-items: center;
         justify-content: flex-start;
         width: 320px;
-        z-index: 11;
     }
 </style>
