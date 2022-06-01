@@ -27,10 +27,12 @@
 
     let mateInput, queenInput, buildingInput,mintInput;
     let claimableQueens = "N/A";
+    let claimableBB = "N/A";
 
     let blocks= [];
     let blockCapacities = [];
     let blockCumCapacities = [];
+    let homelessWorkers;
 
     const fetchUserData = async () => {
         if($userConnected) {
@@ -40,6 +42,7 @@
             feromonBalance = ethers.utils.formatEther(await feromonContract.balanceOf($userAddress));
             const workerContract = new ethers.Contract(addr.worker, abiWorker, $networkProvider);
             workerBalance = (await workerContract.getWorkers($userAddress)).length;
+            homelessWorkers = (await workerContract.getUnHousedWorkers($userAddress)).length;
             const soldierContract = new ethers.Contract(addr.soldier, abiSoldier, $networkProvider);
             soldierBalance = (await soldierContract.getSoldiers($userAddress)).length;
             const queenContract = new ethers.Contract(addr.queen, abiQueen, $networkProvider);
@@ -57,9 +60,11 @@
             const buildingContract = new ethers.Contract(addr.buildingblock, abiBB, $networkProvider);
             blocks = await buildingContract.getBuildingBlocks($userAddress)
             for (let i = 0; i < blocks.length; i++) {
-                blockCapacities[i] = parseInt(await buildingContract.idToCapacity(blocks[i]))
+                blockCapacities[i] = parseInt(await buildingContract.getResidentCount(blocks[i]))
                 blockCumCapacities[i] = parseInt(await buildingContract.idToCumulativeCapacity(blocks[i]))
             }
+            claimableBB = await buildingContract.getClaimableBuildingBlockCount($userAddress);
+            console.log("ClaimableBB", claimableBB)
         }
     }
     setInterval(() => {
@@ -151,7 +156,7 @@
         <p class="detail">Worker Ants need housing to hatch. 1 block houses 10 Worker Ants. </p>
         <input type='text' placeholder="Id of Building Block" bind:value={buildingInput} style="margin-top:8px">
         <div class="buttons" style="margin-top:8px">
-            <div class="button-small" on:click={houseWorkers}>house workers</div>
+            <div class={`button-small ${blockCapacities[0] > 0 && homelessWorkers > 0 ? "green" : ""}`} on:click={houseWorkers}>house workers</div>
             <div class="detail">--> to create space for more</div>
         </div>
         <div class="buttons">
@@ -159,7 +164,7 @@
             <div class="detail">--> to construct bigger nest</div>
         </div>
         <div class="buttons">
-            <div class="button-small" on:click={claimBuilding}>claim merged</div>
+            <div class={`button-small ${claimableBB > 0 ? "green" : ""}`} on:click={claimBuilding}>claim merged</div>
             <div class="detail">--> to increase capacity</div>
         </div>
     </main>

@@ -1,20 +1,18 @@
 <script>
     import { chainID, userConnected, networkInstance} from '../Stores/Network'
-    import fantom from '../Stores/Chains'
+    import polygon from '../Stores/Chains'
 
     const switchNetwork = async () => {
-        console.log("x")
       try {
-        console.log("x")
         const RequestArguments = {
           method: "wallet_switchEthereumChain",
-          params: [{ chainId: fantom.options.params[0].chainId }],
+          params: [{ chainId: polygon.options.params[0].chainId }],
         };
         await $networkInstance.request(RequestArguments);
       } catch (switchError) {
         if (switchError.code === 4902) {
           try {
-            await ethereum.request(fantom.options);
+            await ethereum.request(polygon.options);
           } catch (addError) {}
         }
         if (switchError.code === 4001) {
@@ -28,12 +26,12 @@
     };
 </script>
 
-{#if $userConnected && $chainID != 250}
+{#if $userConnected && $chainID != 137}
 <div class="container">
     <main class="card">
         <p class="detail">You're not on the correct network.</p>
         <div class="buttons" style="margin-top:8px">
-            <div class="button-small" on:click={switchNetwork}>connect to fantom</div>
+            <div class="button-small" on:click={switchNetwork}>connect to polygon</div>
             <div class="detail">--> do it</div>
         </div>
     </main>

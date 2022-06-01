@@ -6,7 +6,9 @@
     import { 
         abiWorker, 
         abiSoldier,
-        abiANT} from "../Stores/ABIs"
+        abiANT,
+        abiBB,
+        abiLarva } from "../Stores/ABIs"
     
     let workerInput;
     let soldierInput;
@@ -18,6 +20,8 @@
 
     let zombieSoldiers  = "N/A";
     let infectedSoldiers = "N/A"
+
+    let claimableBB, claimableFunghi, claimableLarva;
 
     $: $userConnected ? fetchUserData() : "";
     $: occupiedWorkers = totalWorkers - availableWorkers
@@ -32,14 +36,11 @@
 
             const soldierContract = new ethers.Contract(addr.soldier, abiSoldier, $networkProvider);
             totalSoldiers = (await soldierContract.getSoldiers($userAddress)).length;
-            console.log("Total soldiers: ", totalSoldiers)
             availableSoldiers = (await soldierContract.getAvailableSoldiers($userAddress)).length;
-            console.log("Available soldiers: ", availableSoldiers)
             zombieSoldiers = (await soldierContract.getZombieSoldiers($userAddress)).length;
-            console.log("Zombie soldiers: ", zombieSoldiers)
             infectedSoldiers = (await soldierContract.getInfectedSoldiers($userAddress)).length;
-            console.log("Infected soldiers: ", infectedSoldiers)
-
+            claimableFunghi = await workerContract.getClaimableFunghi($userAddress);
+            claimableLarva = await soldierContract.getClaimableLarvaCount($userAddress);
         }
     }
     setInterval(() => {
@@ -47,6 +48,12 @@
     }, 10000);
 
     const gatherBlocks = async () => {
+        const workerContract = new ethers.Contract(addr.worker, abiWorker, $networkSigner);
+        const approved = await workerContract.isApprovedForAll($userAddress, addr.ant);
+        if (!approved) {
+            const approval = await workerContract.setApprovalForAll(addr.ant,true);
+            await approval.wait();
+        }
         const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
         await antContract.sendWorkerToBuild(workerInput);
     }
@@ -126,25 +133,25 @@
         </div>
 
         <div class="buttons" style="margin-top:8px">
-            <div class="button-small" on:click={gatherBlocks}>gather blocks</div>
+            <div class={`button-small ${availableWorkers > 0 ? "green" : ""}`} on:click={gatherBlocks}>gather blocks</div>
             <div class="detail">--> to have more workers</div>
         </div>
         <div class="buttons">
-            <div class="button-small" on:click={gatherProtectedFood}>gather food</div>
+            <div class={`button-small ${availableWorkers > 0 && availableSoldiers > 0 ? "green" : ""}`} on:click={gatherProtectedFood}>gather food</div>
             <div class="detail">--> with soldier protection</div>
         </div>
         <div class="buttons">
-            <div class="button-small" on:click={gatherFood}>gather food</div>
+            <div class={`button-small ${availableWorkers > 0 ? "green" : ""}`} on:click={gatherFood}>gather food</div>
             <div class="detail">--> without soldier protection</div>
         </div>
         <p class="detail">--------------------------------------------</p>
         <div class="buttons">
             <div class="button-small" on:click={claimBlocks}>claim blocks</div>
-            <div class="detail">--> 0 claimable</div>
+            <div class="detail">--> N/A claimable</div>
         </div>
         <div class="buttons">
-            <div class="button-small" on:click={claimFunghi}>claim $funghi</div>
-            <div class="detail">--> 0 claimable</div>
+            <div class={`button-small ${claimableFunghi > 0 ? "green" : ""}`} on:click={claimFunghi}>claim $funghi</div>
+            <div class="detail">--> {claimableFunghi} claimable</div>
         </div>
 
     </main>
@@ -163,12 +170,12 @@
         <p class="detail">You can heal infected soldiers but if you ignore them more than 3 days, they will turn into zombie ants, only to be harvested as $FUNGHI.</p>
         <input type='text' placeholder="Amount of Soldiers" bind:value={soldierInput} style="margin-top:8px">
         <div class="buttons" style="margin-top:8px">
-            <div class="button-small" on:click={sendToRaid}>send to raid</div>
+            <div class={`button-small ${availableSoldiers > 0 ? "green" : ""}`} on:click={sendToRaid}>send to raid</div>
             <div class="detail">-> to steal larva</div>
         </div>
         <div class="buttons">
-            <div class="button-small" on:click={claimLarva}>claim larva</div>
-            <div class="detail">-> 0 claimable</div>
+            <div class={`button-small ${claimableLarva > 0 ? "green" : ""}`} on:click={claimLarva}>try to steal larva</div>
+            <div class="detail">-> {claimableLarva} trials</div>
         </div>
         <div class="buttons">
             <div class="button-small" on:click={healInfected}>heal infected</div>

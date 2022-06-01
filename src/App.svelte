@@ -12,7 +12,7 @@
 <main>
 	<Navbar/>
 	<Warning/>
-	{#if !$userConnected || $chainID == 250}
+	{#if !$userConnected || $chainID == 137}
 		<Router {routes}/>
 	{/if}
 </main>

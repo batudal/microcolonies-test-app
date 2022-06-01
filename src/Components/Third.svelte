@@ -11,6 +11,7 @@
 
     let totalLarva;
     let larvaToHatch;
+    let maxHatch;
     let larvaInput,queenInput;
     let queens = [];
     let queenLevels = [];
@@ -29,9 +30,11 @@
             for (let i = 0; i < queens.length; i++) {
                 queenLevels[i] = await queenContract.idToLevel(queens[i]);
                 queenEggs[i] = await queenContract.idToEggs(queens[i]);
-                console.log(queenLevels[i])
-
             }
+
+            const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+            maxHatch = await antContract.maxHatch();
+            console.log("Maxhatch", maxHatch)
 
         }
     }
@@ -85,6 +88,7 @@
         </div>
         <Line title="Total larvae:" value={totalLarva}></Line>
         <Line title="Ready to hatch:" value={larvaToHatch}></Line>
+        <Line title="Capacity for hatchlings:" value={maxHatch}></Line>
         <p class="detail">--------------------------------------------</p>
         <p class="detail">All larvae will be incubated for 3 days. User can feed the upcoming larvae to hatch to boost their chances to improve offspring rarity.</p>
         <div class="inputs-container">
@@ -95,7 +99,7 @@
             <div class="detail">-> for better ants</div>
         </div>
         <div class="buttons">
-            <div class="button-small" on:click={hatch}>hatch</div>
+            <div class={`button-small ${maxHatch > 0 && larvaToHatch > 0 ? "green" : ""}`} on:click={hatch}>hatch</div>
             <div class="detail">-> to get new ants</div>
         </div>
     </main>

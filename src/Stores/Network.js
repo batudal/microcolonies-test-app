@@ -14,15 +14,15 @@ const WalletConnectProvider = window.WalletConnectProvider.default;
 const providerOptions = {
   walletconnect: {
     package: WalletConnectProvider,
-    options: {
-      rpc: {
-        250: "https://rpc.ftm.tools/",
-      },
-      qrcodeModalOptions: {
-        mobileLinks: ["rainbow", "metamask", "argent", "trust"],
-      },
-      network: "fantom",
-    },
+    // options: {
+    //   rpc: {
+    //     250: "https://rpc.ftm.tools/",
+    //   },
+    //   qrcodeModalOptions: {
+    //     mobileLinks: ["rainbow", "metamask", "argent", "trust"],
+    //   },
+    //   network: "fantom",
+    // },
   },
 };
 

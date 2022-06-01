@@ -78,7 +78,13 @@ export const abiANT = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_amount",
+        type: "uint256",
+      },
+    ],
     name: "claimPassiveSoldierReward",
     outputs: [],
     stateMutability: "nonpayable",
@@ -217,13 +223,6 @@ export const abiANT = [
   },
   {
     inputs: [],
-    name: "infectionSpread",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "larva",
     outputs: [
       {
@@ -272,6 +271,19 @@ export const abiANT = [
     name: "mateMalePrincess",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "maxHatch",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "_maxPossible",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -671,12 +683,50 @@ export const abiBB = [
         type: "address",
       },
     ],
+    name: "getClaimableBuildingBlockCount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "_count",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "getPassiveBuildingBlocks",
     outputs: [
       {
         internalType: "uint256[]",
         name: "",
         type: "uint256[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_index",
+        type: "uint256",
+      },
+    ],
+    name: "getResidentCount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -1003,6 +1053,24 @@ export const abiBB = [
       },
     ],
     name: "reduceCapacity",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_index",
+        type: "uint256",
+      },
+    ],
+    name: "removeDeadWorker",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -4571,6 +4639,24 @@ export const abiSoldier = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_index",
+        type: "uint256",
+      },
+    ],
+    name: "burn",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "counter",
     outputs: [
@@ -4616,6 +4702,25 @@ export const abiSoldier = [
         internalType: "uint256[]",
         name: "",
         type: "uint256[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getClaimableLarvaCount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "_count",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -4820,6 +4925,19 @@ export const abiSoldier = [
       },
     ],
     name: "increaseDamage",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "infectionSpread",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -5438,6 +5556,25 @@ export const abiWorker = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getClaimableFunghi",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "_funghiAmount",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint256[]",
         name: "_workersList",
         type: "uint256[]",
@@ -5447,7 +5584,7 @@ export const abiWorker = [
     outputs: [
       {
         internalType: "uint256",
-        name: "_homeless",
+        name: "",
         type: "uint256",
       },
     ],

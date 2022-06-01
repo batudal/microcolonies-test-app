@@ -160,3 +160,6 @@ input {
   justify-content: flex-start;
   gap: 16px;
 }
+.green {
+  background-color: #00ff6a;
+}
