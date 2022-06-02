@@ -134,7 +134,7 @@ export const abiANT = [
     inputs: [
       {
         internalType: "uint256",
-        name: "_food",
+        name: "_larvaAmount",
         type: "uint256",
       },
     ],
@@ -209,13 +209,7 @@ export const abiANT = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_index",
-        type: "uint256",
-      },
-    ],
+    inputs: [],
     name: "houseWorkers",
     outputs: [],
     stateMutability: "nonpayable",
@@ -683,7 +677,7 @@ export const abiBB = [
         type: "address",
       },
     ],
-    name: "getClaimableBuildingBlockCount",
+    name: "getMergedBuildingBlockCount",
     outputs: [
       {
         internalType: "uint256",
@@ -753,6 +747,11 @@ export const abiBB = [
   },
   {
     inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
       {
         internalType: "uint256",
         name: "_index",
@@ -2126,6 +2125,19 @@ export const abiLarva = [
   },
   {
     inputs: [],
+    name: "FOOD",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "HATCH_DURATION",
     outputs: [
       {
@@ -2265,6 +2277,19 @@ export const abiLarva = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_larvaAmount",
+        type: "uint256",
+      },
+    ],
+    name: "feedingLarva",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "genesisCounter",
     outputs: [
@@ -2321,7 +2346,7 @@ export const abiLarva = [
     outputs: [
       {
         internalType: "uint256",
-        name: "hatchersLength",
+        name: "",
         type: "uint256",
       },
     ],
@@ -4139,6 +4164,25 @@ export const abiQueen = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "_index",
+        type: "uint256",
+      },
+    ],
+    name: "layingEggs",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "deservedEggs",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "_user",
         type: "address",
@@ -5548,6 +5592,25 @@ export const abiWorker = [
         internalType: "uint256[]",
         name: "",
         type: "uint256[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getClaimableBB",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "_claimableBB",
+        type: "uint256",
       },
     ],
     stateMutability: "view",

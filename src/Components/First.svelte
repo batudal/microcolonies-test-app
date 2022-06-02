@@ -25,14 +25,15 @@
     let princessBalance = "N/A";
     let totalPopulation = "N/A";
 
-    let mateInput, queenInput, buildingInput,mintInput;
+    let mateInput, queenInput,mintInput;
     let claimableQueens = "N/A";
-    let claimableBB = "N/A";
+    let claimableMerged = "N/A";
 
     let blocks= [];
     let blockCapacities = [];
     let blockCumCapacities = [];
     let homelessWorkers;
+    let mergeable = false;
 
     const fetchUserData = async () => {
         if($userConnected) {
@@ -63,8 +64,11 @@
                 blockCapacities[i] = parseInt(await buildingContract.getResidentCount(blocks[i]))
                 blockCumCapacities[i] = parseInt(await buildingContract.idToCumulativeCapacity(blocks[i]))
             }
-            claimableBB = await buildingContract.getClaimableBuildingBlockCount($userAddress);
-            console.log("ClaimableBB", claimableBB)
+            // claimableMerged = await buildingContract.getMergedBuildingBlockCount($userAddress);
+            // console.log("claimableMerged: ", claimableMerged)
+            console.log("X")
+            // mergeable = await buildingContract.idToFull(blocks[0]);
+            console.log("X")
         }
     }
     setInterval(() => {
@@ -82,7 +86,7 @@
     }
     const houseWorkers = async () => {
         const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
-        await antContract.houseWorkers(buildingInput)
+        await antContract.houseWorkers()
     }
     const merge = async () => {
         const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
@@ -154,18 +158,17 @@
         {/each}
         <p class="detail" style="margin-top:8px">--------------------------------------------</p>
         <p class="detail">Worker Ants need housing to hatch. 1 block houses 10 Worker Ants. </p>
-        <input type='text' placeholder="Id of Building Block" bind:value={buildingInput} style="margin-top:8px">
         <div class="buttons" style="margin-top:8px">
             <div class={`button-small ${blockCapacities[0] > 0 && homelessWorkers > 0 ? "green" : ""}`} on:click={houseWorkers}>house workers</div>
-            <div class="detail">--> to create space for more</div>
+            <div class="detail">-> to create space for more</div>
         </div>
         <div class="buttons">
-            <div class="button-small" on:click={merge}>start merge</div>
-            <div class="detail">--> to construct bigger nest</div>
+            <div class={`button-small ${mergeable ? "green" : ""}`} on:click={merge}>start merge</div>
+            <div class="detail">-> to construct bigger nest</div>
         </div>
         <div class="buttons">
-            <div class={`button-small ${claimableBB > 0 ? "green" : ""}`} on:click={claimBuilding}>claim merged</div>
-            <div class="detail">--> to increase capacity</div>
+            <div class={`button-small ${claimableMerged > 0 ? "green" : ""}`} on:click={claimBuilding}>claim merged</div>
+            <div class="detail">-> {claimableMerged} claimable</div>
         </div>
     </main>
 </div>

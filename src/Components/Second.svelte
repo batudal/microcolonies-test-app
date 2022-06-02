@@ -33,6 +33,7 @@
             totalWorkers = (await workerContract.getWorkers($userAddress)).length;
             availableWorkers = (await workerContract.getAvailableWorkers($userAddress)).length;
             homelessWorkers = (await workerContract.getUnHousedWorkers($userAddress)).length;
+            claimableBB = await workerContract.getClaimableBB($userAddress);
 
             const soldierContract = new ethers.Contract(addr.soldier, abiSoldier, $networkProvider);
             totalSoldiers = (await soldierContract.getSoldiers($userAddress)).length;
@@ -108,7 +109,7 @@
     }
     const harvestZombie = async () => {
         const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
-        await antContract.claimPassiveSoldierReward();
+        await antContract.claimPassiveSoldierReward(soldierInput);
     }
 </script>
 
@@ -134,7 +135,7 @@
 
         <div class="buttons" style="margin-top:8px">
             <div class={`button-small ${availableWorkers > 0 ? "green" : ""}`} on:click={gatherBlocks}>gather blocks</div>
-            <div class="detail">--> to have more workers</div>
+            <div class="detail">--> to house more workers</div>
         </div>
         <div class="buttons">
             <div class={`button-small ${availableWorkers > 0 && availableSoldiers > 0 ? "green" : ""}`} on:click={gatherProtectedFood}>gather food</div>
@@ -146,8 +147,8 @@
         </div>
         <p class="detail">--------------------------------------------</p>
         <div class="buttons">
-            <div class="button-small" on:click={claimBlocks}>claim blocks</div>
-            <div class="detail">--> N/A claimable</div>
+            <div class={`button-small ${claimableBB > 0 ? "green" : ""}`} on:click={claimBlocks}>claim blocks</div>
+            <div class="detail">--> {claimableBB} claimable</div>
         </div>
         <div class="buttons">
             <div class={`button-small ${claimableFunghi > 0 ? "green" : ""}`} on:click={claimFunghi}>claim $funghi</div>
@@ -178,11 +179,11 @@
             <div class="detail">-> {claimableLarva} trials</div>
         </div>
         <div class="buttons">
-            <div class="button-small" on:click={healInfected}>heal infected</div>
+            <div class={`button-small ${infectedSoldiers > 0 ? "green" : ""}`} on:click={healInfected}>heal infected</div>
             <div class="detail">-> to stop spread</div>
         </div>
         <div class="buttons">
-            <div class="button-small" on:click={harvestZombie}>harvest zombie</div>
+            <div class={`button-small ${zombieSoldiers > 0 ? "green" : ""}`} on:click={harvestZombie}>harvest zombie</div>
             <div class="detail">-> to get $funghi rewards</div>
         </div>
     </main>

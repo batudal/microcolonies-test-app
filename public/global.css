@@ -83,11 +83,11 @@ h3 {
 }
 
 .button:hover {
-  background-color: #ffee00;
+  background-color: #00ff6a;
 }
 
 .button-small:hover {
-  background-color: #ffee00;
+  background-color: #00ff6a;
 }
 
 span {
@@ -132,7 +132,7 @@ input {
   transition: all 0.2s ease;
 }
 .card:hover {
-  box-shadow: 6px 6px 0px #ffee00;
+  box-shadow: 6px 6px 0px #00ff6a;
   /* transform: scale(1.005); */
 }
 .line {
