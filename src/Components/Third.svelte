@@ -34,8 +34,6 @@
 
             const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
             maxHatch = await antContract.maxHatch();
-            console.log("Maxhatch", maxHatch)
-
         }
     }
     setInterval(() => {
@@ -45,7 +43,6 @@
     const feedLarva = async () => {
         const funghiContract = new ethers.Contract(addr.funghi, abiFunghi, $networkSigner);
         const approved = parseFloat(ethers.utils.formatEther(await funghiContract.allowance($userAddress, addr.ant)));
-        console.log(approved)
         if (approved < larvaInput * 80) {
             const approval = await funghiContract.approve(addr.ant,ethers.constants.MaxUint256);
             await approval.wait();
@@ -55,7 +52,7 @@
     }
     const hatch = async () => {
         const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
-        await antContract.hatch(larvaInput)
+        await antContract.hatch(parseInt(larvaInput))
     }
     const feedQueen = async () => {
         const funghiContract = new ethers.Contract(addr.funghi, abiFunghi, $networkSigner);

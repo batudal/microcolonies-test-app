@@ -66,9 +66,7 @@
             }
             // claimableMerged = await buildingContract.getMergedBuildingBlockCount($userAddress);
             // console.log("claimableMerged: ", claimableMerged)
-            console.log("X")
             // mergeable = await buildingContract.idToFull(blocks[0]);
-            console.log("X")
         }
     }
     setInterval(() => {
