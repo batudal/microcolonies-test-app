@@ -28,7 +28,7 @@
         "umut:",
         "suleyman:",
         "ege:",
-        "batu:"
+        "batu: "
     ]
     let whitelistBalances = [];
 
