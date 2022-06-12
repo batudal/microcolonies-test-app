@@ -15,6 +15,23 @@
         abiANT,
         abiBB } from "../Stores/ABIs"
 
+    const whitelist = [
+        "0xbC1f51b74Ad7754839a1fCB4a86a3E75A6E1F544",
+        "0xCa953b66E2372714C2DCF13d0970aBe1077D521D",
+        "0x6bF075861cC6c478baF22bB0C71179fF5F830cBC",
+        "0xFC1EaD6E63D3C744E5290ca4fb96F6519eAe8bb1",
+        "0xb9Eb8B4CbdaDBf0eD7a3E65b10F8A31B4a7671eF",
+        "0xC370b50eC6101781ed1f1690A00BF91cd27D77c4"]
+    const whitelistMembers = [
+        "hakan:",
+        "tolunay:",
+        "umut:",
+        "suleyman:",
+        "ege:",
+        "batu:"
+    ]
+    let whitelistBalances = [];
+
     let funghiBalance = "N/A";
     let feromonBalance = "N/A";
     let workerBalance = "N/A";
@@ -25,7 +42,7 @@
     let princessBalance = "N/A";
     let totalPopulation = "N/A";
 
-    let mateInput, queenInput,mintInput;
+    let mateInput,mintInput;
     let claimableQueens = "N/A";
     let claimableMerged = "N/A";
 
@@ -67,6 +84,7 @@
             // claimableMerged = await buildingContract.getMergedBuildingBlockCount($userAddress);
             // console.log("claimableMerged: ", claimableMerged)
             // mergeable = await buildingContract.idToFull(blocks[0]);
+            await getFunghiBalances();
         }
     }
     setInterval(() => {
@@ -80,7 +98,7 @@
     }
     const claimQueen = async () => {
         const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
-        await antContract.claimQueen(queenInput)
+        await antContract.claimQueen(mateInput)
     }
     const houseWorkers = async () => {
         const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
@@ -103,6 +121,22 @@
         })
     }
 
+    const mint = async () => {
+        const larvaContract = new ethers.Contract(addr.larva, abiLarva, $networkSigner);
+        await larvaContract.mint($userAddress, mintInput)
+    }
+
+    const getFunghiBalances = async () => {
+        for (let i = 0; i < whitelist.length; i++) {
+            whitelistBalances[i] = await getFunghiBalance(whitelist[i]);
+        }
+    }
+    const getFunghiBalance = async (user) => {
+        const funghiContract = new ethers.Contract(addr.funghi, abiFunghi, $networkProvider);
+        const userBalance = ethers.utils.formatEther(await funghiContract.balanceOf(user));
+        return userBalance
+    }
+
 </script>
 
 <div class="container">
@@ -118,9 +152,19 @@
         <p class="detail">Welcome Fren. This game is alpha test mode. Feel free to mint some larvae and start multiplying.</p>
         <input type='text' placeholder="Amount of Larvae" style="margin-top:8px" bind:value={mintInput}>
         <div class="buttons" style="margin-top:8px">
-            <div class="button-small" on:click={genesisMint}>genesis mint</div>
+            <div class="button-small" on:click={mint}>genesis mint</div>
             <div class="detail">--> unlimited for fast test</div>
         </div>
+    </main>
+    <div style="height:24px"></div>
+    <div class="header">
+        <h3>FUNGHI SCOREBOARD</h3>
+    </div>
+    <div style="height:8px"></div>
+    <main class="card">
+        {#each whitelist as user, index}
+            <Line title={whitelistMembers[index]} value={whitelistBalances[index]}></Line>
+        {/each}
     </main>
     <div style="height:24px"></div>
     <div class="header">
@@ -138,11 +182,11 @@
         <p class="detail">Burn a pair of male & princess to mate them. Mating takes 1 day and mints a Queen Ant.</p>
         <input type='text' placeholder="Amount of Ant Pairs / Queens" style="margin-top:8px" bind:value={mateInput}>
         <div class="buttons" style="margin-top:8px">
-            <div class="button-small" on:click={mate}>mate pair</div>
+            <div class={`button-small ${princessBalance && maleBalance > 0 ? "green" : ""}`} on:click={mate}>mate pair</div>
             <div class="detail">--> to create a queen</div>
         </div>
         <div class="buttons">
-            <div class="button-small" on:click={claimQueen}>claim queen</div>
+            <div class={`button-small ${claimableQueens > 0 ? "green" : ""}`} on:click={claimQueen}>claim queen</div>
             <div class="detail">--> and start producing</div>
         </div>
     </main>
