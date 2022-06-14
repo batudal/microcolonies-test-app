@@ -21,7 +21,8 @@
         "0x6bF075861cC6c478baF22bB0C71179fF5F830cBC",
         "0xFC1EaD6E63D3C744E5290ca4fb96F6519eAe8bb1",
         "0xb9Eb8B4CbdaDBf0eD7a3E65b10F8A31B4a7671eF",
-        "0xC370b50eC6101781ed1f1690A00BF91cd27D77c4"]
+        "0xC370b50eC6101781ed1f1690A00BF91cd27D77c4",
+        "0x187549F02D96d94945f2c4Dd206cF58AEed8EBAE"]
     const whitelistMembers = [
         "hakan:",
         "tolunay:",

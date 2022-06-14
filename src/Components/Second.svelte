@@ -196,12 +196,5 @@
         align-items: center;
         justify-content: flex-start;
         max-width: 320px;
-        
-    }
-    .inputs-container{
-        width: 100%;
-        display:flex;
-        flex-direction: row;
-        justify-content: space-between;
     }
 </style>
