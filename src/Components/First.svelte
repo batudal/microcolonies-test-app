@@ -73,7 +73,7 @@
             maleBalance = (await maleContract.getMales($userAddress)).length;
             const princessContract = new ethers.Contract(addr.princess, abiPrincess, $networkProvider);
             princessBalance = (await princessContract.getPrincesses($userAddress)).length;
-            totalPopulation = workerBalance + soldierBalance + queenBalance + larvaBalance + maleBalance;
+            totalPopulation = workerBalance + soldierBalance + queenBalance + larvaBalance + maleBalance + princessBalance;
             claimableQueens = await princessContract.getMatedPrincesses($userAddress);
             claimableQueens = claimableQueens.length > 0 ? parseInt(claimableQueens) : 0;
             
