@@ -16,6 +16,7 @@
     let queens = [];
     let queenLevels = [];
     let queenEggs = [];
+    let funghiAmount;
 
     $: $userConnected ? fetchUserData() : "";
 
@@ -26,10 +27,12 @@
             larvaToHatch = parseInt(await larvaContract.getHatchersLength($userAddress));
             const queenContract = new ethers.Contract(addr.queen, abiQueen, $networkProvider);
             queens = await queenContract.getQueens($userAddress);
+            const funghiContract = new ethers.Contract(addr.funghi, abiFunghi, $networkProvider);
+            funghiAmount = await funghiContract.balanceOf($userAddress)
 
             for (let i = 0; i < queens.length; i++) {
                 queenLevels[i] = await queenContract.idToLevel(queens[i]);
-                queenEggs[i] = await queenContract.idToEggs(queens[i]);
+                queenEggs[i] = await queenContract.layingEggs($userAddress, queens[i]);
             }
 
             const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
@@ -85,14 +88,14 @@
         </div>
         <Line title="Total larvae:" value={totalLarva}></Line>
         <Line title="Ready to hatch:" value={larvaToHatch}></Line>
-        <Line title="Capacity for hatchlings:" value={maxHatch}></Line>
+        <Line title="Max larvae to hatch:" value={maxHatch}></Line>
         <p class="detail">--------------------------------------------</p>
         <p class="detail">All larvae will be incubated for 3 days. User can feed the upcoming larvae to hatch to boost their chances to improve offspring rarity.</p>
         <div class="inputs-container">
             <input type='text' placeholder="Amount of Larvae" bind:value={larvaInput} style="margin-top:8px;">
         </div>
         <div class="buttons" style="margin-top:8px">
-            <div class="button-small" on:click={feedLarva}>feed larva</div>
+            <div class={`button-small ${funghiAmount > 0 && totalLarva > 0 ? "green" : ""}`} on:click={feedLarva}>feed larva</div>
             <div class="detail">-> for better ants</div>
         </div>
         <div class="buttons">

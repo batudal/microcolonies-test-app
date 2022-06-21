@@ -180,11 +180,11 @@
         </div>
         <div class="buttons">
             <div class={`button-small ${infectedSoldiers > 0 ? "green" : ""}`} on:click={healInfected}>heal infected</div>
-            <div class="detail">-> to stop spread</div>
+            <div class="detail">-> to restore health</div>
         </div>
         <div class="buttons">
             <div class={`button-small ${zombieSoldiers > 0 ? "green" : ""}`} on:click={harvestZombie}>harvest zombie</div>
-            <div class="detail">-> to get $funghi rewards</div>
+            <div class="detail">-> to stop spread and get $funghi rewards</div>
         </div>
     </main>
 </div>

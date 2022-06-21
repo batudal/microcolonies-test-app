@@ -49,6 +49,7 @@
     let claimableMerged = "N/A";
 
     let blocks= [];
+    let blockResidents = [];
     let blockCapacities = [];
     let blockCumCapacities = [];
     let homelessWorkers;
@@ -75,12 +76,13 @@
             princessBalance = (await princessContract.getPrincesses($userAddress)).length;
             totalPopulation = workerBalance + soldierBalance + queenBalance + larvaBalance + maleBalance + princessBalance;
             claimableQueens = await princessContract.getMatedPrincesses($userAddress);
-            claimableQueens = claimableQueens.length > 0 ? parseInt(claimableQueens) : 0;
+            claimableQueens = claimableQueens.length > 0 ? parseInt(claimableQueens.length) : 0;
             
             const buildingContract = new ethers.Contract(addr.buildingblock, abiBB, $networkProvider);
             blocks = await buildingContract.getBuildingBlocks($userAddress)
             for (let i = 0; i < blocks.length; i++) {
-                blockCapacities[i] = parseInt(await buildingContract.getResidentCount(blocks[i]))
+                blockResidents[i] = parseInt(await buildingContract.getResidentCount(blocks[i]))
+                blockCapacities[i] = parseInt(await buildingContract.idToCapacity(blocks[i]))
                 blockCumCapacities[i] = parseInt(await buildingContract.idToCumulativeCapacity(blocks[i]))
             }
             // claimableMerged = await buildingContract.getMergedBuildingBlockCount($userAddress);
@@ -198,7 +200,11 @@
             <h3>Building Blocks</h3>
         </div>
         {#each blocks as block, index}
-            <Line title={"Block #"+ parseInt(block)} value={"Available "+blockCapacities[index] + "/" + blockCumCapacities[index]}></Line>
+            <Line 
+                title={index == 0 ? "Nest" : "Block #"+ parseInt(block)} 
+                value={index == 0 ? "Available "+blockResidents[index] + "/" + blockCumCapacities[index] : 
+                    "+10 capacity"}>
+            </Line>
         {/each}
         <p class="detail" style="margin-top:8px">--------------------------------------------</p>
         <p class="detail">Worker Ants need housing to hatch. 1 block houses 10 Worker Ants. </p>
@@ -207,7 +213,7 @@
             <div class="detail">-> to create space for more</div>
         </div>
         <div class="buttons">
-            <div class={`button-small ${mergeable ? "green" : ""}`} on:click={merge}>start merge</div>
+            <div class={`button-small ${blockCapacities[0] == 0 && blockCapacities.length >= 2 ? "green" : ""}`} on:click={merge}>start merge</div>
             <div class="detail">-> to construct bigger nest</div>
         </div>
         <div class="buttons">
