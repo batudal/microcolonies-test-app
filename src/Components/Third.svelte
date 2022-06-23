@@ -4,6 +4,7 @@
     import { ethers } from 'ethers'
     import { addr } from "../Stores/Addresses"
     import { 
+        abiWorker,
         abiFunghi, 
         abiQueen,
         abiLarva,
@@ -17,6 +18,8 @@
     let queenLevels = [];
     let queenEggs = [];
     let funghiAmount;
+    let eggsLayable = 0;
+    let homelessWorkers = 0;
 
     $: $userConnected ? fetchUserData() : "";
 
@@ -29,6 +32,8 @@
             queens = await queenContract.getQueens($userAddress);
             const funghiContract = new ethers.Contract(addr.funghi, abiFunghi, $networkProvider);
             funghiAmount = await funghiContract.balanceOf($userAddress)
+            const workerContract = new ethers.Contract(addr.worker, abiWorker, $networkProvider);
+            homelessWorkers = (await workerContract.getUnHousedWorkers($userAddress)).length;
 
             for (let i = 0; i < queens.length; i++) {
                 queenLevels[i] = await queenContract.idToLevel(queens[i]);
@@ -37,11 +42,23 @@
 
             const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
             maxHatch = await antContract.maxHatch();
+            await isEggsLayable();
         }
     }
     setInterval(() => {
         fetchUserData();
     }, 10000);
+
+    const isEggsLayable = async () => {
+        if($userConnected){
+            eggsLayable = 0;
+            for(let i=0; i < queenEggs.length; i++){
+                if(queenEggs[i] > 0) {
+                    eggsLayable = eggsLayable + parseInt(queenEggs[i])
+                }
+            }
+        }
+    }
 
     const feedLarva = async () => {
         const funghiContract = new ethers.Contract(addr.funghi, abiFunghi, $networkSigner);
@@ -64,12 +81,16 @@
             const approval = await funghiContract.approve(addr.ant,ethers.constants.MaxUint256);
             await approval.wait();
         }
+        if (eggsLayable > 0) {
+            await layEggs();
+        }
         const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
         await antContract.feedQueen(queenInput)
     }
     const layEggs = async () => {
         const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
-        await antContract.layEggs(queenInput)
+        const tx = await antContract.layEggs(queenInput)
+        await tx.wait();
     }
     const queenLevelUp = async () => {
         const queenContract = new ethers.Contract(addr.queen, abiQueen, $networkSigner);
@@ -88,7 +109,7 @@
         </div>
         <Line title="Total larvae:" value={totalLarva}></Line>
         <Line title="Ready to hatch:" value={larvaToHatch}></Line>
-        <Line title="Max larvae to hatch:" value={maxHatch}></Line>
+        <Line title="Max larvae to hatch:" value={10 - homelessWorkers}></Line>
         <p class="detail">--------------------------------------------</p>
         <p class="detail">All larvae will be incubated for 3 days. User can feed the upcoming larvae to hatch to boost their chances to improve offspring rarity.</p>
         <div class="inputs-container">
@@ -109,17 +130,17 @@
             <h3>Queen Ants</h3>
         </div>
         {#each queens as queen, index}
-            <Line title={`Queen #${queen}`} value={`Level ${queenLevels[index]} - ${queenEggs[index]} Eggs`}></Line>
+            <Line title={`Queen #${queen}`} value={`Level ${queenLevels[index]} -> ${queenEggs[index]} Larvae`}></Line>
         {/each}
         <p class="detail">--------------------------------------------</p>
         <p class="detail">Boosting Queen Ant’s fertility costs $FUNGHI. For 1% increase it costs ~12 $FUNGHI.</p>
         <input type='text' placeholder="Id of Queen" bind:value={queenInput} style="margin-top:8px">
         <div class="buttons" style="margin-top:8px">
-            <div class="button-small" on:click={feedQueen}>feed queen</div>
+            <div class={`button-small ${(eggsLayable > 0 && queenEggs.length > 0) ? "green" : ""}`} on:click={feedQueen}>feed queen</div>
             <div class="detail">--> to increase her fertility</div>
         </div>
         <div class="buttons">
-            <div class="button-small" on:click={layEggs}>lay eggs</div>
+            <div class={`button-small ${eggsLayable > 0 ? "green" : ""}`} on:click={layEggs}>claim larvae</div>
             <div class="detail">--> to mint larva</div>
         </div>
         <div class="buttons">

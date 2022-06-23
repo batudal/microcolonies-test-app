@@ -677,25 +677,6 @@ export const abiBB = [
         type: "address",
       },
     ],
-    name: "getMergedBuildingBlockCount",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "_count",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_user",
-        type: "address",
-      },
-    ],
     name: "getPassiveBuildingBlocks",
     outputs: [
       {
@@ -1248,6 +1229,19 @@ export const abiBB = [
     name: "transferOwnership",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "underConstruction",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
 ];
@@ -4163,6 +4157,11 @@ export const abiQueen = [
   },
   {
     inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
       {
         internalType: "uint256",
         name: "_index",

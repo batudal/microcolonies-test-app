@@ -53,7 +53,7 @@
     let blockCapacities = [];
     let blockCumCapacities = [];
     let homelessWorkers;
-    let mergeable = false;
+    let underConstruction;
 
     const fetchUserData = async () => {
         if($userConnected) {
@@ -81,13 +81,11 @@
             const buildingContract = new ethers.Contract(addr.buildingblock, abiBB, $networkProvider);
             blocks = await buildingContract.getBuildingBlocks($userAddress)
             for (let i = 0; i < blocks.length; i++) {
-                blockResidents[i] = parseInt(await buildingContract.getResidentCount(blocks[i]))
+                blockResidents[i] = parseInt((await buildingContract.getWorkersHoused(blocks[i])).length)
                 blockCapacities[i] = parseInt(await buildingContract.idToCapacity(blocks[i]))
                 blockCumCapacities[i] = parseInt(await buildingContract.idToCumulativeCapacity(blocks[i]))
             }
-            // claimableMerged = await buildingContract.getMergedBuildingBlockCount($userAddress);
-            // console.log("claimableMerged: ", claimableMerged)
-            // mergeable = await buildingContract.idToFull(blocks[0]);
+            underConstruction = await buildingContract.underConstruction();
             await getFunghiBalances();
         }
     }
@@ -186,7 +184,7 @@
         <p class="detail">Burn a pair of male & princess to mate them. Mating takes 1 day and mints a Queen Ant.</p>
         <input type='text' placeholder="Amount of Ant Pairs / Queens" style="margin-top:8px" bind:value={mateInput}>
         <div class="buttons" style="margin-top:8px">
-            <div class={`button-small ${princessBalance && maleBalance > 0 ? "green" : ""}`} on:click={mate}>mate pair</div>
+            <div class={`button-small ${princessBalance - claimableQueens && maleBalance - claimableQueens > 0 ? "green" : ""}`} on:click={mate}>mate pair</div>
             <div class="detail">--> to create a queen</div>
         </div>
         <div class="buttons">
@@ -210,15 +208,15 @@
         <p class="detail">Worker Ants need housing to hatch. 1 block houses 10 Worker Ants. </p>
         <div class="buttons" style="margin-top:8px">
             <div class={`button-small ${blockCapacities[0] > 0 && homelessWorkers > 0 ? "green" : ""}`} on:click={houseWorkers}>house workers</div>
-            <div class="detail">-> to create space for more</div>
+            <div class="detail">-> to create space</div>
         </div>
         <div class="buttons">
-            <div class={`button-small ${blockCapacities[0] == 0 && blockCapacities.length >= 2 ? "green" : ""}`} on:click={merge}>start merge</div>
-            <div class="detail">-> to construct bigger nest</div>
+            <div class={`button-small ${(blockCapacities[0] == 0 && blockCapacities.length >= 2 && !underConstruction) ? "green" : ""}`} on:click={merge}>start merge</div>
+            <div class="detail">-> to start construction</div>
         </div>
         <div class="buttons">
-            <div class={`button-small ${claimableMerged > 0 ? "green" : ""}`} on:click={claimBuilding}>claim merged</div>
-            <div class="detail">-> {claimableMerged} claimable</div>
+            <div class={`button-small ${underConstruction ? "green" : ""}`} on:click={claimBuilding}>claim merged</div>
+            <div class="detail">-> to finish construction</div>
         </div>
     </main>
 </div>
