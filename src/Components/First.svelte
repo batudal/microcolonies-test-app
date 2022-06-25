@@ -151,6 +151,16 @@
 
 <div class="container">
     <div class="header">
+        <h3>FUNGHI SCOREBOARD</h3>
+    </div>
+    <div style="height:8px"></div>
+    <main class="card">
+        {#each whitelist as user, index}
+            <Line title={whitelistMembers[index]} value={whitelistBalances[index]}></Line>
+        {/each}
+    </main>
+    <div style="height:24px"></div>
+    <div class="header">
         <h3>GENESIS ROUND</h3>
     </div>
     <div style="height:8px"></div>
@@ -165,16 +175,6 @@
             <div class="button-small" on:click={mint}>genesis mint</div>
             <div class="detail">--> unlimited for fast test</div>
         </div>
-    </main>
-    <div style="height:24px"></div>
-    <div class="header">
-        <h3>FUNGHI SCOREBOARD</h3>
-    </div>
-    <div style="height:8px"></div>
-    <main class="card">
-        {#each whitelist as user, index}
-            <Line title={whitelistMembers[index]} value={whitelistBalances[index]}></Line>
-        {/each}
     </main>
     <div style="height:24px"></div>
     <div class="header">

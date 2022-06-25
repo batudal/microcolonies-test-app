@@ -137,16 +137,16 @@
         <input type='text' placeholder="Id of Queen" bind:value={queenInput} style="margin-top:8px">
         <div class="buttons" style="margin-top:8px">
             <div class={`button-small ${(eggsLayable > 0 && queenEggs.length > 0) ? "green" : ""}`} on:click={feedQueen}>feed queen</div>
-            <div class="detail">--> to increase her fertility</div>
+            <div class="detail">-> to increase her fertility</div>
         </div>
         <div class="buttons">
             <div class={`button-small ${eggsLayable > 0 ? "green" : ""}`} on:click={layEggs}>claim larvae</div>
-            <div class="detail">--> to mint larva</div>
+            <div class="detail">-> to mint larva</div>
         </div>
-        <div class="buttons">
+        <!-- <div class="buttons">
             <div class="button-small" on:click={queenLevelUp}>upgrade queen</div>
-            <div class="detail">--> to level her up</div>
-        </div>
+            <div class="detail">-> to level her up</div>
+        </div> -->
     </main>
 </div>
 
