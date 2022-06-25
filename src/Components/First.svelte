@@ -13,7 +13,8 @@
         abiQueen,
         abiLarva,
         abiANT,
-        abiBB } from "../Stores/ABIs"
+        abiBB,
+    abiFakeDollars } from "../Stores/ABIs"
 
     const whitelist = [
         "0xbC1f51b74Ad7754839a1fCB4a86a3E75A6E1F544",
@@ -22,7 +23,8 @@
         "0xFC1EaD6E63D3C744E5290ca4fb96F6519eAe8bb1",
         "0xb9Eb8B4CbdaDBf0eD7a3E65b10F8A31B4a7671eF",
         "0xC370b50eC6101781ed1f1690A00BF91cd27D77c4",
-        "0x187549F02D96d94945f2c4Dd206cF58AEed8EBAE"]
+        "0x187549F02D96d94945f2c4Dd206cF58AEed8EBAE",
+        "0x47124988aED21c3fB3357e8412fb7191Ee5DF3f1"]
     const whitelistMembers = [
         "hakan:",
         "tolunay:",
@@ -30,7 +32,8 @@
         "suleyman:",
         "ege:",
         "batu: ",
-        "zeynep: "
+        "zeynep: ",
+        "nuriye: "
     ]
     let whitelistBalances = [];
 
@@ -55,8 +58,13 @@
     let homelessWorkers;
     let underConstruction;
 
+    let fakeDollarsApproved;
+
     const fetchUserData = async () => {
         if($userConnected) {
+            const fakeDollarsContract = new ethers.Contract(addr.fakeDollars, abiFakeDollars, $networkProvider);
+            const fakeDollarsAllowance = ethers.utils.formatEther(await fakeDollarsContract.allowance($userAddress,addr.larva));
+            fakeDollarsApproved = fakeDollarsAllowance >= 100;
             const funghiContract = new ethers.Contract(addr.funghi, abiFunghi, $networkProvider);
             funghiBalance = ethers.utils.formatEther(await funghiContract.balanceOf($userAddress));
             const feromonContract = new ethers.Contract(addr.feromon, abiFeromon, $networkProvider);
@@ -125,7 +133,7 @@
 
     const mint = async () => {
         const larvaContract = new ethers.Contract(addr.larva, abiLarva, $networkSigner);
-        await larvaContract.mint($userAddress, mintInput)
+        await larvaContract.mint(mintInput)
     }
 
     const getFunghiBalances = async () => {
