@@ -1,6 +1,7 @@
 <script>
   import Line from "./Line.svelte";
   import Scoreboard from "./Scoreboard.svelte";
+  import { allMinted } from "../Stores/States";
   import {
     userConnected,
     userAddress,
@@ -20,7 +21,6 @@
     abiLarva,
     abiANT,
     abiBB,
-    abiFakeDollars,
   } from "../Stores/ABIs";
 
   let funghiBalance = "N/A";
@@ -42,19 +42,8 @@
   let underConstruction;
   let matingPrincesses = 0;
 
-  let fakeDollarsApproved;
-
   const fetchUserData = async () => {
     if ($userConnected) {
-      const fakeDollarsContract = new ethers.Contract(
-        addr.fakeDollars,
-        abiFakeDollars,
-        $networkProvider
-      );
-      const fakeDollarsAllowance = ethers.utils.formatEther(
-        await fakeDollarsContract.allowance($userAddress, addr.larva)
-      );
-      fakeDollarsApproved = fakeDollarsAllowance >= 100;
       const funghiContract = new ethers.Contract(
         addr.funghi,
         abiFunghi,
@@ -167,7 +156,6 @@
     const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
     await antContract.claimUpgradedBuilding();
   };
-
   const genesisMint = async () => {
     const larvaContract = new ethers.Contract(
       addr.larva,
@@ -181,31 +169,33 @@
 <div class="container">
   <Scoreboard type="funghi" />
   <div style="height:24px" />
-  <div class="header">
-    <h3>GENESIS ROUND</h3>
-  </div>
-  <div style="height:8px" />
-  <main class="card">
-    <Line title="Funghi" value={funghiBalance} />
-    <Line title="Feromons" value={feromonBalance} />
-    <Line title="Population" value={totalPopulation} />
-    <p class="detail">--------------------------------------------</p>
-    <p class="detail">
-      Welcome Fren. This game is alpha test mode. Feel free to mint some larvae
-      and start multiplying.
-    </p>
-    <input
-      type="text"
-      placeholder="Amount of Larvae"
-      style="margin-top:8px"
-      bind:value={mintInput}
-    />
-    <div class="buttons" style="margin-top:8px">
-      <div class="button-small" on:click={genesisMint}>genesis mint</div>
-      <div class="detail">-> unlimited for fast test</div>
+  {#if !$allMinted}
+    <div class="header">
+      <h3>GENESIS ROUND</h3>
     </div>
-  </main>
-  <div style="height:24px" />
+    <div style="height:8px" />
+    <main class="card">
+      <Line title="Funghi" value={funghiBalance} />
+      <Line title="Feromons" value={feromonBalance} />
+      <Line title="Population" value={totalPopulation} />
+      <p class="detail">--------------------------------------------</p>
+      <p class="detail">
+        Welcome Fren. This game is alpha test mode. Feel free to mint some
+        larvae and start multiplying.
+      </p>
+      <input
+        type="text"
+        placeholder="Amount of Larvae"
+        style="margin-top:8px"
+        bind:value={mintInput}
+      />
+      <div class="buttons" style="margin-top:8px">
+        <div class="button-small" on:click={genesisMint}>genesis mint</div>
+        <div class="detail">-> unlimited for fast test</div>
+      </div>
+    </main>
+    <div style="height:24px" />
+  {/if}
   <div class="header">
     <h3>UTILITIES</h3>
   </div>

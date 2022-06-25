@@ -1,5 +1,6 @@
 <script>
   import { ethers } from "ethers";
+  import { allMinted } from "../Stores/States";
   import { addr } from "../Stores/Addresses";
   import Line from "./Line.svelte";
   import {
@@ -20,6 +21,7 @@
   } from "../Stores/ABIs";
 
   export let type;
+
   let scoreboard = [
     {
       address: "0xbC1f51b74Ad7754839a1fCB4a86a3E75A6E1F544",
@@ -112,10 +114,15 @@
     return userBalance;
   };
   const getPopulations = async () => {
+    let zeroPopulation = false;
     for (let i = 0; i < scoreboard.length; i++) {
       scoreboard[i].value = await getPopulation(scoreboard[i].address);
+      if (scoreboard[i].value == 0) {
+        zeroPopulation = true;
+      }
     }
     scoreboard.sort((a, b) => b.value - a.value);
+    allMinted.set(!zeroPopulation);
   };
   const getPopulation = async (user) => {
     let balance = 0;
@@ -160,7 +167,9 @@
 </script>
 
 <div class="header">
-  <h3>{type.toUpperCase()} SCOREBOARD</h3>
+  <h3>
+    {type.toUpperCase()} SCOREBOARD
+  </h3>
 </div>
 <div style="height:8px" />
 <main class="card">
