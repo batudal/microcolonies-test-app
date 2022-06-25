@@ -48,12 +48,12 @@
     },
     {
       address: "0xC370b50eC6101781ed1f1690A00BF91cd27D77c4",
-      title: "batu: ",
+      title: "zeynep: ",
       value: "",
     },
     {
       address: "0x187549F02D96d94945f2c4Dd206cF58AEed8EBAE",
-      title: "zeynep: ",
+      title: "batu: ",
       value: "",
     },
     {
