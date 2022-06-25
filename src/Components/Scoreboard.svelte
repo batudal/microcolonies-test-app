@@ -146,12 +146,12 @@
       abiPrincess,
       $networkProvider
     );
-    balance += parseInt(await workerContract.balanceOf(user));
-    balance += parseInt(await soldierContract.balanceOf(user));
-    balance += parseInt(await queenContract.balanceOf(user));
-    balance += parseInt(await larvaContract.balanceOf(user));
-    balance += parseInt(await maleContract.balanceOf(user));
-    balance += parseInt(await princessContract.balanceOf(user));
+    balance += (await workerContract.getWorkers(user)).length;
+    balance += (await soldierContract.getSoldiers(user)).length;
+    balance += (await queenContract.getQueens(user)).length;
+    balance += (await larvaContract.getLarvae(user)).length;
+    balance += (await maleContract.getMales(user)).length;
+    balance += (await princessContract.getPrincesses(user)).length;
     return balance;
   };
 </script>
