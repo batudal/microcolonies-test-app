@@ -142,8 +142,9 @@
         maleBalance +
         princessBalance;
       claimableQueens = await princessContract.getClaimable($userAddress);
-      matingPrincesses = (await princessContract.getClaimable($userAddress))
-        .length;
+      matingPrincesses = (
+        await princessContract.getMatedPrincesses($userAddress)
+      ).length;
       const buildingContract = new ethers.Contract(
         addr.buildingblock,
         abiBB,
