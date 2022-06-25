@@ -170,6 +170,25 @@ export const abiANT = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "firstMint",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "funghi",
     outputs: [
@@ -3685,6 +3704,25 @@ export const abiPrincess = [
         type: "address",
       },
     ],
+    name: "getClaimable",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "_claimable",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "getMatedPrincesses",
     outputs: [
       {
@@ -4151,7 +4189,7 @@ export const abiQueen = [
   },
   {
     inputs: [],
-    name: "FERTILITY_DURATION",
+    name: "LEVEL_UP_FEE",
     outputs: [
       {
         internalType: "uint256",
@@ -6035,6 +6073,24 @@ export const abiWorker = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_index",
+        type: "uint256",
+      },
+    ],
+    name: "killWorker",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {

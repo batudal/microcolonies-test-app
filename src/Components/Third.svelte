@@ -142,12 +142,8 @@
     await tx.wait();
   };
   const queenLevelUp = async () => {
-    const queenContract = new ethers.Contract(
-      addr.queen,
-      abiQueen,
-      $networkSigner
-    );
-    await queenContract.queenLevelup(queenInput);
+    const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+    await antContract.queenLevelup(queenInput);
   };
 </script>
 
@@ -244,10 +240,10 @@
       </div>
       <div class="detail">-> to mint larva</div>
     </div>
-    <!-- <div class="buttons">
-            <div class="button-small" on:click={queenLevelUp}>upgrade queen</div>
-            <div class="detail">-> to level her up</div>
-        </div> -->
+    <div class="buttons">
+      <div class="button-small" on:click={queenLevelUp}>upgrade queen</div>
+      <div class="detail">-> to level her up</div>
+    </div>
   </main>
 </div>
 

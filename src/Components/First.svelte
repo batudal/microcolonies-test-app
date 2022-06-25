@@ -64,6 +64,7 @@
   let blockCumCapacities = [];
   let homelessWorkers;
   let underConstruction;
+  let matingPrincesses = 0;
 
   let fakeDollarsApproved;
 
@@ -140,10 +141,9 @@
         larvaBalance +
         maleBalance +
         princessBalance;
-      claimableQueens = await princessContract.getMatedPrincesses($userAddress);
-      claimableQueens =
-        claimableQueens.length > 0 ? parseInt(claimableQueens.length) : 0;
-
+      claimableQueens = await princessContract.getClaimable($userAddress);
+      matingPrincesses = (await princessContract.getClaimable($userAddress))
+        .length;
       const buildingContract = new ethers.Contract(
         addr.buildingblock,
         abiBB,
@@ -197,49 +197,11 @@
       abiLarva,
       $networkSigner
     );
-    const _value = 0.0008 * parseFloat(mintInput);
-    await larvaContract.genesisMint(mintInput, {
-      value: ethers.utils.parseEther(_value.toString()),
-    });
+    await larvaContract.genesisMint(mintInput);
   };
-
-  const mint = async () => {
-    const larvaContract = new ethers.Contract(
-      addr.larva,
-      abiLarva,
-      $networkSigner
-    );
-    await larvaContract.mint(mintInput);
-  };
-
-  //   const getFunghiBalances = async () => {
-  //     for (let i = 0; i < whitelist.length; i++) {
-  //       whitelistBalances[i] = await getFunghiBalance(whitelist[i]);
-  //     }
-  //   };
-  //   const getFunghiBalance = async (user) => {
-  //     const funghiContract = new ethers.Contract(
-  //       addr.funghi,
-  //       abiFunghi,
-  //       $networkProvider
-  //     );
-  //     const userBalance = ethers.utils.formatEther(
-  //       await funghiContract.balanceOf(user)
-  //     );
-  //     return userBalance;
-  //   };
 </script>
 
 <div class="container">
-  <!-- <div class="header">
-    <h3>FUNGHI SCOREBOARD</h3>
-  </div>
-  <div style="height:8px" />
-  <main class="card">
-    {#each whitelist as user, index}
-      <Line title={whitelistMembers[index]} value={whitelistBalances[index]} />
-    {/each}
-  </main> -->
   <Scoreboard type="funghi" />
   <div style="height:24px" />
   <div class="header">
@@ -262,8 +224,8 @@
       bind:value={mintInput}
     />
     <div class="buttons" style="margin-top:8px">
-      <div class="button-small" on:click={mint}>genesis mint</div>
-      <div class="detail">--> unlimited for fast test</div>
+      <div class="button-small" on:click={genesisMint}>genesis mint</div>
+      <div class="detail">-> unlimited for fast test</div>
     </div>
   </main>
   <div style="height:24px" />
@@ -292,7 +254,8 @@
     <div class="buttons" style="margin-top:8px">
       <div
         class={`button-small ${
-          princessBalance - claimableQueens && maleBalance - claimableQueens > 0
+          (princessBalance - matingPrincesses &&
+            maleBalance - matingPrincesses) > 0
             ? "green"
             : ""
         }`}
@@ -300,7 +263,7 @@
       >
         mate pair
       </div>
-      <div class="detail">--> to create a queen</div>
+      <div class="detail">-> to create a queen</div>
     </div>
     <div class="buttons">
       <div
@@ -309,7 +272,7 @@
       >
         claim queen
       </div>
-      <div class="detail">--> and start producing</div>
+      <div class="detail">-> and start producing</div>
     </div>
   </main>
   <div style="height:24px" />

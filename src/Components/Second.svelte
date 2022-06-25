@@ -14,6 +14,7 @@
     abiWorker,
     abiSoldier,
     abiANT,
+    abiFeromon,
     abiBB,
     abiLarva,
   } from "../Stores/ABIs";
@@ -28,6 +29,7 @@
   let zombieSoldiers = "N/A";
   let infectedSoldiers = "N/A";
   let claimableBB, claimableFunghi, claimableLarva;
+  let feromonBalance;
 
   $: $userConnected ? fetchUserData() : "";
   $: occupiedWorkers = totalWorkers - availableWorkers;
@@ -65,6 +67,14 @@
       claimableFunghi = await workerContract.getClaimableFunghi($userAddress);
       claimableLarva = await soldierContract.getClaimableLarvaCount(
         $userAddress
+      );
+      const feromonContract = new ethers.Contract(
+        addr.feromon,
+        abiFeromon,
+        $networkProvider
+      );
+      feromonBalance = ethers.utils.formatEther(
+        await feromonContract.balanceOf($userAddress)
       );
     }
   };
@@ -205,7 +215,7 @@
       >
         gather blocks
       </div>
-      <div class="detail">--> to house more workers</div>
+      <div class="detail">-> to house more workers</div>
     </div>
     <div class="buttons">
       <div
@@ -216,7 +226,7 @@
       >
         gather food
       </div>
-      <div class="detail">--> with soldier protection</div>
+      <div class="detail">-> with soldier protection</div>
     </div>
     <div class="buttons">
       <div
@@ -225,7 +235,7 @@
       >
         gather food
       </div>
-      <div class="detail">--> without soldier protection</div>
+      <div class="detail">-> without soldier protection</div>
     </div>
     <p class="detail">--------------------------------------------</p>
     <div class="buttons">
@@ -235,7 +245,7 @@
       >
         claim blocks
       </div>
-      <div class="detail">--> {claimableBB} claimable</div>
+      <div class="detail">-> {claimableBB} claimable</div>
     </div>
     <div class="buttons">
       <div
@@ -244,7 +254,7 @@
       >
         claim $funghi
       </div>
-      <div class="detail">--> {claimableFunghi} claimable</div>
+      <div class="detail">-> {claimableFunghi} claimable</div>
     </div>
   </main>
   <div style="height:24px" />
