@@ -81,6 +81,7 @@
     for (let i = 0; i < scoreboard.length; i++) {
       scoreboard[i].value = await getFunghiBalance(scoreboard[i].address);
     }
+    scoreboard.sort((a, b) => b.value - a.value);
   };
   const getFunghiBalance = async (user) => {
     const funghiContract = new ethers.Contract(
@@ -97,6 +98,7 @@
     for (let i = 0; i < scoreboard.length; i++) {
       scoreboard[i].value = await getFeromonBalance(scoreboard[i].address);
     }
+    scoreboard.sort((a, b) => b.value - a.value);
   };
   const getFeromonBalance = async (user) => {
     const feromonContract = new ethers.Contract(
@@ -113,6 +115,7 @@
     for (let i = 0; i < scoreboard.length; i++) {
       scoreboard[i].value = await getPopulation(scoreboard[i].address);
     }
+    scoreboard.sort((a, b) => b.value - a.value);
   };
   const getPopulation = async (user) => {
     let balance = 0;
@@ -161,8 +164,8 @@
 </div>
 <div style="height:8px" />
 <main class="card">
-  {#each scoreboard as user}
-    <Line title={user.title} value={user.value} />
+  {#each scoreboard as user, index}
+    <Line title={user.title} value={user.value} winner={index == 0} />
   {/each}
 </main>
 

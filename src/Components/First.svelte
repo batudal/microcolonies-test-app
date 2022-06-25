@@ -23,28 +23,6 @@
     abiFakeDollars,
   } from "../Stores/ABIs";
 
-  const whitelist = [
-    "0xbC1f51b74Ad7754839a1fCB4a86a3E75A6E1F544",
-    "0xCa953b66E2372714C2DCF13d0970aBe1077D521D",
-    "0x6bF075861cC6c478baF22bB0C71179fF5F830cBC",
-    "0xFC1EaD6E63D3C744E5290ca4fb96F6519eAe8bb1",
-    "0xb9Eb8B4CbdaDBf0eD7a3E65b10F8A31B4a7671eF",
-    "0xC370b50eC6101781ed1f1690A00BF91cd27D77c4",
-    "0x187549F02D96d94945f2c4Dd206cF58AEed8EBAE",
-    "0x47124988aED21c3fB3357e8412fb7191Ee5DF3f1",
-  ];
-  const whitelistMembers = [
-    "hakan:",
-    "tolunay:",
-    "umut:",
-    "suleyman:",
-    "ege:",
-    "batu: ",
-    "zeynep: ",
-    "nuriye: ",
-  ];
-  let whitelistBalances = [];
-
   let funghiBalance = "N/A";
   let feromonBalance = "N/A";
   let workerBalance = "N/A";
@@ -56,8 +34,6 @@
   let totalPopulation = "N/A";
   let mateInput, mintInput;
   let claimableQueens = "N/A";
-  let claimableMerged = "N/A";
-
   let blocks = [];
   let blockResidents = [];
   let blockCapacities = [];
