@@ -123,7 +123,7 @@
         await funghiContract.allowance($userAddress, addr.ant)
       )
     );
-    if (approved < larvaInput * 240) {
+    if (approved < queenInput * 240) {
       const approval = await funghiContract.approve(
         addr.ant,
         ethers.constants.MaxUint256
