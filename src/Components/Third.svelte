@@ -16,6 +16,7 @@
     abiQueen,
     abiLarva,
     abiANT,
+    abiFeromon,
   } from "../Stores/ABIs";
 
   let totalLarva;
@@ -26,6 +27,7 @@
   let queenLevels = [];
   let queenEggs = [];
   let funghiAmount;
+  let feromonAmount;
   let eggsLayable = 0;
   let homelessWorkers = 0;
 
@@ -54,11 +56,19 @@
         $networkProvider
       );
       funghiAmount = await funghiContract.balanceOf($userAddress);
+      const feromonContract = new ethers.Contract(
+        addr.feromon,
+        abiFeromon,
+        $networkProvider
+      );
+      feromonAmount = await feromonContract.balanceOf($userAddress);
+      feromonAmount = parseInt(ethers.utils.formatEther(feromonAmount));
       const workerContract = new ethers.Contract(
         addr.worker,
         abiWorker,
         $networkProvider
       );
+
       homelessWorkers = (await workerContract.getUnHousedWorkers($userAddress))
         .length;
 
@@ -142,8 +152,25 @@
     await tx.wait();
   };
   const queenLevelUp = async () => {
+    const feromonContract = new ethers.Contract(
+      addr.feromon,
+      abiFeromon,
+      $networkSigner
+    );
+    const approved = parseFloat(
+      ethers.utils.formatEther(
+        await feromonContract.allowance($userAddress, addr.ant)
+      )
+    );
+    if (approved < 100) {
+      const approval = await feromonContract.approve(
+        addr.ant,
+        ethers.constants.MaxUint256
+      );
+      await approval.wait();
+    }
     const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
-    await antContract.queenLevelup(queenInput);
+    await antContract.queenLevelUp(queenInput);
   };
 </script>
 
@@ -241,7 +268,14 @@
       <div class="detail">-> to mint larva</div>
     </div>
     <div class="buttons">
-      <div class="button-small" on:click={queenLevelUp}>upgrade queen</div>
+      <div
+        class={`button-small ${
+          queens.length > 0 && feromonAmount > 100 ? "green" : ""
+        }`}
+        on:click={queenLevelUp}
+      >
+        upgrade queen
+      </div>
       <div class="detail">-> to level her up</div>
     </div>
   </main>

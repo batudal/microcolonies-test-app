@@ -132,7 +132,6 @@
       const now = parseInt(Date.now() / 1000);
       const start = await buildingContract.idToConstructionTime(blocks[0]);
       remainingConstruction = now - start;
-      console.log("remainingConstruction: ", remainingConstruction);
     }
   };
   setInterval(() => {
