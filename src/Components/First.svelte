@@ -41,6 +41,7 @@
   let homelessWorkers;
   let underConstruction;
   let matingPrincesses = 0;
+  let remainingConstruction;
 
   const fetchUserData = async () => {
     if ($userConnected) {
@@ -128,7 +129,10 @@
         );
       }
       underConstruction = await buildingContract.underConstruction();
-      //   await getFunghiBalances();
+      const now = parseInt(Date.now() / 1000);
+      const start = await buildingContract.idToConstructionTime(blocks[0]);
+      remainingConstruction = now - start;
+      console.log("remainingConstruction: ", remainingConstruction);
     }
   };
   setInterval(() => {
@@ -276,7 +280,7 @@
       <div class="detail">-> to create space</div>
     </div>
     <div class="buttons">
-      <div
+      <!-- <div
         class={`button-small ${
           blockCapacities[0] == 0 &&
           blockCapacities.length >= 2 &&
@@ -285,18 +289,18 @@
             : ""
         }`}
         on:click={merge}
-      >
-        start merge
-      </div>
+      > -->
+      <div class="button-small" on:click={merge}>start merge</div>
       <div class="detail">-> to start construction</div>
     </div>
     <div class="buttons">
-      <div
-        class={`button-small ${underConstruction ? "green" : ""}`}
+      <!-- <div
+        class={`button-small ${
+          !underConstruction && remainingConstruction >= 21600 ? "green" : ""
+        }`}
         on:click={claimBuilding}
-      >
-        claim merged
-      </div>
+      > -->
+      <div class="button-small" on:click={claimBuilding}>claim merged</div>
       <div class="detail">-> to finish construction</div>
     </div>
   </main>
