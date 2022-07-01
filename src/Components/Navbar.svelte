@@ -43,8 +43,6 @@
   <div style="height: 24px" />
   <div class="bar">
     <a href="#/"><img src="/images/logo.svg" alt="" /></a>
-    <div class="filler" />
-
     <p>
       Tournament ends in: <span>{days}d {hours}h {minutes}m {seconds}s</span>
     </p>
