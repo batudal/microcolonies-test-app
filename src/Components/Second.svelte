@@ -224,7 +224,7 @@
         }`}
         on:click={gatherProtectedFood}
       >
-        collect $funghi
+        farm $funghi
       </div>
       <div class="detail">-> with soldier protection</div>
     </div>
@@ -233,7 +233,7 @@
         class={`button-small ${availableWorkers > 0 ? "green" : ""}`}
         on:click={gatherFood}
       >
-        collect $funghi
+        farm $funghi
       </div>
       <div class="detail">-> without soldier protection</div>
     </div>
@@ -252,7 +252,7 @@
         class={`button-small ${claimableFunghi > 0 ? "green" : ""}`}
         on:click={claimFunghi}
       >
-        claim $funghi
+        harvest $funghi
       </div>
       <div class="detail">-> {claimableFunghi} claimable</div>
     </div>
