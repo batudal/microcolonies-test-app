@@ -213,7 +213,7 @@
         class={`button-small ${availableWorkers > 0 ? "green" : ""}`}
         on:click={gatherBlocks}
       >
-        gather blocks
+        collect blocks
       </div>
       <div class="detail">-> to house more workers</div>
     </div>
@@ -224,7 +224,7 @@
         }`}
         on:click={gatherProtectedFood}
       >
-        gather food
+        collect $funghi
       </div>
       <div class="detail">-> with soldier protection</div>
     </div>
@@ -233,7 +233,7 @@
         class={`button-small ${availableWorkers > 0 ? "green" : ""}`}
         on:click={gatherFood}
       >
-        gather food
+        collect $funghi
       </div>
       <div class="detail">-> without soldier protection</div>
     </div>
