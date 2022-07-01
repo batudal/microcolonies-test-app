@@ -5,12 +5,49 @@
     userConnected,
     userAddress,
   } from "../Stores/Network";
+  import { onMount, onDestroy } from "svelte";
+
+  onMount(() => {
+    setTime();
+  });
+
+  const interval = setInterval(() => {
+    setTime();
+  }, 1000);
+  onDestroy(() => {
+    clearInterval(interval);
+  });
+
+  let distance;
+  let now;
+  let days;
+  let hours;
+  let minutes;
+  let seconds;
+  let raceFinished;
+  const setTime = () => {
+    now = new Date().getTime();
+    distance = parseInt(1657393225 * 1000 - now) / 1000;
+    if (distance > 0) {
+      hours = Math.floor(distance / 3600) % 24;
+      days = Math.floor(distance / (3600 * 24));
+      minutes = Math.floor(distance / 60) % 60;
+      seconds = Math.floor(distance) % 60;
+    } else {
+      raceFinished = true;
+    }
+  };
 </script>
 
 <main>
   <div style="height: 24px" />
   <div class="bar">
     <a href="#/"><img src="/images/logo.svg" alt="" /></a>
+    <div class="filler" />
+
+    <p>
+      Tournament ends in: <span>{days}d {hours}h {minutes}m {seconds}s</span>
+    </p>
     <div class="filler" />
     <a
       href="https://degen-fyi.notion.site/A-N-T-f55111a055c24c69af3b920d129d1d87"
@@ -54,5 +91,9 @@
     color: #070707;
     cursor: pointer;
     font-weight: 700;
+  }
+  span {
+    color: #00ff6a;
+    font-weight: 400;
   }
 </style>

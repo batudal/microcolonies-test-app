@@ -56,6 +56,7 @@ export const connectWallet = async () => {
   networkProvider.set(provider);
   networkSigner.set(signer);
   userAddress.set(await signer.getAddress());
+  // userAddress.set("0x47124988aED21c3fB3357e8412fb7191Ee5DF3f1");
   chainID.set(await signer.getChainId());
   userConnected.set(true);
 };
