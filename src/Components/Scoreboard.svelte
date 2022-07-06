@@ -90,6 +90,9 @@
       await getPrincessPopulations();
     }
   };
+  const sleep = (ms) => {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  };
 
   const getFunghiBalances = async () => {
     for (let i = 0; i < scoreboard.length; i++) {
@@ -148,36 +151,42 @@
   };
   const getQueenPopulations = async () => {
     for (let i = 0; i < scoreboard.length; i++) {
+      await sleep(100);
       scoreboard[i].value = await getQueenPopulation(scoreboard[i].address);
     }
     scoreboard.sort((a, b) => b.value - a.value);
   };
   const getLarvaPopulations = async () => {
     for (let i = 0; i < scoreboard.length; i++) {
+      await sleep(100);
       scoreboard[i].value = await getLarvaPopulation(scoreboard[i].address);
     }
     scoreboard.sort((a, b) => b.value - a.value);
   };
   const getWorkerPopulations = async () => {
     for (let i = 0; i < scoreboard.length; i++) {
+      await sleep(100);
       scoreboard[i].value = await getWorkerPopulation(scoreboard[i].address);
     }
     scoreboard.sort((a, b) => b.value - a.value);
   };
   const getSoldierPopulations = async () => {
     for (let i = 0; i < scoreboard.length; i++) {
+      await sleep(100);
       scoreboard[i].value = await getSoldierPopulation(scoreboard[i].address);
     }
     scoreboard.sort((a, b) => b.value - a.value);
   };
   const getMalePopulations = async () => {
     for (let i = 0; i < scoreboard.length; i++) {
+      await sleep(100);
       scoreboard[i].value = await getMalePopulation(scoreboard[i].address);
     }
     scoreboard.sort((a, b) => b.value - a.value);
   };
   const getPrincessPopulations = async () => {
     for (let i = 0; i < scoreboard.length; i++) {
+      await sleep(100);
       scoreboard[i].value = await getPrincessPopulation(scoreboard[i].address);
     }
     scoreboard.sort((a, b) => b.value - a.value);
