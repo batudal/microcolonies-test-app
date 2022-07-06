@@ -76,6 +76,18 @@
       await getFeromonBalances();
     } else if (type == "population") {
       await getPopulations();
+    } else if (type == "queen population") {
+      await getQueenPopulations();
+    } else if (type == "larva population") {
+      await getLarvaPopulations();
+    } else if (type == "worker population") {
+      await getWorkerPopulations();
+    } else if (type == "soldier population") {
+      await getSoldierPopulations();
+    } else if (type == "male population") {
+      await getMalePopulations();
+    } else if (type == "princess population") {
+      await getPrincessPopulations();
     }
   };
 
@@ -126,43 +138,97 @@
   };
   const getPopulation = async (user) => {
     let balance = 0;
-    const workerContract = new ethers.Contract(
-      addr.worker,
-      abiWorker,
-      $networkProvider
-    );
-    const soldierContract = new ethers.Contract(
-      addr.soldier,
-      abiSoldier,
-      $networkProvider
-    );
-    const queenContract = new ethers.Contract(
-      addr.queen,
-      abiQueen,
-      $networkProvider
-    );
+    balance += await getWorkerPopulation(user);
+    balance += await getSoldierPopulation(user);
+    balance += await getQueenPopulation(user);
+    balance += await getLarvaPopulation(user);
+    balance += await getMalePopulation(user);
+    balance += await getPrincessPopulation(user);
+    return balance;
+  };
+  const getQueenPopulations = async () => {
+    for (let i = 0; i < scoreboard.length; i++) {
+      scoreboard[i].value = await getQueenPopulation(scoreboard[i].address);
+    }
+    scoreboard.sort((a, b) => b.value - a.value);
+  };
+  const getLarvaPopulations = async () => {
+    for (let i = 0; i < scoreboard.length; i++) {
+      scoreboard[i].value = await getLarvaPopulation(scoreboard[i].address);
+    }
+    scoreboard.sort((a, b) => b.value - a.value);
+  };
+  const getWorkerPopulations = async () => {
+    for (let i = 0; i < scoreboard.length; i++) {
+      scoreboard[i].value = await getWorkerPopulation(scoreboard[i].address);
+    }
+    scoreboard.sort((a, b) => b.value - a.value);
+  };
+  const getSoldierPopulations = async () => {
+    for (let i = 0; i < scoreboard.length; i++) {
+      scoreboard[i].value = await getSoldierPopulation(scoreboard[i].address);
+    }
+    scoreboard.sort((a, b) => b.value - a.value);
+  };
+  const getMalePopulations = async () => {
+    for (let i = 0; i < scoreboard.length; i++) {
+      scoreboard[i].value = await getMalePopulation(scoreboard[i].address);
+    }
+    scoreboard.sort((a, b) => b.value - a.value);
+  };
+  const getPrincessPopulations = async () => {
+    for (let i = 0; i < scoreboard.length; i++) {
+      scoreboard[i].value = await getPrincessPopulation(scoreboard[i].address);
+    }
+    scoreboard.sort((a, b) => b.value - a.value);
+  };
+  const getLarvaPopulation = async (user) => {
     const larvaContract = new ethers.Contract(
       addr.larva,
       abiLarva,
       $networkProvider
     );
+    return (await larvaContract.getLarvae(user)).length;
+  };
+  const getQueenPopulation = async (user) => {
+    const queenContract = new ethers.Contract(
+      addr.queen,
+      abiQueen,
+      $networkProvider
+    );
+    return (await queenContract.getQueens(user)).length;
+  };
+  const getWorkerPopulation = async (user) => {
+    const workerContract = new ethers.Contract(
+      addr.worker,
+      abiWorker,
+      $networkProvider
+    );
+    return (await workerContract.getWorkers(user)).length;
+  };
+  const getSoldierPopulation = async (user) => {
+    const soldierContract = new ethers.Contract(
+      addr.soldier,
+      abiSoldier,
+      $networkProvider
+    );
+    return (await soldierContract.getSoldiers(user)).length;
+  };
+  const getMalePopulation = async (user) => {
     const maleContract = new ethers.Contract(
       addr.male,
       abiMale,
       $networkProvider
     );
+    return (await maleContract.getMales(user)).length;
+  };
+  const getPrincessPopulation = async (user) => {
     const princessContract = new ethers.Contract(
       addr.princess,
       abiPrincess,
       $networkProvider
     );
-    balance += (await workerContract.getWorkers(user)).length;
-    balance += (await soldierContract.getSoldiers(user)).length;
-    balance += (await queenContract.getQueens(user)).length;
-    balance += (await larvaContract.getLarvae(user)).length;
-    balance += (await maleContract.getMales(user)).length;
-    balance += (await princessContract.getPrincesses(user)).length;
-    return balance;
+    return (await princessContract.getPrincesses(user)).length;
   };
 </script>
 

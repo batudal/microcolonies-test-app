@@ -177,6 +177,10 @@
 <div class="container">
   <Scoreboard type="population" />
   <div style="height:24px" />
+  <Scoreboard type="male population" />
+  <div style="height:24px" />
+  <Scoreboard type="princess population" />
+  <div style="height:24px" />
 
   <div class="header">
     <h3>INCUBATION LAB</h3>

@@ -178,6 +178,10 @@
 <div class="container">
   <Scoreboard type="feromon" />
   <div style="height:24px" />
+  <Scoreboard type="worker population" />
+  <div style="height:24px" />
+  <Scoreboard type="soldier population" />
+  <div style="height:24px" />
 
   <div class="header">
     <h3>COMMAND CENTER</h3>
