@@ -172,10 +172,10 @@
 <div class="container">
   <Scoreboard type="funghi" />
   <div style="height:24px" />
-  <Scoreboard type="queen population" />
+  <!-- <Scoreboard type="queen population" />
   <div style="height:24px" />
   <Scoreboard type="larva population" />
-  <div style="height:24px" />
+  <div style="height:24px" /> -->
   {#if !$allMinted}
     <div class="header">
       <h3>GENESIS ROUND</h3>
