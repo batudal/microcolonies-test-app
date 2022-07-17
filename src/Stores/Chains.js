@@ -1,16 +1,16 @@
-const fantom = {
-  name: "fantom",
+const goerli = {
+  name: "goerli",
   options: {
     method: "wallet_addEthereumChain",
     params: [
       {
-        chainName: "Fantom",
-        chainId: "0xFA",
-        rpcUrls: ["https://rpc.ftm.tools/"],
-        blockExplorerUrls: ["https://ftmscan.com/"],
+        chainName: "Goerli Testnet",
+        chainId: "0x89",
+        rpcUrls: ["https://goerli.infura.io/v3/"],
+        blockExplorerUrls: ["https://goerli.etherscan.io"],
         nativeCurrency: {
-          name: "Fantom",
-          symbol: "FTM",
+          name: "GoerliETH",
+          symbol: "ETH",
           decimals: 18,
         },
       },
@@ -37,5 +37,5 @@ const polygon = {
   },
 };
 
-module.exports = fantom;
+module.exports = goerli;
 module.exports = polygon;

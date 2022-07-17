@@ -96,6 +96,7 @@
 
   const getFunghiBalances = async () => {
     for (let i = 0; i < scoreboard.length; i++) {
+      await sleep(300);
       scoreboard[i].value = await getFunghiBalance(scoreboard[i].address);
     }
     scoreboard.sort((a, b) => b.value - a.value);
@@ -113,6 +114,7 @@
   };
   const getFeromonBalances = async () => {
     for (let i = 0; i < scoreboard.length; i++) {
+      await sleep(300);
       scoreboard[i].value = await getFeromonBalance(scoreboard[i].address);
     }
     scoreboard.sort((a, b) => b.value - a.value);
@@ -131,6 +133,7 @@
   const getPopulations = async () => {
     let zeroPopulation = false;
     for (let i = 0; i < scoreboard.length; i++) {
+      await sleep(300);
       scoreboard[i].value = await getPopulation(scoreboard[i].address);
       if (scoreboard[i].value == 0) {
         zeroPopulation = true;

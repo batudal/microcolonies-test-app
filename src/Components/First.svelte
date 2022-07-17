@@ -9,7 +9,7 @@
     networkSigner,
   } from "../Stores/Network";
   import { ethers } from "ethers";
-  import { addr } from "../Stores/Addresses";
+  // import { addr } from "../Stores/Addresses";
   import {
     abiFunghi,
     abiFeromon,
@@ -22,6 +22,9 @@
     abiANT,
     abiBB,
   } from "../Stores/ABIs";
+
+  export let addr;
+  console.log(addr);
 
   let funghiBalance = "N/A";
   let feromonBalance = "N/A";
@@ -46,7 +49,7 @@
   const fetchUserData = async () => {
     if ($userConnected) {
       const funghiContract = new ethers.Contract(
-        addr.funghi,
+        addr.contractFunghi,
         abiFunghi,
         $networkProvider
       );
@@ -54,7 +57,7 @@
         await funghiContract.balanceOf($userAddress)
       );
       const feromonContract = new ethers.Contract(
-        addr.feromon,
+        addr.contractFeromon,
         abiFeromon,
         $networkProvider
       );
@@ -62,7 +65,7 @@
         await feromonContract.balanceOf($userAddress)
       );
       const workerContract = new ethers.Contract(
-        addr.worker,
+        addr.contractWorker,
         abiWorker,
         $networkProvider
       );
@@ -70,31 +73,31 @@
       homelessWorkers = (await workerContract.getUnHousedWorkers($userAddress))
         .length;
       const soldierContract = new ethers.Contract(
-        addr.soldier,
+        addr.contractSoldier,
         abiSoldier,
         $networkProvider
       );
       soldierBalance = (await soldierContract.getSoldiers($userAddress)).length;
       const queenContract = new ethers.Contract(
-        addr.queen,
+        addr.contractQueen,
         abiQueen,
         $networkProvider
       );
       queenBalance = (await queenContract.getQueens($userAddress)).length;
       const larvaContract = new ethers.Contract(
-        addr.larva,
+        addr.contractLarva,
         abiLarva,
         $networkProvider
       );
       larvaBalance = (await larvaContract.getLarvae($userAddress)).length;
       const maleContract = new ethers.Contract(
-        addr.male,
+        addr.contractMale,
         abiMale,
         $networkProvider
       );
       maleBalance = (await maleContract.getMales($userAddress)).length;
       const princessContract = new ethers.Contract(
-        addr.princess,
+        addr.contractPrincess,
         abiPrincess,
         $networkProvider
       );
@@ -111,27 +114,27 @@
       matingPrincesses = (
         await princessContract.getMatedPrincesses($userAddress)
       ).length;
-      const buildingContract = new ethers.Contract(
-        addr.buildingblock,
-        abiBB,
-        $networkProvider
-      );
-      blocks = await buildingContract.getBuildingBlocks($userAddress);
-      for (let i = 0; i < blocks.length; i++) {
-        blockResidents[i] = parseInt(
-          (await buildingContract.getWorkersHoused(blocks[i])).length
-        );
-        blockCapacities[i] = parseInt(
-          await buildingContract.idToCapacity(blocks[i])
-        );
-        blockCumCapacities[i] = parseInt(
-          await buildingContract.idToCumulativeCapacity(blocks[i])
-        );
-      }
-      underConstruction = await buildingContract.underConstruction();
-      const now = parseInt(Date.now() / 1000);
-      const start = await buildingContract.idToConstructionTime(blocks[0]);
-      remainingConstruction = now - start;
+      // const buildingContract = new ethers.Contract(
+      //   addr.buildingblock,
+      //   abiBB,
+      //   $networkProvider
+      // );
+      // blocks = await buildingContract.getBuildingBlocks($userAddress);
+      // for (let i = 0; i < blocks.length; i++) {
+      //   blockResidents[i] = parseInt(
+      //     (await buildingContract.getWorkersHoused(blocks[i])).length
+      //   );
+      //   blockCapacities[i] = parseInt(
+      //     await buildingContract.idToCapacity(blocks[i])
+      //   );
+      //   blockCumCapacities[i] = parseInt(
+      //     await buildingContract.idToCumulativeCapacity(blocks[i])
+      //   );
+      // }
+      // underConstruction = await buildingContract.underConstruction();
+      // const now = parseInt(Date.now() / 1000);
+      // const start = await buildingContract.idToConstructionTime(blocks[0]);
+      // remainingConstruction = now - start;
     }
   };
   setInterval(() => {
@@ -140,28 +143,48 @@
   $: $userConnected ? fetchUserData() : "";
 
   const mate = async () => {
-    const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
     await antContract.mateMalePrincess(mateInput);
   };
   const claimQueen = async () => {
-    const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
     await antContract.claimQueen(mateInput);
   };
   const houseWorkers = async () => {
-    const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
     await antContract.houseWorkers();
   };
   const merge = async () => {
-    const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
     await antContract.mergeBBs();
   };
   const claimBuilding = async () => {
-    const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
     await antContract.claimUpgradedBuilding();
   };
   const genesisMint = async () => {
     const larvaContract = new ethers.Contract(
-      addr.larva,
+      addr.contractLarva,
       abiLarva,
       $networkSigner
     );
@@ -250,63 +273,6 @@
     </div>
   </main>
   <div style="height:24px" />
-  <main class="card">
-    <div class="header">
-      <h3>Building Blocks</h3>
-    </div>
-    {#each blocks as block, index}
-      <Line
-        title={index == 0 ? "Nest" : "Block #" + parseInt(block)}
-        value={index == 0
-          ? "Available " +
-            blockResidents[index] +
-            "/" +
-            blockCumCapacities[index]
-          : "+10 capacity"}
-      />
-    {/each}
-    <p class="detail" style="margin-top:8px">
-      --------------------------------------------
-    </p>
-    <p class="detail">
-      Worker Ants need housing to hatch. 1 block houses 10 Worker Ants.
-    </p>
-    <div class="buttons" style="margin-top:8px">
-      <div
-        class={`button-small ${
-          blockCapacities[0] > 0 && homelessWorkers > 0 ? "green" : ""
-        }`}
-        on:click={houseWorkers}
-      >
-        house workers
-      </div>
-      <div class="detail">-> to create space</div>
-    </div>
-    <div class="buttons">
-      <!-- <div
-        class={`button-small ${
-          blockCapacities[0] == 0 &&
-          blockCapacities.length >= 2 &&
-          !underConstruction
-            ? "green"
-            : ""
-        }`}
-        on:click={merge}
-      > -->
-      <div class="button-small" on:click={merge}>start merge</div>
-      <div class="detail">-> to start construction</div>
-    </div>
-    <div class="buttons">
-      <!-- <div
-        class={`button-small ${
-          !underConstruction && remainingConstruction >= 21600 ? "green" : ""
-        }`}
-        on:click={claimBuilding}
-      > -->
-      <div class="button-small" on:click={claimBuilding}>claim merged</div>
-      <div class="detail">-> to finish construction</div>
-    </div>
-  </main>
 </div>
 
 <style>

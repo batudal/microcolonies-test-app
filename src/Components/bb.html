@@ -1,0 +1,45 @@
+<main class="card">
+  <div class="header">
+    <h3>Building Blocks</h3>
+  </div>
+  {#each blocks as block, index} <Line title={index == 0 ? "Nest" : "Block #" +
+  parseInt(block)} value={index == 0 ? "Available " + blockResidents[index] +
+  "/" + blockCumCapacities[index] : "+10 capacity"} /> {/each}
+  <p class="detail" style="margin-top: 8px">
+    --------------------------------------------
+  </p>
+  <p class="detail">
+    Worker Ants need housing to hatch. 1 block houses 10 Worker Ants.
+  </p>
+  <div class="buttons" style="margin-top: 8px">
+    <div class="{`button-small" ${ blockCapacities[0]>
+      0 && homelessWorkers > 0 ? "green" : "" }`} on:click={houseWorkers} >
+      house workers
+    </div>
+    <div class="detail">-> to create space</div>
+  </div>
+  <div class="buttons">
+    <!-- <div
+        class={`button-small ${
+          blockCapacities[0] == 0 &&
+          blockCapacities.length >= 2 &&
+          !underConstruction
+            ? "green"
+            : ""
+        }`}
+        on:click={merge}
+      > -->
+    <div class="button-small" on:click="{merge}">start merge</div>
+    <div class="detail">-> to start construction</div>
+  </div>
+  <div class="buttons">
+    <!-- <div
+        class={`button-small ${
+          !underConstruction && remainingConstruction >= 21600 ? "green" : ""
+        }`}
+        on:click={claimBuilding}
+      > -->
+    <div class="button-small" on:click="{claimBuilding}">claim merged</div>
+    <div class="detail">-> to finish construction</div>
+  </div>
+</main>

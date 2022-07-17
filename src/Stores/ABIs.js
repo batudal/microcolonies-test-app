@@ -6779,3 +6779,362 @@ export const abiFakeDollars = [
     type: "function",
   },
 ];
+export const abiTournament = [
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint8",
+        name: "version",
+        type: "uint8",
+      },
+    ],
+    name: "Initialized",
+    type: "event",
+  },
+  {
+    inputs: [],
+    name: "contracts",
+    outputs: [
+      {
+        internalType: "address",
+        name: "contractAnt",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "contractQueen",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "contractLarva",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "contractWorker",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "contractSoldier",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "contractMale",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "contractPrincess",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "contractLollipop",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "contractFunghi",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "contractFeromon",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "currencyToken",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "distributeRewards",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "enterTournament",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "entranceFee",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "implementations",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "_tournamentTitle",
+        type: "string",
+      },
+      {
+        internalType: "address[]",
+        name: "_participants",
+        type: "address[]",
+      },
+      {
+        internalType: "uint256",
+        name: "_entranceFee",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "_currencyToken",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_epochDuration",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_tournamentDuration",
+        type: "uint256",
+      },
+      {
+        internalType: "address[]",
+        name: "_implementations",
+        type: "address[]",
+      },
+    ],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "participants",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "startDate",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "tournamentDuration",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "tournamentTitle",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+];
+export const abiTournamentFactory = [
+  {
+    inputs: [
+      {
+        internalType: "address[]",
+        name: "_implementations",
+        type: "address[]",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "constructor",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "title",
+        type: "string",
+      },
+      {
+        internalType: "address[]",
+        name: "participants",
+        type: "address[]",
+      },
+      {
+        internalType: "uint256",
+        name: "entranceFee",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "currencyToken",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "epochDuration",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "tournamentDuration",
+        type: "uint256",
+      },
+    ],
+    name: "createTournament",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getTournaments",
+    outputs: [
+      {
+        internalType: "contract Tournament[]",
+        name: "",
+        type: "address[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "implementations",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "tournaments",
+    outputs: [
+      {
+        internalType: "contract Tournament",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "userTournaments",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+];

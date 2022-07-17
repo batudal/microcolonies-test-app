@@ -9,7 +9,7 @@
     networkSigner,
   } from "../Stores/Network";
   import { ethers } from "ethers";
-  import { addr } from "../Stores/Addresses";
+  // import { addr } from "../Stores/Addresses";
   import {
     abiWorker,
     abiSoldier,
@@ -18,6 +18,8 @@
     abiBB,
     abiLarva,
   } from "../Stores/ABIs";
+
+  export let addr;
 
   let workerInput;
   let soldierInput;
@@ -38,7 +40,7 @@
   const fetchUserData = async () => {
     if ($userConnected) {
       const workerContract = new ethers.Contract(
-        addr.worker,
+        addr.contractWorker,
         abiWorker,
         $networkProvider
       );
@@ -51,7 +53,7 @@
       claimableBB = await workerContract.getClaimableBB($userAddress);
 
       const soldierContract = new ethers.Contract(
-        addr.soldier,
+        addr.contractSoldier,
         abiSoldier,
         $networkProvider
       );
@@ -69,7 +71,7 @@
         $userAddress
       );
       const feromonContract = new ethers.Contract(
-        addr.feromon,
+        addr.contractFeromon,
         abiFeromon,
         $networkProvider
       );
@@ -84,93 +86,141 @@
 
   const gatherBlocks = async () => {
     const workerContract = new ethers.Contract(
-      addr.worker,
+      addr.contractWorker,
       abiWorker,
       $networkSigner
     );
     const approved = await workerContract.isApprovedForAll(
       $userAddress,
-      addr.ant
+      addr.contractAnt
     );
     if (!approved) {
-      const approval = await workerContract.setApprovalForAll(addr.ant, true);
+      const approval = await workerContract.setApprovalForAll(
+        addr.contractAnt,
+        true
+      );
       await approval.wait();
     }
-    const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
     await antContract.sendWorkerToBuild(workerInput);
   };
 
   const claimBlocks = async () => {
-    const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
     await antContract.claimBuildingBlock();
   };
 
   const gatherFood = async () => {
     const workerContract = new ethers.Contract(
-      addr.worker,
+      addr.contractWorker,
       abiWorker,
       $networkSigner
     );
     const approved = await workerContract.isApprovedForAll(
       $userAddress,
-      addr.ant
+      addr.contractAnt
     );
     if (!approved) {
-      const approval = await workerContract.setApprovalForAll(addr.ant, true);
+      const approval = await workerContract.setApprovalForAll(
+        addr.contractAnt,
+        true
+      );
       await approval.wait();
     }
-    const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
     await antContract.stakeWorker(workerInput);
   };
   const gatherProtectedFood = async () => {
     const workerContract = new ethers.Contract(
-      addr.worker,
+      addr.contractWorker,
       abiWorker,
       $networkSigner
     );
     const approved = await workerContract.isApprovedForAll(
       $userAddress,
-      addr.ant
+      addr.contractAnt
     );
     if (!approved) {
-      const approval = await workerContract.setApprovalForAll(addr.ant, true);
+      const approval = await workerContract.setApprovalForAll(
+        addr.contractAnt,
+        true
+      );
       await approval.wait();
     }
-    const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
     await antContract.stakeProtectedWorker(workerInput);
   };
   const claimFunghi = async () => {
-    const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
     await antContract.claimFunghi();
   };
 
   const sendToRaid = async () => {
     const soldierContract = new ethers.Contract(
-      addr.soldier,
+      addr.contractSoldier,
       abiSoldier,
       $networkSigner
     );
     const approved = await soldierContract.isApprovedForAll(
       $userAddress,
-      addr.ant
+      addr.contractAnt
     );
     if (!approved) {
-      const approval = await soldierContract.setApprovalForAll(addr.ant, true);
+      const approval = await soldierContract.setApprovalForAll(
+        addr.contractAnt,
+        true
+      );
       await approval.wait();
     }
-    const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
     await antContract.sendSoldierToRaid(soldierInput);
   };
   const claimLarva = async () => {
-    const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
     await antContract.claimStolenLarvae();
   };
   const healInfected = async () => {
-    const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
     await antContract.healSoldier(soldierInput);
   };
   const harvestZombie = async () => {
-    const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
     await antContract.claimPassiveSoldierReward(soldierInput);
   };
 </script>

@@ -14,15 +14,6 @@ const WalletConnectProvider = window.WalletConnectProvider.default;
 const providerOptions = {
   walletconnect: {
     package: WalletConnectProvider,
-    // options: {
-    //   rpc: {
-    //     250: "https://rpc.ftm.tools/",
-    //   },
-    //   qrcodeModalOptions: {
-    //     mobileLinks: ["rainbow", "metamask", "argent", "trust"],
-    //   },
-    //   network: "fantom",
-    // },
   },
 };
 
@@ -56,7 +47,6 @@ export const connectWallet = async () => {
   networkProvider.set(provider);
   networkSigner.set(signer);
   userAddress.set(await signer.getAddress());
-  // userAddress.set("0x47124988aED21c3fB3357e8412fb7191Ee5DF3f1");
   chainID.set(await signer.getChainId());
   userConnected.set(true);
 };
@@ -64,10 +54,3 @@ export const connectWallet = async () => {
 if (web3Modal.cachedProvider) {
   connectWallet();
 }
-
-export const connectNode = async () => {
-  const provider = new ethers.providers.JsonRpcProvider(
-    "https://rpc.ftm.tools"
-  );
-  nodeProvider.set(provider);
-};

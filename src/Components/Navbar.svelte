@@ -43,9 +43,9 @@
   <div style="height: 24px" />
   <div class="bar">
     <a href="#/"><img src="/images/logo.svg" alt="" /></a>
-    <p>
+    <!-- <p>
       Tournament ends in: <span>{days}d {hours}h {minutes}m {seconds}s</span>
-    </p>
+    </p> -->
     <div class="filler" />
     <a
       href="https://degen-fyi.notion.site/A-N-T-f55111a055c24c69af3b920d129d1d87"

@@ -9,7 +9,7 @@
     networkSigner,
   } from "../Stores/Network";
   import { ethers } from "ethers";
-  import { addr } from "../Stores/Addresses";
+  // import { addr } from "../Stores/Addresses";
   import {
     abiWorker,
     abiFunghi,
@@ -18,6 +18,8 @@
     abiANT,
     abiFeromon,
   } from "../Stores/ABIs";
+
+  export let addr;
 
   let totalLarva;
   let larvaToHatch;
@@ -36,7 +38,7 @@
   const fetchUserData = async () => {
     if ($userConnected) {
       const larvaContract = new ethers.Contract(
-        addr.larva,
+        addr.contractLarva,
         abiLarva,
         $networkProvider
       );
@@ -45,26 +47,26 @@
         await larvaContract.getHatchersLength($userAddress)
       );
       const queenContract = new ethers.Contract(
-        addr.queen,
+        addr.contractQueen,
         abiQueen,
         $networkProvider
       );
       queens = await queenContract.getQueens($userAddress);
       const funghiContract = new ethers.Contract(
-        addr.funghi,
+        addr.contractFunghi,
         abiFunghi,
         $networkProvider
       );
       funghiAmount = await funghiContract.balanceOf($userAddress);
       const feromonContract = new ethers.Contract(
-        addr.feromon,
+        addr.contractFeromon,
         abiFeromon,
         $networkProvider
       );
       feromonAmount = await feromonContract.balanceOf($userAddress);
       feromonAmount = parseInt(ethers.utils.formatEther(feromonAmount));
       const workerContract = new ethers.Contract(
-        addr.worker,
+        addr.contractWorker,
         abiWorker,
         $networkProvider
       );
@@ -77,7 +79,11 @@
         queenEggs[i] = await queenContract.layingEggs($userAddress, queens[i]);
       }
 
-      const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+      const antContract = new ethers.Contract(
+        addr.contractAnt,
+        abiANT,
+        $networkSigner
+      );
       maxHatch = await antContract.maxHatch();
       await isEggsLayable();
     }
@@ -99,43 +105,51 @@
 
   const feedLarva = async () => {
     const funghiContract = new ethers.Contract(
-      addr.funghi,
+      addr.contractFunghi,
       abiFunghi,
       $networkSigner
     );
     const approved = parseFloat(
       ethers.utils.formatEther(
-        await funghiContract.allowance($userAddress, addr.ant)
+        await funghiContract.allowance($userAddress, addr.contractAnt)
       )
     );
     if (approved < larvaInput * 80) {
       const approval = await funghiContract.approve(
-        addr.ant,
+        addr.contractAnt,
         ethers.constants.MaxUint256
       );
       await approval.wait();
     }
-    const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
     await antContract.feedLarva(larvaInput);
   };
   const hatch = async () => {
-    const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
     await antContract.hatch(parseInt(larvaInput));
   };
   const feedQueen = async () => {
     const funghiContract = new ethers.Contract(
-      addr.funghi,
+      addr.contractFunghi,
       abiFunghi,
       $networkSigner
     );
     const approved = parseFloat(
       ethers.utils.formatEther(
-        await funghiContract.allowance($userAddress, addr.ant)
+        await funghiContract.allowance($userAddress, addr.contractAnt)
       )
     );
     if (approved < queenInput * 240) {
       const approval = await funghiContract.approve(
-        addr.ant,
+        addr.contractAnt,
         ethers.constants.MaxUint256
       );
       await approval.wait();
@@ -143,33 +157,45 @@
     if (eggsLayable > 0) {
       await layEggs();
     }
-    const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
     await antContract.feedQueen(queenInput);
   };
   const layEggs = async () => {
-    const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
     const tx = await antContract.layEggs(queenInput);
     await tx.wait();
   };
   const queenLevelUp = async () => {
     const feromonContract = new ethers.Contract(
-      addr.feromon,
+      addr.contractFeromon,
       abiFeromon,
       $networkSigner
     );
     const approved = parseFloat(
       ethers.utils.formatEther(
-        await feromonContract.allowance($userAddress, addr.ant)
+        await feromonContract.allowance($userAddress, addr.contractAnt)
       )
     );
     if (approved < 100) {
       const approval = await feromonContract.approve(
-        addr.ant,
+        addr.contractAnt,
         ethers.constants.MaxUint256
       );
       await approval.wait();
     }
-    const antContract = new ethers.Contract(addr.ant, abiANT, $networkSigner);
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
     await antContract.queenLevelUp(queenInput);
   };
 </script>
