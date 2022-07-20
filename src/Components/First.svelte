@@ -20,11 +20,11 @@
     abiQueen,
     abiLarva,
     abiANT,
-    abiBB,
+    abiTournament,
   } from "../Stores/ABIs";
 
   export let addr;
-  console.log(addr);
+  export let tournament;
 
   let funghiBalance = "N/A";
   let feromonBalance = "N/A";
@@ -35,6 +35,7 @@
   let maleBalance = "N/A";
   let princessBalance = "N/A";
   let totalPopulation = "N/A";
+  let nestCapacity;
   let mateInput, mintInput;
   let claimableQueens = "N/A";
   let blocks = [];
@@ -45,6 +46,8 @@
   let underConstruction;
   let matingPrincesses = 0;
   let remainingConstruction;
+  let princessMissions = [];
+  let nickname = "";
 
   const fetchUserData = async () => {
     if ($userConnected) {
@@ -103,17 +106,22 @@
       );
       princessBalance = (await princessContract.getPrincesses($userAddress))
         .length;
-      totalPopulation =
-        workerBalance +
-        soldierBalance +
-        queenBalance +
-        larvaBalance +
-        maleBalance +
-        princessBalance;
-      claimableQueens = await princessContract.getClaimable($userAddress);
-      matingPrincesses = (
-        await princessContract.getMatedPrincesses($userAddress)
-      ).length;
+
+      const antContract = new ethers.Contract(
+        addr.contractAnt,
+        abiANT,
+        $networkSigner
+      );
+
+      totalPopulation = await antContract.getPopulation();
+      nestCapacity = await antContract.playerToCapacity($userAddress);
+
+      princessMissions = await princessContract.getMissions($userAddress);
+
+      // claimableQueens = await princessContract.getClaimable($userAddress);
+      // matingPrincesses = (
+      //   await princessContract.getMatedPrincesses($userAddress)
+      // ).length;
       // const buildingContract = new ethers.Contract(
       //   addr.buildingblock,
       //   abiBB,
@@ -182,50 +190,53 @@
     );
     await antContract.claimUpgradedBuilding();
   };
-  const genesisMint = async () => {
-    const larvaContract = new ethers.Contract(
-      addr.contractLarva,
-      abiLarva,
+  const enterTournament = async () => {
+    const tournamentContract = new ethers.Contract(
+      tournament,
+      abiTournament,
       $networkSigner
     );
-    await larvaContract.genesisMint(mintInput);
+    await tournamentContract.enterTournament("");
   };
 </script>
 
 <div class="container">
-  <Scoreboard type="funghi" />
+  <!-- <Scoreboard type="funghi" /> -->
   <div style="height:24px" />
   <!-- <Scoreboard type="queen population" />
   <div style="height:24px" />
   <Scoreboard type="larva population" />
   <div style="height:24px" /> -->
-  {#if !$allMinted}
-    <div class="header">
-      <h3>GENESIS ROUND</h3>
-    </div>
-    <div style="height:8px" />
-    <main class="card">
-      <Line title="Funghi" value={funghiBalance} />
-      <Line title="Feromons" value={feromonBalance} />
-      <Line title="Population" value={totalPopulation} />
-      <p class="detail">--------------------------------------------</p>
-      <p class="detail">
-        Welcome Fren. This game is alpha test mode. Feel free to mint some
-        larvae and start multiplying.
-      </p>
-      <input
-        type="text"
-        placeholder="Amount of Larvae"
-        style="margin-top:8px"
-        bind:value={mintInput}
-      />
-      <div class="buttons" style="margin-top:8px">
-        <div class="button-small" on:click={genesisMint}>genesis mint</div>
-        <div class="detail">-> unlimited for fast test</div>
+  <div class="header">
+    <h3>GENESIS ROUND</h3>
+  </div>
+  <div style="height:8px" />
+  <main class="card">
+    <Line title="Funghi" value={funghiBalance} />
+    <Line title="Feromons" value={feromonBalance} />
+    <Line
+      title="Population / Capacity"
+      value={`${totalPopulation}/${nestCapacity}`}
+    />
+    <p class="detail">--------------------------------------------</p>
+    <p class="detail">
+      Welcome Fren. This game is alpha test mode. Feel free to mint some larvae
+      and start multiplying.
+    </p>
+    <input
+      type="text"
+      placeholder="Nickname"
+      style="margin-top:8px"
+      bind:value={nickname}
+    />
+    <div class="buttons" style="margin-top:8px">
+      <div class="button-small" on:click={enterTournament}>
+        enter tournament
       </div>
-    </main>
-    <div style="height:24px" />
-  {/if}
+      <div class="detail">-> unlimited for fast test</div>
+    </div>
+  </main>
+  <div style="height:24px" />
   <div class="header">
     <h3>UTILITIES</h3>
   </div>
@@ -242,12 +253,6 @@
       Burn a pair of male & princess to mate them. Mating takes 1 day and mints
       a Queen Ant.
     </p>
-    <input
-      type="text"
-      placeholder="Amount of Ant Pairs / Queens"
-      style="margin-top:8px"
-      bind:value={mateInput}
-    />
     <div class="buttons" style="margin-top:8px">
       <div
         class={`button-small ${
@@ -258,19 +263,18 @@
         }`}
         on:click={mate}
       >
-        mate pair
+        mate pairs
       </div>
       <div class="detail">-> to create a queen</div>
     </div>
-    <div class="buttons">
-      <div
-        class={`button-small ${claimableQueens > 0 ? "green" : ""}`}
-        on:click={claimQueen}
-      >
-        claim queen
+    <p class="detail">--------------------------------------------</p>
+
+    {#each princessMissions as m, i}
+      <div class="buttons" style="margin-top:8px">
+        <p>Mission #{i + 1}</p>
+        <div class={`button-small`}>claim</div>
       </div>
-      <div class="detail">-> and start producing</div>
-    </div>
+    {/each}
   </main>
   <div style="height:24px" />
 </div>

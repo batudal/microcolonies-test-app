@@ -1,91 +1,32 @@
 export const abiANT = [
   {
+    anonymous: false,
     inputs: [
       {
-        internalType: "address",
-        name: "_workerAddress",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_soldierAddress",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_queenAddress",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_larvaAddress",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_maleAddress",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_princessaddress",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_funghiaddress",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_feromonaddress",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_buildingblockaddress",
-        type: "address",
-      },
-    ],
-    stateMutability: "nonpayable",
-    type: "constructor",
-  },
-  {
-    inputs: [],
-    name: "buildingblock",
-    outputs: [
-      {
-        internalType: "contract IBuildingBlock",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "claimBuildingBlock",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "claimFunghi",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
+        indexed: false,
         internalType: "uint256",
-        name: "_amount",
+        name: "round",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "prob_",
         type: "uint256",
       },
     ],
-    name: "claimPassiveSoldierReward",
+    name: "logProb",
+    type: "event",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address[]",
+        name: "_participants",
+        type: "address[]",
+      },
+    ],
+    name: "addParticipants",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -94,7 +35,20 @@ export const abiANT = [
     inputs: [
       {
         internalType: "uint256",
-        name: "_amount",
+        name: "_missionIndex",
+        type: "uint256",
+      },
+    ],
+    name: "claimAndIncreaseSpace",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_missionIndex",
         type: "uint256",
       },
     ],
@@ -104,15 +58,14 @@ export const abiANT = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_missionId",
+        type: "uint256",
+      },
+    ],
     name: "claimStolenLarvae",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "claimUpgradedBuilding",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -126,6 +79,32 @@ export const abiANT = [
       },
     ],
     name: "convertFromWorkerToSoldier",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "decreaseAvailableSpace",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_amount",
+        type: "uint256",
+      },
+    ],
+    name: "expandNest",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -172,6 +151,19 @@ export const abiANT = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "_amount",
+        type: "uint256",
+      },
+    ],
+    name: "findTarget",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "",
         type: "address",
@@ -204,6 +196,76 @@ export const abiANT = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getHomelessAntCount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "_homelessAntCount",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getPairs",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "_pair",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getPopulation",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "count",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getSpeed",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "speed",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint256",
         name: "_amount",
         type: "uint256",
@@ -217,19 +279,78 @@ export const abiANT = [
   {
     inputs: [
       {
-        internalType: "uint256",
-        name: "_soldierAmount",
-        type: "uint256",
+        internalType: "address",
+        name: "_user",
+        type: "address",
       },
     ],
-    name: "healSoldier",
+    name: "increaseAvailableSpace",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
-    inputs: [],
-    name: "houseWorkers",
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "increaseCapacity",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_queenAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_larvaAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_workerAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_soldierAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_maleAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_princessAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_lollipopAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_funghiAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_feromonAddress",
+        type: "address",
+      },
+    ],
+    name: "initialize",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -262,6 +383,19 @@ export const abiANT = [
   },
   {
     inputs: [],
+    name: "lollipop",
+    outputs: [
+      {
+        internalType: "contract ILollipop",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "male",
     outputs: [
       {
@@ -274,25 +408,25 @@ export const abiANT = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_pairAmount",
-        type: "uint256",
-      },
-    ],
+    inputs: [],
     name: "mateMalePrincess",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
-    inputs: [],
-    name: "maxHatch",
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "matingDates",
     outputs: [
       {
         internalType: "uint256",
-        name: "_maxPossible",
+        name: "",
         type: "uint256",
       },
     ],
@@ -300,10 +434,117 @@ export const abiANT = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "mergeBBs",
-    outputs: [],
-    stateMutability: "nonpayable",
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "otherParticipants",
+    outputs: [
+      {
+        internalType: "address[]",
+        name: "_participants",
+        type: "address[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "participants",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "playerToAvailableSpace",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "playerToCapacity",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "playerToLollipop",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "playerToTarget",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -349,24 +590,35 @@ export const abiANT = [
     inputs: [
       {
         internalType: "uint256",
-        name: "_amount",
+        name: "_missionId",
         type: "uint256",
       },
     ],
-    name: "sendSoldierToRaid",
-    outputs: [],
-    stateMutability: "nonpayable",
+    name: "revealTarget",
+    outputs: [
+      {
+        internalType: "address",
+        name: "_target",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
     inputs: [
       {
-        internalType: "uint256",
-        name: "_amount",
-        type: "uint256",
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_target",
+        type: "address",
       },
     ],
-    name: "sendWorkerToBuild",
+    name: "setPlayerToTarget",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -382,32 +634,6 @@ export const abiANT = [
       },
     ],
     stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_workerAmount",
-        type: "uint256",
-      },
-    ],
-    name: "stakeProtectedWorker",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_amount",
-        type: "uint256",
-      },
-    ],
-    name: "stakeWorker",
-    outputs: [],
-    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -3498,11 +3724,6 @@ export const abiMale = [
 ];
 export const abiPrincess = [
   {
-    inputs: [],
-    stateMutability: "nonpayable",
-    type: "constructor",
-  },
-  {
     anonymous: false,
     inputs: [
       {
@@ -3556,6 +3777,19 @@ export const abiPrincess = [
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: "uint8",
+        name: "version",
+        type: "uint8",
+      },
+    ],
+    name: "Initialized",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: "address",
         name: "previousOwner",
@@ -3598,7 +3832,7 @@ export const abiPrincess = [
   },
   {
     inputs: [],
-    name: "MATE_DURATION",
+    name: "MATE_EPOCHS",
     outputs: [
       {
         internalType: "uint256",
@@ -3607,6 +3841,39 @@ export const abiPrincess = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_maleId",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_princessId",
+        type: "uint256",
+      },
+      {
+        internalType: "bool",
+        name: "_finalized",
+        type: "bool",
+      },
+      {
+        internalType: "uint256",
+        name: "_speed",
+        type: "uint256",
+      },
+    ],
+    name: "addMission",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -3678,6 +3945,37 @@ export const abiPrincess = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "duration",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_index",
+        type: "uint256",
+      },
+    ],
+    name: "finalizeMission",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "uint256",
@@ -3703,12 +4001,36 @@ export const abiPrincess = [
         name: "_user",
         type: "address",
       },
+      {
+        internalType: "uint256",
+        name: "_missionIndex",
+        type: "uint256",
+      },
     ],
     name: "getClaimable",
     outputs: [
       {
         internalType: "uint256",
         name: "_claimable",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getHomelessCount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
         type: "uint256",
       },
     ],
@@ -3741,6 +4063,81 @@ export const abiPrincess = [
         name: "_user",
         type: "address",
       },
+      {
+        internalType: "uint256",
+        name: "_missionIndex",
+        type: "uint256",
+      },
+    ],
+    name: "getMissionEnd",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "_end",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getMissions",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "start",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "end",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "maleId",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "princessId",
+            type: "uint256",
+          },
+          {
+            internalType: "bool",
+            name: "finalized",
+            type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "speed",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct PrincessANT.Mission[]",
+        name: "",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
     ],
     name: "getPrincesses",
     outputs: [
@@ -3748,6 +4145,44 @@ export const abiPrincess = [
         internalType: "uint256[]",
         name: "",
         type: "uint256[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getUnHousedPrincesses",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "idToHousing",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
       },
     ],
     stateMutability: "view",
@@ -3789,6 +4224,19 @@ export const abiPrincess = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_epochDuration",
+        type: "uint256",
+      },
+    ],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -3946,7 +4394,7 @@ export const abiPrincess = [
       },
       {
         internalType: "bytes",
-        name: "_data",
+        name: "data",
         type: "bytes",
       },
     ],
@@ -3969,6 +4417,24 @@ export const abiPrincess = [
       },
     ],
     name: "setApprovalForAll",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_index",
+        type: "uint256",
+      },
+      {
+        internalType: "bool",
+        name: "_status",
+        type: "bool",
+      },
+    ],
+    name: "setHousing",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -4084,6 +4550,55 @@ export const abiPrincess = [
     name: "transferOwnership",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "userMissions",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "start",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "end",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maleId",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "princessId",
+        type: "uint256",
+      },
+      {
+        internalType: "bool",
+        name: "finalized",
+        type: "bool",
+      },
+      {
+        internalType: "uint256",
+        name: "speed",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
 ];
@@ -4721,11 +5236,6 @@ export const abiQueen = [
 ];
 export const abiSoldier = [
   {
-    inputs: [],
-    stateMutability: "nonpayable",
-    type: "constructor",
-  },
-  {
     anonymous: false,
     inputs: [
       {
@@ -4773,6 +5283,19 @@ export const abiSoldier = [
       },
     ],
     name: "ApprovalForAll",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint8",
+        name: "version",
+        type: "uint8",
+      },
+    ],
+    name: "Initialized",
     type: "event",
   },
   {
@@ -4834,7 +5357,7 @@ export const abiSoldier = [
   },
   {
     inputs: [],
-    name: "HEAL_WINDOW",
+    name: "HEAL_EPOCHS",
     outputs: [
       {
         internalType: "uint256",
@@ -4847,7 +5370,7 @@ export const abiSoldier = [
   },
   {
     inputs: [],
-    name: "RAID_DURATION",
+    name: "MAX_DAMAGE_COUNT",
     outputs: [
       {
         internalType: "uint256",
@@ -4860,7 +5383,7 @@ export const abiSoldier = [
   },
   {
     inputs: [],
-    name: "STAKE_DURATION",
+    name: "RAID_EPOCHS",
     outputs: [
       {
         internalType: "uint256",
@@ -4869,6 +5392,34 @@ export const abiSoldier = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+      {
+        internalType: "uint256[]",
+        name: "_ids",
+        type: "uint256[]",
+      },
+      {
+        internalType: "bool",
+        name: "_finalized",
+        type: "bool",
+      },
+      {
+        internalType: "uint256",
+        name: "speed",
+        type: "uint256",
+      },
+    ],
+    name: "addMission",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -4911,6 +5462,35 @@ export const abiSoldier = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "attackerSoldierCount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "targetSoldierCount",
+        type: "uint256",
+      },
+    ],
+    name: "battle",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "prize",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "bonus",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "_user",
         type: "address",
@@ -4934,6 +5514,63 @@ export const abiSoldier = [
         internalType: "uint256",
         name: "",
         type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "duration",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "feromon",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_index",
+        type: "uint256",
+      },
+    ],
+    name: "finalizeMission",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "funghi",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
       },
     ],
     stateMutability: "view",
@@ -5004,12 +5641,139 @@ export const abiSoldier = [
         type: "address",
       },
     ],
+    name: "getHomelessCount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "getInfectedSoldiers",
     outputs: [
       {
         internalType: "uint256[]",
         name: "",
         type: "uint256[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getInfectionRate",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "infectionRate",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_index",
+        type: "uint256",
+      },
+    ],
+    name: "getMissionEnd",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "_end",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_index",
+        type: "uint256",
+      },
+    ],
+    name: "getMissionPartipants",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "missionParticipants",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getMissions",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "start",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "end",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256[]",
+            name: "ids",
+            type: "uint256[]",
+          },
+          {
+            internalType: "bool",
+            name: "finalized",
+            type: "bool",
+          },
+        ],
+        internalType: "struct SoldierANT.Mission[]",
+        name: "",
+        type: "tuple[]",
       },
     ],
     stateMutability: "view",
@@ -5042,6 +5806,25 @@ export const abiSoldier = [
         type: "address",
       },
     ],
+    name: "getUnHousedSoldiers",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
     name: "getZombieSoldiers",
     outputs: [
       {
@@ -5051,6 +5834,19 @@ export const abiSoldier = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_soldierAmount",
+        type: "uint256",
+      },
+    ],
+    name: "healSoldier",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -5086,6 +5882,25 @@ export const abiSoldier = [
         internalType: "uint256",
         name: "",
         type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "idToHousing",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
       },
     ],
     stateMutability: "view",
@@ -5152,44 +5967,6 @@ export const abiSoldier = [
     inputs: [
       {
         internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    name: "idToStakeDate",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    name: "idToStaked",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
         name: "_index",
         type: "uint256",
       },
@@ -5215,6 +5992,34 @@ export const abiSoldier = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "_epochDuration",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "_lollipop",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_feromon",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_funghi",
+        type: "address",
+      },
+    ],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "owner",
         type: "address",
@@ -5231,6 +6036,19 @@ export const abiSoldier = [
         internalType: "bool",
         name: "",
         type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "lollipop",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
       },
     ],
     stateMutability: "view",
@@ -5385,7 +6203,7 @@ export const abiSoldier = [
       },
       {
         internalType: "bytes",
-        name: "_data",
+        name: "data",
         type: "bytes",
       },
     ],
@@ -5408,6 +6226,24 @@ export const abiSoldier = [
       },
     ],
     name: "setApprovalForAll",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_index",
+        type: "uint256",
+      },
+      {
+        internalType: "bool",
+        name: "_status",
+        type: "bool",
+      },
+    ],
+    name: "setHousing",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -5444,42 +6280,6 @@ export const abiSoldier = [
       },
     ],
     name: "setRaidMission",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_index",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "_stakeDate",
-        type: "uint256",
-      },
-    ],
-    name: "setStakeDate",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_index",
-        type: "uint256",
-      },
-      {
-        internalType: "bool",
-        name: "_status",
-        type: "bool",
-      },
-    ],
-    name: "setStaked",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -5571,19 +6371,42 @@ export const abiSoldier = [
     stateMutability: "nonpayable",
     type: "function",
   },
-];
-export const abiWorker = [
   {
     inputs: [
       {
         internalType: "address",
-        name: "_buildingblockaddress",
+        name: "",
         type: "address",
       },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
     ],
-    stateMutability: "nonpayable",
-    type: "constructor",
+    name: "userMissions",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "start",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "end",
+        type: "uint256",
+      },
+      {
+        internalType: "bool",
+        name: "finalized",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
   },
+];
+export const abiWorker = [
   {
     anonymous: false,
     inputs: [
@@ -5638,6 +6461,19 @@ export const abiWorker = [
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: "uint8",
+        name: "version",
+        type: "uint8",
+      },
+    ],
+    name: "Initialized",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: "address",
         name: "previousOwner",
@@ -5680,7 +6516,7 @@ export const abiWorker = [
   },
   {
     inputs: [],
-    name: "BUILD_DURATION",
+    name: "BUILD_EPOCHS",
     outputs: [
       {
         internalType: "uint256",
@@ -5693,12 +6529,58 @@ export const abiWorker = [
   },
   {
     inputs: [],
-    name: "STAKE_DURATION",
+    name: "STAKE_EPOCHS",
     outputs: [
       {
         internalType: "uint256",
         name: "",
         type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+      {
+        internalType: "uint256[]",
+        name: "_ids",
+        type: "uint256[]",
+      },
+      {
+        internalType: "uint256",
+        name: "_missionType",
+        type: "uint256",
+      },
+      {
+        internalType: "bool",
+        name: "_finalized",
+        type: "bool",
+      },
+      {
+        internalType: "uint256",
+        name: "speed",
+        type: "uint256",
+      },
+    ],
+    name: "addMission",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "ant",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
       },
     ],
     stateMutability: "view",
@@ -5742,11 +6624,68 @@ export const abiWorker = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_index",
+        type: "uint256",
+      },
+    ],
+    name: "burn",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_missionIndex",
+        type: "uint256",
+      },
+    ],
+    name: "claimFunghi",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [],
-    name: "buildingblock",
+    name: "counter",
     outputs: [
       {
-        internalType: "contract IBuildingBlock",
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "duration",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "feromon",
+    outputs: [
+      {
+        internalType: "address",
         name: "",
         type: "address",
       },
@@ -5767,19 +6706,19 @@ export const abiWorker = [
         type: "uint256",
       },
     ],
-    name: "burn",
+    name: "finalizeMission",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
     inputs: [],
-    name: "counter",
+    name: "funghi",
     outputs: [
       {
-        internalType: "uint256",
+        internalType: "address",
         name: "",
-        type: "uint256",
+        type: "address",
       },
     ],
     stateMutability: "view",
@@ -5864,9 +6803,9 @@ export const abiWorker = [
   {
     inputs: [
       {
-        internalType: "uint256[]",
-        name: "_workersList",
-        type: "uint256[]",
+        internalType: "address",
+        name: "_user",
+        type: "address",
       },
     ],
     name: "getHomelessCount",
@@ -5874,6 +6813,119 @@ export const abiWorker = [
       {
         internalType: "uint256",
         name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_missionIndex",
+        type: "uint256",
+      },
+    ],
+    name: "getMissionEnd",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "_end",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_missionIndex",
+        type: "uint256",
+      },
+    ],
+    name: "getMissionIds",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "ids",
+        type: "uint256[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getMissions",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "start",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "end",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256[]",
+            name: "ids",
+            type: "uint256[]",
+          },
+          {
+            internalType: "uint256",
+            name: "missionType",
+            type: "uint256",
+          },
+          {
+            internalType: "bool",
+            name: "finalized",
+            type: "bool",
+          },
+        ],
+        internalType: "struct WorkerANT.Mission[]",
+        name: "",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getSpeed",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "speed",
         type: "uint256",
       },
     ],
@@ -6054,6 +7106,39 @@ export const abiWorker = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "_epochDuration",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "_lollipop",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_feromon",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_funghi",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_ant",
+        type: "address",
+      },
+    ],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "owner",
         type: "address",
@@ -6091,6 +7176,19 @@ export const abiWorker = [
     name: "killWorker",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "lollipop",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -6242,7 +7340,7 @@ export const abiWorker = [
       },
       {
         internalType: "bytes",
-        name: "_data",
+        name: "data",
         type: "bytes",
       },
     ],
@@ -6398,6 +7496,19 @@ export const abiWorker = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "_amount",
+        type: "uint256",
+      },
+    ],
+    name: "stakeWorker",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes4",
         name: "interfaceId",
         type: "bytes4",
@@ -6480,6 +7591,45 @@ export const abiWorker = [
     name: "transferOwnership",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "userMissions",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "start",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "end",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "missionType",
+        type: "uint256",
+      },
+      {
+        internalType: "bool",
+        name: "finalized",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
 ];
@@ -6872,7 +8022,13 @@ export const abiTournament = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "string",
+        name: "nickname",
+        type: "string",
+      },
+    ],
     name: "enterTournament",
     outputs: [],
     stateMutability: "payable",
@@ -6951,6 +8107,25 @@ export const abiTournament = [
     name: "initialize",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "nicknames",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -7070,6 +8245,19 @@ export const abiTournamentFactory = [
         internalType: "contract Tournament[]",
         name: "",
         type: "address[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getUserTournaments",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]",
       },
     ],
     stateMutability: "view",

@@ -32,6 +32,9 @@
   let infectedSoldiers = "N/A";
   let claimableBB, claimableFunghi, claimableLarva;
   let feromonBalance;
+  let workerMissions = [];
+  let activeWorkerMissions = [];
+  let soldierMissions = [];
 
   $: $userConnected ? fetchUserData() : "";
   $: occupiedWorkers = totalWorkers - availableWorkers;
@@ -48,9 +51,14 @@
       availableWorkers = (
         await workerContract.getAvailableWorkers($userAddress)
       ).length;
-      homelessWorkers = (await workerContract.getUnHousedWorkers($userAddress))
-        .length;
-      claimableBB = await workerContract.getClaimableBB($userAddress);
+      // homelessWorkers = (await workerContract.getUnHousedWorkers($userAddress))
+      //   .length;
+      // claimableBB = await workerContract.getClaimableBB($userAddress);
+      workerMissions = await workerContract.getMissions($userAddress);
+      activeWorkerMissions = workerMissions.filter((w) => {
+        !w.finalized;
+      });
+      console.log(activeWorkerMissions);
 
       const soldierContract = new ethers.Contract(
         addr.contractSoldier,
@@ -70,6 +78,7 @@
       claimableLarva = await soldierContract.getClaimableLarvaCount(
         $userAddress
       );
+      soldierMissions = await soldierContract.getMissions($userAddress);
       const feromonContract = new ethers.Contract(
         addr.contractFeromon,
         abiFeromon,
@@ -80,11 +89,13 @@
       );
     }
   };
+  let now;
   setInterval(() => {
     fetchUserData();
+    now = parseInt(new Date(now) / 1000);
   }, 10000);
 
-  const gatherBlocks = async () => {
+  const expandNest = async () => {
     const workerContract = new ethers.Contract(
       addr.contractWorker,
       abiWorker,
@@ -106,16 +117,16 @@
       abiANT,
       $networkSigner
     );
-    await antContract.sendWorkerToBuild(workerInput);
+    await antContract.expandNest(workerInput);
   };
 
-  const claimBlocks = async () => {
+  const claimBlocks = async (index) => {
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,
       $networkSigner
     );
-    await antContract.claimBuildingBlock();
+    await antContract.claimAndIncreaseSpace(index);
   };
 
   const gatherFood = async () => {
@@ -135,44 +146,16 @@
       );
       await approval.wait();
     }
-    const antContract = new ethers.Contract(
-      addr.contractAnt,
-      abiANT,
-      $networkSigner
-    );
-    await antContract.stakeWorker(workerInput);
+    await workerContract.stakeWorker(workerInput);
   };
-  const gatherProtectedFood = async () => {
+
+  const claimFunghi = async (index) => {
     const workerContract = new ethers.Contract(
       addr.contractWorker,
       abiWorker,
       $networkSigner
     );
-    const approved = await workerContract.isApprovedForAll(
-      $userAddress,
-      addr.contractAnt
-    );
-    if (!approved) {
-      const approval = await workerContract.setApprovalForAll(
-        addr.contractAnt,
-        true
-      );
-      await approval.wait();
-    }
-    const antContract = new ethers.Contract(
-      addr.contractAnt,
-      abiANT,
-      $networkSigner
-    );
-    await antContract.stakeProtectedWorker(workerInput);
-  };
-  const claimFunghi = async () => {
-    const antContract = new ethers.Contract(
-      addr.contractAnt,
-      abiANT,
-      $networkSigner
-    );
-    await antContract.claimFunghi();
+    await workerContract.claimFunghi(index);
   };
 
   const sendToRaid = async () => {
@@ -226,7 +209,7 @@
 </script>
 
 <div class="container">
-  <Scoreboard type="feromon" />
+  <!-- <Scoreboard type="feromon" /> -->
   <div style="height:24px" />
   <!-- <Scoreboard type="worker population" />
   <div style="height:24px" />
@@ -265,23 +248,13 @@
     <div class="buttons" style="margin-top:8px">
       <div
         class={`button-small ${availableWorkers > 0 ? "green" : ""}`}
-        on:click={gatherBlocks}
+        on:click={expandNest}
       >
         collect blocks
       </div>
       <div class="detail">-> to house more workers</div>
     </div>
-    <div class="buttons">
-      <div
-        class={`button-small ${
-          availableWorkers > 0 && availableSoldiers > 0 ? "green" : ""
-        }`}
-        on:click={gatherProtectedFood}
-      >
-        farm $funghi
-      </div>
-      <div class="detail">-> with soldier protection</div>
-    </div>
+
     <div class="buttons">
       <div
         class={`button-small ${availableWorkers > 0 ? "green" : ""}`}
@@ -292,7 +265,7 @@
       <div class="detail">-> without soldier protection</div>
     </div>
     <p class="detail">--------------------------------------------</p>
-    <div class="buttons">
+    <!-- <div class="buttons">
       <div
         class={`button-small ${claimableBB > 0 ? "green" : ""}`}
         on:click={claimBlocks}
@@ -309,7 +282,33 @@
         harvest $funghi
       </div>
       <div class="detail">-> {claimableFunghi} claimable</div>
+    </div> -->
+    <div class="header">
+      <h3>Worker Missions</h3>
     </div>
+    {#if activeWorkerMissions.length == 0}
+      <p>No missions...</p>
+    {:else}
+      {#each workerMissions as m, i}
+        {#if !m.finalized}
+          {#if m.missionType == 1}
+            <div class="buttons" style="margin-top:8px">
+              <p>{m.missionType == 0 ? "Funghi" : "Nest"}Mission #{i + 1}</p>
+              <div class={`button-small`} on:click={() => claimBlocks(i)}>
+                claim block
+              </div>
+            </div>
+          {:else}
+            <div class="buttons" style="margin-top:8px">
+              <p>Mission #{i + 1}</p>
+              <div class={`button-small`} on:click={() => claimFunghi(i)}>
+                claim funghi
+              </div>
+            </div>
+          {/if}
+        {/if}
+      {/each}
+    {/if}
   </main>
   <div style="height:24px" />
   <main class="card">

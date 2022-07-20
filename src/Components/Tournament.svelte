@@ -11,7 +11,7 @@
   let epochDuration;
   let tournamentDuration;
   let userTournaments = [];
-  let factoryAddress = "0xF1F2F7d3Bf9f25c5f7f35918630C6Fd571E99082";
+  let factoryAddress = "0x7b6aD761AA5d7f7c85108990238546922d02aD63";
 
   //   onMount(async () => {
   //     if ($userConnected) getUserTournaments();
@@ -44,8 +44,7 @@
       abiTournamentFactory,
       $networkSigner
     );
-    userTournaments = await tournamentFactory.getTournaments();
-    console.log(userTournaments);
+    userTournaments = await tournamentFactory.getUserTournaments();
   };
 </script>
 
@@ -91,8 +90,8 @@
   <main class="card">
     {#each userTournaments as t}
       <div class="tournaments">
-        <p class="small">{t}</p>
-        <a href="#/dashboard/{t}">
+        <p class="small">{t?._hex}</p>
+        <a href="#/dashboard/{t?._hex}">
           <div class="button-small">enter tournament</div>
         </a>
       </div>

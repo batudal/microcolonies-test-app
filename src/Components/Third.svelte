@@ -32,6 +32,7 @@
   let feromonAmount;
   let eggsLayable = 0;
   let homelessWorkers = 0;
+  let homelessCount;
 
   $: $userConnected ? fetchUserData() : "";
 
@@ -71,9 +72,6 @@
         $networkProvider
       );
 
-      homelessWorkers = (await workerContract.getUnHousedWorkers($userAddress))
-        .length;
-
       for (let i = 0; i < queens.length; i++) {
         queenLevels[i] = await queenContract.idToLevel(queens[i]);
         queenEggs[i] = await queenContract.layingEggs($userAddress, queens[i]);
@@ -84,7 +82,9 @@
         abiANT,
         $networkSigner
       );
-      maxHatch = await antContract.maxHatch();
+      maxHatch = await antContract.playerToAvailableSpace($userAddress);
+      homelessCount = await antContract.getHomelessAntCount($userAddress);
+
       await isEggsLayable();
     }
   };
@@ -201,7 +201,7 @@
 </script>
 
 <div class="container">
-  <Scoreboard type="population" />
+  <!-- <Scoreboard type="population" /> -->
   <div style="height:24px" />
   <!-- <Scoreboard type="male population" />
   <div style="height:24px" />
@@ -218,7 +218,9 @@
     </div>
     <Line title="Total larvae:" value={totalLarva} />
     <Line title="Ready to hatch:" value={larvaToHatch} />
-    <Line title="Max larvae to hatch:" value={10 - homelessWorkers} />
+    <Line title="Max larvae to hatch:" value={maxHatch} />
+    <Line title="Homeless ants:" value={homelessCount} />
+
     <p class="detail">--------------------------------------------</p>
     <p class="detail">
       All larvae will be incubated for 3 days. User can feed the upcoming larvae

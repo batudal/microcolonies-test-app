@@ -25,7 +25,7 @@
     <p>...waiting</p>
   {:then addr}
     <div class="container">
-      <First {addr} />
+      <First {addr} tournament={params.tournament} />
       <Second {addr} />
       <Third {addr} />
       <div style="height: 120px; width:100%" />
