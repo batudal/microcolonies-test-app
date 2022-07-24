@@ -273,12 +273,12 @@
     await antContract.retreatSoldiers(id);
   };
   const healInfected = async () => {
-    const antContract = new ethers.Contract(
-      addr.contractAnt,
-      abiANT,
+    const soldierContract = new ethers.Contract(
+      addr.contractSoldier,
+      abiSoldier,
       $networkSigner
     );
-    await antContract.healSoldier(soldierInput);
+    await soldierContract.healSoldier(soldierInput);
   };
   const harvestZombie = async () => {
     const antContract = new ethers.Contract(
