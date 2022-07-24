@@ -92,7 +92,7 @@
       for (let i = 0; i < soldierMissions.length; i++) {
         if (soldierMissions[i].end < now) {
           try {
-            let reveal = await antContract.revealTarget(0);
+            let reveal = await antContract.revealTarget(i);
             let nickname;
             try {
               const tournamentContract = new ethers.Contract(
@@ -256,13 +256,21 @@
     );
     await antContract.findTarget(soldierInput);
   };
-  const claimLarva = async () => {
+  const claimLarva = async (id) => {
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,
       $networkSigner
     );
-    await antContract.claimStolenLarvae();
+    await antContract.claimStolenLarvae(id);
+  };
+  const retreat = async (id) => {
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
+    await antContract.retreat(id);
   };
   const healInfected = async () => {
     const antContract = new ethers.Contract(
@@ -488,6 +496,9 @@
                   on:click={() => claimLarva(i)}
                 >
                   attack
+                </div>
+                <div class={`button-small green`} on:click={() => retreat(i)}>
+                  retreat
                 </div>
               {:else}
                 <p>Scout ({m.ids.length} ants)</p>
