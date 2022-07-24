@@ -15,11 +15,12 @@
     abiSoldier,
     abiANT,
     abiFeromon,
-    abiBB,
     abiLarva,
+    abiTournament,
   } from "../Stores/ABIs";
 
   export let addr;
+  export let tournament;
 
   let workerInput;
   let soldierInput;
@@ -35,6 +36,11 @@
   let workerMissions = [];
   let activeWorkerMissions = [];
   let soldierMissions = [];
+  let activeSoldierMissions = [];
+  let missionUpdating = false;
+  let claimUpdating = null;
+  let targetUpdating = null;
+  let acquiredTargets = [];
 
   $: $userConnected ? fetchUserData() : "";
   $: occupiedWorkers = totalWorkers - availableWorkers;
@@ -55,10 +61,7 @@
       //   .length;
       // claimableBB = await workerContract.getClaimableBB($userAddress);
       workerMissions = await workerContract.getMissions($userAddress);
-      activeWorkerMissions = workerMissions.filter((w) => {
-        !w.finalized;
-      });
-      console.log(activeWorkerMissions);
+      activeWorkerMissions = workerMissions.filter((x) => !x.finalized);
 
       const soldierContract = new ethers.Contract(
         addr.contractSoldier,
@@ -79,6 +82,36 @@
         $userAddress
       );
       soldierMissions = await soldierContract.getMissions($userAddress);
+      activeSoldierMissions = soldierMissions.filter((x) => !x.finalized);
+      const antContract = new ethers.Contract(
+        addr.contractAnt,
+        abiANT,
+        $networkSigner
+      );
+      let _acquiredTargets = [];
+      for (let i = 0; i < soldierMissions.length; i++) {
+        if (soldierMissions[i].end < now) {
+          try {
+            let reveal = await antContract.revealTarget(0);
+            let nickname;
+            try {
+              const tournamentContract = new ethers.Contract(
+                tournament,
+                abiTournament,
+                $networkSigner
+              );
+              nickname = await tournamentContract.nicknames(reveal);
+            } catch (e) {
+              console.log(e);
+            }
+            _acquiredTargets.push(nickname ? nickname : reveal);
+          } catch (e) {
+            console.log(e);
+          }
+        }
+      }
+      acquiredTargets = _acquiredTargets;
+
       const feromonContract = new ethers.Contract(
         addr.contractFeromon,
         abiFeromon,
@@ -89,13 +122,18 @@
       );
     }
   };
-  let now;
+
   setInterval(() => {
     fetchUserData();
-    now = parseInt(new Date(now) / 1000);
   }, 10000);
 
+  let now;
+  setInterval(() => {
+    now = parseInt(Date.now()) / 1000;
+  });
+
   const expandNest = async () => {
+    missionUpdating = true;
     const workerContract = new ethers.Contract(
       addr.contractWorker,
       abiWorker,
@@ -105,31 +143,48 @@
       $userAddress,
       addr.contractAnt
     );
-    if (!approved) {
-      const approval = await workerContract.setApprovalForAll(
-        addr.contractAnt,
-        true
-      );
-      await approval.wait();
+    try {
+      if (!approved) {
+        const approval = await workerContract.setApprovalForAll(
+          addr.contractAnt,
+          true
+        );
+        await approval.wait();
+      }
+    } catch (e) {
+      console.log(e);
     }
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,
       $networkSigner
     );
-    await antContract.expandNest(workerInput);
+    try {
+      const expand = await antContract.expandNest(workerInput);
+      await expand.wait();
+    } catch (e) {
+      console.log(e);
+    }
+    await fetchUserData().then((missionUpdating = false));
   };
 
   const claimBlocks = async (index) => {
+    claimUpdating = index;
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,
       $networkSigner
     );
-    await antContract.claimAndIncreaseSpace(index);
+    try {
+      await antContract.claimAndIncreaseSpace(index);
+    } catch (e) {
+      console.log(e);
+    }
+    await fetchUserData().then((claimUpdating = null));
   };
 
   const gatherFood = async () => {
+    missionUpdating = true;
     const workerContract = new ethers.Contract(
       addr.contractWorker,
       abiWorker,
@@ -139,23 +194,42 @@
       $userAddress,
       addr.contractAnt
     );
-    if (!approved) {
-      const approval = await workerContract.setApprovalForAll(
-        addr.contractAnt,
-        true
-      );
-      await approval.wait();
+    try {
+      if (!approved) {
+        const approval = await workerContract.setApprovalForAll(
+          addr.contractAnt,
+          true
+        );
+        await approval.wait();
+      }
+    } catch (e) {
+      console.log(e);
     }
-    await workerContract.stakeWorker(workerInput);
+
+    try {
+      const stake = await workerContract.stakeWorker(workerInput);
+      await stake.wait();
+    } catch (e) {
+      console.log(e);
+    }
+    await fetchUserData().then((missionUpdating = false));
   };
 
   const claimFunghi = async (index) => {
+    claimUpdating = index;
+    console.log(claimUpdating);
     const workerContract = new ethers.Contract(
       addr.contractWorker,
       abiWorker,
       $networkSigner
     );
-    await workerContract.claimFunghi(index);
+    try {
+      const claim = await workerContract.claimFunghi(index);
+      await claim.wait();
+    } catch (e) {
+      console.log(e);
+    }
+    await fetchUserData().then((claimUpdating = null));
   };
 
   const sendToRaid = async () => {
@@ -180,7 +254,7 @@
       abiANT,
       $networkSigner
     );
-    await antContract.sendSoldierToRaid(soldierInput);
+    await antContract.findTarget(soldierInput);
   };
   const claimLarva = async () => {
     const antContract = new ethers.Contract(
@@ -217,17 +291,14 @@
   <div style="height:24px" /> -->
 
   <div class="header">
-    <h3>COMMAND CENTER</h3>
+    <h3>WORKER ANTS</h3>
   </div>
   <div style="height:8px" />
   <main class="card">
-    <div class="header">
-      <h3>Worker Ants</h3>
-    </div>
-    <Line title="Total worker ants:" value={totalWorkers} />
-    <Line title="Available worker ants:" value={availableWorkers} />
-    <Line title="Occupied worker ants:" value={occupiedWorkers} />
-    <Line title="Homeless worker ants:" value={homelessWorkers} />
+    <Line title="Total:" value={totalWorkers} />
+    <Line title="Available:" value={availableWorkers} />
+    <Line title="Occupied:" value={occupiedWorkers} />
+    <!-- <Line title="Homeless worker ants:" value={homelessWorkers} /> -->
 
     <p class="detail">--------------------------------------------</p>
     <p class="detail">
@@ -250,9 +321,9 @@
         class={`button-small ${availableWorkers > 0 ? "green" : ""}`}
         on:click={expandNest}
       >
-        collect blocks
+        build
       </div>
-      <div class="detail">-> to house more workers</div>
+      <div class="detail">-> increase nest capacity (10)</div>
     </div>
 
     <div class="buttons">
@@ -260,9 +331,9 @@
         class={`button-small ${availableWorkers > 0 ? "green" : ""}`}
         on:click={gatherFood}
       >
-        farm $funghi
+        farm
       </div>
-      <div class="detail">-> without soldier protection</div>
+      <div class="detail">-> produce funghi (240)</div>
     </div>
     <p class="detail">--------------------------------------------</p>
     <!-- <div class="buttons">
@@ -286,24 +357,59 @@
     <div class="header">
       <h3>Worker Missions</h3>
     </div>
-    {#if activeWorkerMissions.length == 0}
-      <p>No missions...</p>
+    {#if missionUpdating}
+      <p style="width:100%;">Deploying new mission...</p>
+    {/if}
+    {#if activeWorkerMissions.length == 0 && !missionUpdating}
+      <p style="width:100%;">No active missions.</p>
     {:else}
       {#each workerMissions as m, i}
         {#if !m.finalized}
           {#if m.missionType == 1}
-            <div class="buttons" style="margin-top:8px">
-              <p>{m.missionType == 0 ? "Funghi" : "Nest"}Mission #{i + 1}</p>
-              <div class={`button-small`} on:click={() => claimBlocks(i)}>
-                claim block
-              </div>
+            <div class="buttons" style="justify-content:space-between;">
+              {#if claimUpdating != i}
+                <p>Nest ({m.ids.length} ants)</p>
+                <p>
+                  {m.end > now
+                    ? `${parseInt((m.end - now) / 86400)}d ${parseInt(
+                        ((m.end - now) / 3600) % 24
+                      )}h ${parseInt(((m.end - now) / 60) % 60)}m`
+                    : ""}
+                </p>
+                {#if m.end < now}
+                  <div
+                    class={`button-small green`}
+                    on:click={() => claimBlocks(i)}
+                  >
+                    claim block
+                  </div>
+                {/if}
+              {:else}
+                <p style="width:100%;">Claiming now...</p>
+              {/if}
             </div>
           {:else}
-            <div class="buttons" style="margin-top:8px">
-              <p>Mission #{i + 1}</p>
-              <div class={`button-small`} on:click={() => claimFunghi(i)}>
-                claim funghi
-              </div>
+            <div class="buttons" style="justify-content:space-between;">
+              {#if claimUpdating != i}
+                <p>Funghi ({m.ids.length} ants)</p>
+                <p>
+                  {m.end > now
+                    ? `${parseInt((m.end - now) / 86400)}d ${parseInt(
+                        ((m.end - now) / 3600) % 24
+                      )}h ${parseInt(((m.end - now) / 60) % 60)}m`
+                    : ""}
+                </p>
+                {#if m.end < now}
+                  <div
+                    class={`button-small green`}
+                    on:click={() => claimFunghi(i)}
+                  >
+                    claim funghi
+                  </div>
+                {/if}
+              {:else}
+                <p style="width:100%;">Claiming now...</p>
+              {/if}
             </div>
           {/if}
         {/if}
@@ -311,15 +417,16 @@
     {/if}
   </main>
   <div style="height:24px" />
+  <div class="header">
+    <h3>SOLDIER ANTS</h3>
+  </div>
+  <div style="height:8px" />
   <main class="card">
-    <div class="header">
-      <h3>Soldier Ants</h3>
-    </div>
-    <Line title="Total soldier ants: " value={totalSoldiers} />
-    <Line title="Available soldier ants:" value={availableSoldiers} />
-    <Line title="Occupied soldier ants:" value={occupiedSoldiers} />
-    <Line title="Infected soldier ants:" value={infectedSoldiers} />
-    <Line title="Zombie soldier ants:" value={zombieSoldiers} />
+    <Line title="Total: " value={totalSoldiers} />
+    <Line title="Available:" value={availableSoldiers} />
+    <Line title="Occupied:" value={occupiedSoldiers} />
+    <Line title="Infected:" value={infectedSoldiers} />
+    <Line title="Zombie:" value={zombieSoldiers} />
 
     <p class="detail">--------------------------------------------</p>
     <p class="detail">
@@ -343,15 +450,6 @@
     </div>
     <div class="buttons">
       <div
-        class={`button-small ${claimableLarva > 0 ? "green" : ""}`}
-        on:click={claimLarva}
-      >
-        try to steal larva
-      </div>
-      <div class="detail">-> {claimableLarva} trials</div>
-    </div>
-    <div class="buttons">
-      <div
         class={`button-small ${infectedSoldiers > 0 ? "green" : ""}`}
         on:click={healInfected}
       >
@@ -368,6 +466,46 @@
       </div>
       <div class="detail">-> to stop spread and get $funghi rewards</div>
     </div>
+    <p class="detail">--------------------------------------------</p>
+
+    <div class="header">
+      <h3>Soldier Missions</h3>
+    </div>
+    {#if missionUpdating}
+      <p style="width:100%;">Deploying new mission...</p>
+    {/if}
+    {#if activeSoldierMissions.length == 0 && !targetUpdating}
+      <p style="width:100%;">No active missions.</p>
+    {:else}
+      {#each soldierMissions as m, i}
+        {#if !m.finalized}
+          <div class="buttons" style="justify-content:space-between;">
+            {#if targetUpdating != i}
+              {#if m.end < now}
+                <p>{acquiredTargets[i]?.substring(0, 6)}</p>
+                <div
+                  class={`button-small green`}
+                  on:click={() => claimLarva(i)}
+                >
+                  attack
+                </div>
+              {:else}
+                <p>Scout ({m.ids.length} ants)</p>
+                <p>
+                  {m.end > now
+                    ? `${parseInt((m.end - now) / 86400)}d ${parseInt(
+                        ((m.end - now) / 3600) % 24
+                      )}h ${parseInt(((m.end - now) / 60) % 60)}  m`
+                    : ""}
+                </p>
+              {/if}
+            {:else}
+              <p style="width:100%;">Finding a new target...</p>
+            {/if}
+          </div>
+        {/if}
+      {/each}
+    {/if}
   </main>
 </div>
 

@@ -49,11 +49,10 @@ export default {
       },
     }),
     css({ output: "bundle.css" }),
-    commonjs({ transformMixedEsModules: true }),
+    commonjs({}),
     resolve({
       browser: true,
       dedupe: ["svelte"],
-      transformMixedEsModules: true,
     }),
     nodeResolve({
       browser: true,

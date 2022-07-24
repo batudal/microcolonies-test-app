@@ -1,7 +1,12 @@
 <script>
-  import { networkSigner, userConnected, userAddress } from "../Stores/Network";
+  import {
+    networkSigner,
+    networkProvider,
+    userConnected,
+    userAddress,
+  } from "../Stores/Network";
   import { Contract, ethers } from "ethers";
-  import { abiTournamentFactory } from "../Stores/ABIs";
+  import { abiTournament, abiTournamentFactory } from "../Stores/ABIs";
   import { onMount } from "svelte";
 
   let title;
@@ -11,7 +16,8 @@
   let epochDuration;
   let tournamentDuration;
   let userTournaments = [];
-  let factoryAddress = "0x7b6aD761AA5d7f7c85108990238546922d02aD63";
+  let titles = [];
+  let factoryAddress = "0x9a666583A8e8f61ff6C3888375990F67772D819d";
 
   //   onMount(async () => {
   //     if ($userConnected) getUserTournaments();
@@ -20,6 +26,10 @@
   $: if ($userConnected) {
     getUserTournaments();
   }
+
+  setInterval(() => {
+    if ($userConnected) getUserTournaments();
+  }, 10000);
 
   const createTournament = async () => {
     const tournamentFactory = new Contract(
@@ -38,13 +48,28 @@
   };
 
   const getUserTournaments = async () => {
-    console.log("Aah I'm getting.");
+    titles = [];
     const tournamentFactory = new Contract(
       factoryAddress,
       abiTournamentFactory,
       $networkSigner
     );
     userTournaments = await tournamentFactory.getUserTournaments();
+    for (let i = 0; i < userTournaments.length; i++) {
+      const tournamentContract = new Contract(
+        userTournaments[i]._hex,
+        abiTournament,
+        $networkProvider
+      );
+      let title;
+      try {
+        title = await tournamentContract.tournamentTitle();
+      } catch (e) {
+        console.log(e);
+        title = "";
+      }
+      titles = [...titles, title];
+    }
   };
 </script>
 
@@ -88,9 +113,10 @@
   </main>
   <div style="height: 20px" />
   <main class="card">
-    {#each userTournaments as t}
+    {#each userTournaments as t, i}
+      <div style="height:8px" />
       <div class="tournaments">
-        <p class="small">{t?._hex}</p>
+        <p class="small">{titles[i]}</p>
         <a href="#/dashboard/{t?._hex}">
           <div class="button-small">enter tournament</div>
         </a>

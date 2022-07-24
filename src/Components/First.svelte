@@ -27,6 +27,7 @@
   export let tournament;
 
   let funghiBalance = "N/A";
+  let lollipopBalance = "N/A";
   let feromonBalance = "N/A";
   let workerBalance = "N/A";
   let soldierBalance = "N/A";
@@ -48,6 +49,8 @@
   let remainingConstruction;
   let princessMissions = [];
   let nickname = "";
+  let now;
+  let activePrincessMissions = [];
 
   const fetchUserData = async () => {
     if ($userConnected) {
@@ -117,7 +120,7 @@
       nestCapacity = await antContract.playerToCapacity($userAddress);
 
       princessMissions = await princessContract.getMissions($userAddress);
-
+      activePrincessMissions = princessMissions.filter((w) => !w.finalized);
       // claimableQueens = await princessContract.getClaimable($userAddress);
       // matingPrincesses = (
       //   await princessContract.getMatedPrincesses($userAddress)
@@ -150,21 +153,25 @@
   }, 10000);
   $: $userConnected ? fetchUserData() : "";
 
+  setInterval(() => {
+    now = parseInt(Date.now()) / 1000;
+  }, 1000);
+
   const mate = async () => {
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,
       $networkSigner
     );
-    await antContract.mateMalePrincess(mateInput);
+    await antContract.mateMalePrincess();
   };
-  const claimQueen = async () => {
+  const claimQueen = async (index) => {
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,
       $networkSigner
     );
-    await antContract.claimQueen(mateInput);
+    await antContract.claimQueen(index, { gasLimit: "1000000" });
   };
   const houseWorkers = async () => {
     const antContract = new ethers.Contract(
@@ -238,7 +245,7 @@
   </main>
   <div style="height:24px" />
   <div class="header">
-    <h3>UTILITIES</h3>
+    <h3>PRINCESS & DRONE ANTS</h3>
   </div>
   <div style="height:8px" />
   <main class="card">
@@ -268,13 +275,32 @@
       <div class="detail">-> to create a queen</div>
     </div>
     <p class="detail">--------------------------------------------</p>
-
-    {#each princessMissions as m, i}
-      <div class="buttons" style="margin-top:8px">
-        <p>Mission #{i + 1}</p>
-        <div class={`button-small`}>claim</div>
-      </div>
-    {/each}
+    <div class="header">
+      <h3>Princess Missions</h3>
+    </div>
+    {#if activePrincessMissions.length == 0}
+      <p style="width:100%;">No missions...</p>
+    {:else}
+      {#each princessMissions as m, i}
+        {#if !m.finalized}
+          <div class="buttons">
+            <p>
+              Mission #{i + 1} - {m.end > now
+                ? `${parseInt((m.end - now) / 86400)}d ${parseInt(
+                    ((m.end - now) / 3600) % 24
+                  )}h ${parseInt(((m.end - now) / 60) % 60)}m`
+                : ""}
+            </p>
+            <div
+              class={`button-small ${now > m.end ? "green" : ""}`}
+              on:click={() => claimQueen(i)}
+            >
+              claim
+            </div>
+          </div>
+        {/if}
+      {/each}
+    {/if}
   </main>
   <div style="height:24px" />
 </div>

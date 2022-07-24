@@ -18,6 +18,7 @@
     abiANT,
     abiFeromon,
   } from "../Stores/ABIs";
+  import { add_transform } from "svelte/internal";
 
   export let addr;
 
@@ -33,6 +34,9 @@
   let eggsLayable = 0;
   let homelessWorkers = 0;
   let homelessCount;
+  let firstMint = false;
+  let hatching = false;
+  let fed;
 
   $: $userConnected ? fetchUserData() : "";
 
@@ -47,6 +51,7 @@
       larvaToHatch = parseInt(
         await larvaContract.getHatchersLength($userAddress)
       );
+      fed = await larvaContract.getFed($userAddress);
       const queenContract = new ethers.Contract(
         addr.contractQueen,
         abiQueen,
@@ -74,7 +79,8 @@
 
       for (let i = 0; i < queens.length; i++) {
         queenLevels[i] = await queenContract.idToLevel(queens[i]);
-        queenEggs[i] = await queenContract.layingEggs($userAddress, queens[i]);
+        queenEggs[i] = await queenContract.eggsFormula(queens[i]);
+        queenEggs[i] -= await queenContract.idToEggs(queens[i]);
       }
 
       const antContract = new ethers.Contract(
@@ -82,6 +88,7 @@
         abiANT,
         $networkSigner
       );
+      firstMint = await antContract.firstMint($userAddress);
       maxHatch = await antContract.playerToAvailableSpace($userAddress);
       homelessCount = await antContract.getHomelessAntCount($userAddress);
 
@@ -128,14 +135,23 @@
     );
     await antContract.feedLarva(larvaInput);
   };
+
   const hatch = async () => {
+    hatching = true;
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,
       $networkSigner
     );
-    await antContract.hatch(parseInt(larvaInput));
+    try {
+      const hatchtx = await antContract.hatch(parseInt(larvaInput));
+      await hatchtx.wait();
+    } catch (e) {
+      console.log(e);
+    }
+    await fetchUserData().then((hatching = false));
   };
+
   const feedQueen = async () => {
     const funghiContract = new ethers.Contract(
       addr.contractFunghi,
@@ -209,17 +225,16 @@
   <div style="height:24px" /> -->
 
   <div class="header">
-    <h3>INCUBATION LAB</h3>
+    <h3>LARVAE</h3>
   </div>
   <div style="height:8px" />
   <main class="card">
-    <div class="header">
-      <h3>Larvae</h3>
-    </div>
-    <Line title="Total larvae:" value={totalLarva} />
-    <Line title="Ready to hatch:" value={larvaToHatch} />
-    <Line title="Max larvae to hatch:" value={maxHatch} />
-    <Line title="Homeless ants:" value={homelessCount} />
+    <Line title="Fed larvae / Total larvae" value={`${fed}/${totalLarva}`} />
+    <Line
+      title="Available nest capacity:"
+      value={!firstMint ? "10" : maxHatch}
+    />
+    <!-- <Line title="Homeless ants:" value={homelessCount} /> -->
 
     <p class="detail">--------------------------------------------</p>
     <p class="detail">
@@ -246,22 +261,27 @@
       <div class="detail">-> for better ants</div>
     </div>
     <div class="buttons">
-      <div
-        class={`button-small ${
-          maxHatch > 0 && larvaToHatch > 0 ? "green" : ""
-        }`}
-        on:click={hatch}
-      >
-        hatch
-      </div>
-      <div class="detail">-> to get new ants</div>
+      {#if !hatching}
+        <div
+          class={`button-small ${
+            !firstMint || (maxHatch > 0 && totalLarva > 0) ? "green" : ""
+          }`}
+          on:click={hatch}
+        >
+          hatch
+        </div>
+        <div class="detail">-> to get new ants</div>
+      {:else}
+        <p style="width:100;">Hatching new ants...</p>
+      {/if}
     </div>
   </main>
   <div style="height:24px" />
+  <div class="header">
+    <h3>QUEEN ANTS</h3>
+  </div>
+  <div style="height:8px" />
   <main class="card">
-    <div class="header">
-      <h3>Queen Ants</h3>
-    </div>
     {#each queens as queen, index}
       <Line
         title={`Queen #${queen}`}

@@ -26,7 +26,7 @@
   {:then addr}
     <div class="container">
       <First {addr} tournament={params.tournament} />
-      <Second {addr} />
+      <Second {addr} tournament={params.tournament} />
       <Third {addr} />
       <div style="height: 120px; width:100%" />
     </div>
