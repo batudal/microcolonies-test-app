@@ -270,7 +270,7 @@
       abiANT,
       $networkSigner
     );
-    await antContract.retreat(id);
+    await antContract.retreatSoldiers(id);
   };
   const healInfected = async () => {
     const antContract = new ethers.Contract(

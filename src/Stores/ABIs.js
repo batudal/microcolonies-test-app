@@ -594,6 +594,19 @@ export const abiANT = [
         type: "uint256",
       },
     ],
+    name: "retreatSoldiers",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_missionId",
+        type: "uint256",
+      },
+    ],
     name: "revealTarget",
     outputs: [
       {
@@ -650,7 +663,6 @@ export const abiANT = [
     type: "function",
   },
 ];
-
 export const abiFeromon = [
   {
     inputs: [],

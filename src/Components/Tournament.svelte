@@ -17,7 +17,7 @@
   let tournamentDuration;
   let userTournaments = [];
   let titles = [];
-  let factoryAddress = "0x679A2458bAD12e6547D690b2128B71423AF8DC40";
+  let factoryAddress = "0xE79f736166AdC988f1d42886A05863120a4AFc80";
 
   //   onMount(async () => {
   //     if ($userConnected) getUserTournaments();
