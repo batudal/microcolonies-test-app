@@ -283,7 +283,7 @@
       abiANT,
       $networkSigner
     );
-    await antContract.claimPassiveSoldierReward(soldierInput);
+    await antContract.harvestZombie(soldierInput);
   };
 </script>
 
