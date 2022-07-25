@@ -139,21 +139,21 @@
       abiWorker,
       $networkSigner
     );
-    const approved = await workerContract.isApprovedForAll(
-      $userAddress,
-      addr.contractAnt
-    );
-    try {
-      if (!approved) {
-        const approval = await workerContract.setApprovalForAll(
-          addr.contractAnt,
-          true
-        );
-        await approval.wait();
-      }
-    } catch (e) {
-      console.log(e);
-    }
+    // const approved = await workerContract.isApprovedForAll(
+    //   $userAddress,
+    //   addr.contractAnt
+    // );
+    // try {
+    //   if (!approved) {
+    //     const approval = await workerContract.setApprovalForAll(
+    //       addr.contractAnt,
+    //       true
+    //     );
+    //     await approval.wait();
+    //   }
+    // } catch (e) {
+    //   console.log(e);
+    // }
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,
@@ -190,21 +190,21 @@
       abiWorker,
       $networkSigner
     );
-    const approved = await workerContract.isApprovedForAll(
-      $userAddress,
-      addr.contractAnt
-    );
-    try {
-      if (!approved) {
-        const approval = await workerContract.setApprovalForAll(
-          addr.contractAnt,
-          true
-        );
-        await approval.wait();
-      }
-    } catch (e) {
-      console.log(e);
-    }
+    // const approved = await workerContract.isApprovedForAll(
+    //   $userAddress,
+    //   addr.contractAnt
+    // );
+    // try {
+    //   if (!approved) {
+    //     const approval = await workerContract.setApprovalForAll(
+    //       addr.contractAnt,
+    //       true
+    //     );
+    //     await approval.wait();
+    //   }
+    // } catch (e) {
+    //   console.log(e);
+    // }
 
     try {
       const stake = await workerContract.stakeWorker(workerInput);
@@ -238,17 +238,17 @@
       abiSoldier,
       $networkSigner
     );
-    const approved = await soldierContract.isApprovedForAll(
-      $userAddress,
-      addr.contractAnt
-    );
-    if (!approved) {
-      const approval = await soldierContract.setApprovalForAll(
-        addr.contractAnt,
-        true
-      );
-      await approval.wait();
-    }
+    // const approved = await soldierContract.isApprovedForAll(
+    //   $userAddress,
+    //   addr.contractAnt
+    // );
+    // if (!approved) {
+    //   const approval = await soldierContract.setApprovalForAll(
+    //     addr.contractAnt,
+    //     true
+    //   );
+    //   await approval.wait();
+    // }
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,

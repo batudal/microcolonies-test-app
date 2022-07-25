@@ -1,7 +1,6 @@
 <script>
   import Line from "./Line.svelte";
   import Scoreboard from "./Scoreboard.svelte";
-  import { allMinted } from "../Stores/States";
   import {
     userConnected,
     userAddress,
@@ -9,7 +8,6 @@
     networkSigner,
   } from "../Stores/Network";
   import { ethers } from "ethers";
-  // import { addr } from "../Stores/Addresses";
   import {
     abiFunghi,
     abiFeromon,
@@ -21,6 +19,7 @@
     abiLarva,
     abiANT,
     abiTournament,
+    abiLollipop,
   } from "../Stores/ABIs";
 
   export let addr;
@@ -37,16 +36,9 @@
   let princessBalance = "N/A";
   let totalPopulation = "N/A";
   let nestCapacity;
-  let mateInput, mintInput;
+
   let claimableQueens = "N/A";
-  let blocks = [];
-  let blockResidents = [];
-  let blockCapacities = [];
-  let blockCumCapacities = [];
-  let homelessWorkers;
-  let underConstruction;
   let matingPrincesses = 0;
-  let remainingConstruction;
   let princessMissions = [];
   let nickname = "";
   let now;
@@ -76,8 +68,7 @@
         $networkProvider
       );
       workerBalance = (await workerContract.getWorkers($userAddress)).length;
-      homelessWorkers = (await workerContract.getUnHousedWorkers($userAddress))
-        .length;
+
       const soldierContract = new ethers.Contract(
         addr.contractSoldier,
         abiSoldier,
@@ -116,36 +107,19 @@
         $networkSigner
       );
 
+      const lollipopContract = new ethers.Contract(
+        addr.contractLollipop,
+        abiLollipop,
+        $networkSigner
+      );
+      lollipopBalance = await lollipopContract.balanceOf($userAddress);
+      console.log(lollipopBalance);
+
       totalPopulation = await antContract.getPopulation();
       nestCapacity = await antContract.playerToCapacity($userAddress);
 
       princessMissions = await princessContract.getMissions($userAddress);
       activePrincessMissions = princessMissions.filter((w) => !w.finalized);
-      // claimableQueens = await princessContract.getClaimable($userAddress);
-      // matingPrincesses = (
-      //   await princessContract.getMatedPrincesses($userAddress)
-      // ).length;
-      // const buildingContract = new ethers.Contract(
-      //   addr.buildingblock,
-      //   abiBB,
-      //   $networkProvider
-      // );
-      // blocks = await buildingContract.getBuildingBlocks($userAddress);
-      // for (let i = 0; i < blocks.length; i++) {
-      //   blockResidents[i] = parseInt(
-      //     (await buildingContract.getWorkersHoused(blocks[i])).length
-      //   );
-      //   blockCapacities[i] = parseInt(
-      //     await buildingContract.idToCapacity(blocks[i])
-      //   );
-      //   blockCumCapacities[i] = parseInt(
-      //     await buildingContract.idToCumulativeCapacity(blocks[i])
-      //   );
-      // }
-      // underConstruction = await buildingContract.underConstruction();
-      // const now = parseInt(Date.now() / 1000);
-      // const start = await buildingContract.idToConstructionTime(blocks[0]);
-      // remainingConstruction = now - start;
     }
   };
   setInterval(() => {
@@ -173,30 +147,6 @@
     );
     await antContract.claimQueen(index, { gasLimit: "1000000" });
   };
-  const houseWorkers = async () => {
-    const antContract = new ethers.Contract(
-      addr.contractAnt,
-      abiANT,
-      $networkSigner
-    );
-    await antContract.houseWorkers();
-  };
-  const merge = async () => {
-    const antContract = new ethers.Contract(
-      addr.contractAnt,
-      abiANT,
-      $networkSigner
-    );
-    await antContract.mergeBBs();
-  };
-  const claimBuilding = async () => {
-    const antContract = new ethers.Contract(
-      addr.contractAnt,
-      abiANT,
-      $networkSigner
-    );
-    await antContract.claimUpgradedBuilding();
-  };
   const enterTournament = async () => {
     const tournamentContract = new ethers.Contract(
       tournament,
@@ -204,6 +154,18 @@
       $networkSigner
     );
     await tournamentContract.enterTournament("");
+  };
+  const activateLollipop = async () => {
+    const lollipopContract = new ethers.Contract(
+      addr.contractLollipop,
+      abiLollipop,
+      $networkSigner
+    );
+    try {
+      await lollipopContract.activate($userAddress);
+    } catch (e) {
+      console.log(e);
+    }
   };
 </script>
 
@@ -240,7 +202,16 @@
       <div class="button-small" on:click={enterTournament}>
         enter tournament
       </div>
-      <div class="detail">-> unlimited for fast test</div>
+      <div class="detail">-> let's go</div>
+    </div>
+    <div class="buttons">
+      <div
+        class={`button-small ${lollipopBalance > 0 ? "green" : ""}`}
+        on:click={activateLollipop}
+      >
+        use lollipop
+      </div>
+      <div class="detail">-> to speed up missions</div>
     </div>
   </main>
   <div style="height:24px" />
