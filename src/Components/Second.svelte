@@ -1,7 +1,5 @@
 <script>
   import Line from "./Line.svelte";
-  import Scoreboard from "./Scoreboard.svelte";
-
   import {
     userConnected,
     userAddress,
@@ -9,7 +7,6 @@
     networkSigner,
   } from "../Stores/Network";
   import { ethers } from "ethers";
-  // import { addr } from "../Stores/Addresses";
   import {
     abiWorker,
     abiSoldier,
@@ -25,103 +22,140 @@
   let workerInput;
   let soldierInput;
   let availableWorkers = "N/A";
-  let homelessWorkers = "N/A";
   let totalWorkers = "N/A";
   let totalSoldiers = "N/A";
   let availableSoldiers = "N/A";
   let zombieSoldiers = "N/A";
   let infectedSoldiers = "N/A";
-  let claimableBB, claimableFunghi, claimableLarva;
-  let feromonBalance;
   let workerMissions = [];
   let activeWorkerMissions = [];
   let soldierMissions = [];
   let activeSoldierMissions = [];
   let missionUpdating = false;
+  let soldierMissionUpdating = false;
   let claimUpdating = null;
   let targetUpdating = null;
   let acquiredTargets = [];
+  let acquiredTargetsNicknames = [];
+  let targetLarvae = [];
+  let targetSoldiers = [];
+  let feromonBalance;
+  let claimableFunghi;
+  let claimableLarva;
 
   $: $userConnected ? fetchUserData() : "";
   $: occupiedWorkers = totalWorkers - availableWorkers;
   $: occupiedSoldiers = totalSoldiers - availableSoldiers - zombieSoldiers;
+  $: if (acquiredTargets.length > 0) {
+    fetchTargetData(acquiredTargets);
+  }
 
-  const fetchUserData = async () => {
-    if ($userConnected) {
-      const workerContract = new ethers.Contract(
-        addr.contractWorker,
-        abiWorker,
-        $networkProvider
-      );
-      totalWorkers = (await workerContract.getWorkers($userAddress)).length;
-      availableWorkers = (
-        await workerContract.getAvailableWorkers($userAddress)
-      ).length;
-      workerMissions = await workerContract.getMissions($userAddress);
-      activeWorkerMissions = workerMissions.filter((x) => !x.finalized);
-
-      const soldierContract = new ethers.Contract(
-        addr.contractSoldier,
-        abiSoldier,
-        $networkProvider
-      );
-      totalSoldiers = (await soldierContract.getSoldiers($userAddress)).length;
-      availableSoldiers = (
-        await soldierContract.getAvailableSoldiers($userAddress)
-      ).length;
-      zombieSoldiers = (await soldierContract.getZombieSoldiers($userAddress))
-        .length;
-      infectedSoldiers = (
-        await soldierContract.getInfectedSoldiers($userAddress)
-      ).length;
-      claimableFunghi = await workerContract.getClaimableFunghi($userAddress);
-      claimableLarva = await soldierContract.getClaimableLarvaCount(
-        $userAddress
-      );
-      soldierMissions = await soldierContract.getMissions($userAddress);
-      activeSoldierMissions = soldierMissions.filter((x) => !x.finalized);
-      const antContract = new ethers.Contract(
-        addr.contractAnt,
-        abiANT,
-        $networkSigner
-      );
-      let _acquiredTargets = [];
-      for (let i = 0; i < soldierMissions.length; i++) {
-        if (soldierMissions[i].end < now) {
-          try {
-            let reveal = await antContract.revealTarget(i);
-            let nickname;
-            try {
-              const tournamentContract = new ethers.Contract(
-                tournament,
-                abiTournament,
-                $networkSigner
-              );
-              nickname = await tournamentContract.nicknames(reveal);
-            } catch (e) {
-              console.log(e);
-            }
-            _acquiredTargets.push(nickname ? nickname : reveal);
-          } catch (e) {
-            console.log(e);
-          }
-        }
+  const fetchTargetData = async (targets) => {
+    const larvaContract = new ethers.Contract(
+      addr.contractLarva,
+      abiLarva,
+      $networkProvider
+    );
+    const soldierContract = new ethers.Contract(
+      addr.contractSoldier,
+      abiSoldier,
+      $networkProvider
+    );
+    for (let i = 0; i < targets.length; i++) {
+      if (targets[i] != "") {
+        targetLarvae[i] = await larvaContract.getLarvae(targets[i]);
+        targetSoldiers[i] = await soldierContract.getAvailableSoldiers(
+          targets[i]
+        );
+      } else {
+        targetLarvae[i] = [];
+        targetSoldiers[i] = [];
       }
-      acquiredTargets = _acquiredTargets;
-
-      const feromonContract = new ethers.Contract(
-        addr.contractFeromon,
-        abiFeromon,
-        $networkProvider
-      );
-      feromonBalance = ethers.utils.formatEther(
-        await feromonContract.balanceOf($userAddress)
-      );
     }
   };
 
+  const fetchUserData = async () => {
+    const workerContract = new ethers.Contract(
+      addr.contractWorker,
+      abiWorker,
+      $networkProvider
+    );
+    totalWorkers = (await workerContract.getWorkers($userAddress)).length;
+    availableWorkers = (await workerContract.getAvailableWorkers($userAddress))
+      .length;
+    workerMissions = await workerContract.getMissions($userAddress);
+    activeWorkerMissions = workerMissions.filter((x) => !x.finalized);
+
+    const soldierContract = new ethers.Contract(
+      addr.contractSoldier,
+      abiSoldier,
+      $networkProvider
+    );
+    totalSoldiers = (await soldierContract.getSoldiers($userAddress)).length;
+    availableSoldiers = (
+      await soldierContract.getAvailableSoldiers($userAddress)
+    ).length;
+    zombieSoldiers = (await soldierContract.getZombieSoldiers($userAddress))
+      .length;
+    infectedSoldiers = (await soldierContract.getInfectedSoldiers($userAddress))
+      .length;
+    claimableFunghi = await workerContract.getClaimableFunghi($userAddress);
+    claimableLarva = await soldierContract.getClaimableLarvaCount($userAddress);
+    soldierMissions = await soldierContract.getMissions($userAddress);
+    activeSoldierMissions = soldierMissions.filter((x) => !x.finalized);
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
+    let _acquiredTargets = [];
+    let _acquiredTargetsNicknames = [];
+    for (let i = 0; i < soldierMissions.length; i++) {
+      if (soldierMissions[i].end < now && !soldierMissions[i].finalized) {
+        try {
+          let reveal = await antContract.revealTarget(i);
+          console.log(reveal);
+          let nickname;
+          try {
+            const tournamentContract = new ethers.Contract(
+              tournament,
+              abiTournament,
+              $networkSigner
+            );
+            nickname = await tournamentContract.getNickname(
+              "0x187549F02D96d94945f2c4Dd206cF58AEed8EBAE"
+            );
+            console.log(nickname);
+          } catch (e) {
+            console.log(e);
+          }
+          _acquiredTargets.push(reveal);
+          _acquiredTargetsNicknames.push(nickname);
+        } catch (e) {
+          console.log(e);
+        }
+      } else {
+        _acquiredTargets.push("");
+        _acquiredTargetsNicknames.push("");
+      }
+    }
+    acquiredTargets = _acquiredTargets;
+    acquiredTargetsNicknames = _acquiredTargetsNicknames;
+
+    const feromonContract = new ethers.Contract(
+      addr.contractFeromon,
+      abiFeromon,
+      $networkProvider
+    );
+    feromonBalance = ethers.utils.formatEther(
+      await feromonContract.balanceOf($userAddress)
+    );
+  };
+
   setInterval(() => {
-    fetchUserData();
+    if ($userConnected) {
+      fetchUserData();
+    }
   }, 10000);
 
   let now;
@@ -164,7 +198,6 @@
     }
     await fetchUserData().then((missionUpdating = false));
   };
-
   const claimBlocks = async (index) => {
     claimUpdating = index;
     const antContract = new ethers.Contract(
@@ -179,7 +212,6 @@
     }
     await fetchUserData().then((claimUpdating = null));
   };
-
   const gatherFood = async () => {
     missionUpdating = true;
     const workerContract = new ethers.Contract(
@@ -211,10 +243,8 @@
     }
     await fetchUserData().then((missionUpdating = false));
   };
-
   const claimFunghi = async (index) => {
     claimUpdating = index;
-    console.log(claimUpdating);
     const workerContract = new ethers.Contract(
       addr.contractWorker,
       abiWorker,
@@ -228,46 +258,68 @@
     }
     await fetchUserData().then((claimUpdating = null));
   };
-
   const sendToRaid = async () => {
+    soldierMissionUpdating = true;
     const soldierContract = new ethers.Contract(
       addr.contractSoldier,
       abiSoldier,
       $networkSigner
     );
+
     const approved = await soldierContract.isApprovedForAll(
       $userAddress,
       addr.contractAnt
     );
-    if (!approved) {
-      const approval = await soldierContract.setApprovalForAll(
-        addr.contractAnt,
-        true
-      );
-      await approval.wait();
+    try {
+      if (!approved) {
+        const approval = await soldierContract.setApprovalForAll(
+          addr.contractAnt,
+          true
+        );
+        await approval.wait();
+      }
+    } catch (e) {
+      console.log(e);
     }
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,
       $networkSigner
     );
-    await antContract.findTarget(soldierInput);
+    try {
+      await antContract.findTarget(soldierInput);
+    } catch (e) {
+      console.log(e);
+    }
+    await fetchUserData().then((claimSoldierUpdating = null));
   };
   const claimLarva = async (id) => {
+    targetUpdating = id;
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,
       $networkSigner
     );
-    await antContract.claimStolenLarvae(id);
+    try {
+      await antContract.claimStolenLarvae(id);
+    } catch (e) {
+      console.log(e);
+    }
+    await fetchUserData().then((targetUpdating = null));
   };
   const retreat = async (id) => {
+    targetUpdating = id;
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,
       $networkSigner
     );
-    await antContract.retreatSoldiers(id);
+    try {
+      await antContract.retreatSoldiers(id);
+    } catch (e) {
+      console.log(e);
+    }
+    await fetchUserData().then((targetUpdating = null));
   };
   const healInfected = async () => {
     const soldierContract = new ethers.Contract(
@@ -288,13 +340,7 @@
 </script>
 
 <div class="container">
-  <!-- <Scoreboard type="feromon" /> -->
   <div style="height:24px" />
-  <!-- <Scoreboard type="worker population" />
-  <div style="height:24px" />
-  <Scoreboard type="soldier population" />
-  <div style="height:24px" /> -->
-
   <div class="header">
     <h3>WORKER ANTS</h3>
   </div>
@@ -303,7 +349,6 @@
     <Line title="Total:" value={totalWorkers} />
     <Line title="Available:" value={availableWorkers} />
     <Line title="Occupied:" value={occupiedWorkers} />
-    <!-- <Line title="Homeless worker ants:" value={homelessWorkers} /> -->
 
     <p class="detail">--------------------------------------------</p>
     <p class="detail">
@@ -341,29 +386,11 @@
       <div class="detail">-> produce funghi (240)</div>
     </div>
     <p class="detail">--------------------------------------------</p>
-    <!-- <div class="buttons">
-      <div
-        class={`button-small ${claimableBB > 0 ? "green" : ""}`}
-        on:click={claimBlocks}
-      >
-        claim blocks
-      </div>
-      <div class="detail">-> {claimableBB} claimable</div>
-    </div>
-    <div class="buttons">
-      <div
-        class={`button-small ${claimableFunghi > 0 ? "green" : ""}`}
-        on:click={claimFunghi}
-      >
-        harvest $funghi
-      </div>
-      <div class="detail">-> {claimableFunghi} claimable</div>
-    </div> -->
     <div class="header">
       <h3>Worker Missions</h3>
     </div>
     {#if missionUpdating}
-      <p style="width:100%;">Deploying new mission...</p>
+      <p class="notification">Deploying new mission...</p>
     {/if}
     {#if activeWorkerMissions.length == 0 && !missionUpdating}
       <p style="width:100%;">No active missions.</p>
@@ -390,7 +417,7 @@
                   </div>
                 {/if}
               {:else}
-                <p style="width:100%;">Claiming now...</p>
+                <p class="notification">Claiming now...</p>
               {/if}
             </div>
           {:else}
@@ -413,7 +440,7 @@
                   </div>
                 {/if}
               {:else}
-                <p style="width:100%;">Claiming now...</p>
+                <p class="notification">Claiming now...</p>
               {/if}
             </div>
           {/if}
@@ -449,9 +476,9 @@
         class={`button-small ${availableSoldiers > 0 ? "green" : ""}`}
         on:click={sendToRaid}
       >
-        send to raid
+        scout
       </div>
-      <div class="detail">-> to steal larva</div>
+      <div class="detail">-> find a target</div>
     </div>
     <div class="buttons">
       <div
@@ -476,7 +503,7 @@
     <div class="header">
       <h3>Soldier Missions</h3>
     </div>
-    {#if missionUpdating}
+    {#if soldierMissionUpdating}
       <p style="width:100%;">Deploying new mission...</p>
     {/if}
     {#if activeSoldierMissions.length == 0 && !targetUpdating}
@@ -484,20 +511,38 @@
     {:else}
       {#each soldierMissions as m, i}
         {#if !m.finalized}
-          <div class="buttons" style="justify-content:space-between;">
-            {#if targetUpdating != i}
-              {#if m.end < now}
-                <p>{acquiredTargets[i]?.substring(0, 6)}</p>
+          {#if targetUpdating != i}
+            {#if m.end < now}
+              <div style="height:8px" />
+              <Line title="Target name:" value={acquiredTargetsNicknames[i]} />
+              <Line
+                title="Target address:"
+                value={acquiredTargets[i]?.substring(0, 6)}
+              />
+              <Line
+                title="Target soldiers:"
+                value={targetSoldiers[i]?.length}
+              />
+              <Line title="Target larvae:" value={targetLarvae[i]?.length} />
+              <p class="detail">--------------------------------------------</p>
+
+              <div class="buttons">
                 <div
                   class={`button-small green`}
                   on:click={() => claimLarva(i)}
                 >
                   attack
                 </div>
+                <div class="detail">-> for the glory</div>
+              </div>
+              <div class="buttons">
                 <div class={`button-small green`} on:click={() => retreat(i)}>
                   retreat
                 </div>
-              {:else}
+                <div class="detail">-> and waste your time</div>
+              </div>
+            {:else}
+              <div class="buttons" style="justify-content:space-between;">
                 <p>Scout ({m.ids.length} ants)</p>
                 <p>
                   {m.end > now
@@ -506,11 +551,11 @@
                       )}h ${parseInt(((m.end - now) / 60) % 60)}  m`
                     : ""}
                 </p>
-              {/if}
-            {:else}
-              <p style="width:100%;">Finding a new target...</p>
+              </div>
             {/if}
-          </div>
+          {:else}
+            <p class="notification">Transaction in progress...</p>
+          {/if}
         {/if}
       {/each}
     {/if}
@@ -524,5 +569,28 @@
     align-items: center;
     justify-content: flex-start;
     max-width: 320px;
+  }
+  .row-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+  }
+  .notification {
+    width: 100%;
+    color: #00ff6a;
+    animation-name: strobe;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+  }
+  @keyframes strobe {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
   }
 </style>

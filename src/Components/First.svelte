@@ -153,7 +153,7 @@
       abiTournament,
       $networkSigner
     );
-    await tournamentContract.enterTournament("");
+    await tournamentContract.enterTournament(nickname);
   };
   const activateLollipop = async () => {
     const lollipopContract = new ethers.Contract(
