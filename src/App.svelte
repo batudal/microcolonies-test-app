@@ -1,7 +1,7 @@
 <script>
   import Router from "svelte-spa-router";
-  import Dashboard from "./Components/Dashboard.svelte";
-  import Navbar from "./Components/Navbar.svelte";
+  import Dashboard from "./Components/Dashboard/Dashboard.svelte";
+  import Navbar from "./Components/UI/Navbar.svelte";
   import Warning from "./Components/Warning.svelte";
   import { userConnected, chainID } from "./Stores/Network";
   import Tournament from "./Components/Tournament.svelte";

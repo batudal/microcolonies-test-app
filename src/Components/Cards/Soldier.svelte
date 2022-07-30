@@ -1,50 +1,37 @@
 <script>
-  import Line from "./Line.svelte";
+  import Line from "../UI/Line.svelte";
   import {
     userConnected,
     userAddress,
     networkProvider,
     networkSigner,
-  } from "../Stores/Network";
+  } from "../../Stores/Network";
   import { ethers } from "ethers";
   import {
-    abiWorker,
     abiSoldier,
     abiANT,
-    abiFeromon,
     abiLarva,
     abiTournament,
-  } from "../Stores/ABIs";
+  } from "../../Stores/ABIs";
 
   export let addr;
   export let tournament;
 
-  let workerInput;
   let soldierInput;
-  let availableWorkers = "N/A";
-  let totalWorkers = "N/A";
   let totalSoldiers = "N/A";
   let availableSoldiers = "N/A";
   let zombieSoldiers = "N/A";
   let infectedSoldiers = "N/A";
-  let workerMissions = [];
-  let activeWorkerMissions = [];
   let soldierMissions = [];
   let activeSoldierMissions = [];
-  let missionUpdating = false;
   let soldierMissionUpdating = false;
-  let claimUpdating = null;
   let targetUpdating = null;
   let acquiredTargets = [];
   let acquiredTargetsNicknames = [];
   let targetLarvae = [];
   let targetSoldiers = [];
-  let feromonBalance;
-  let claimableFunghi;
-  let claimableLarva;
 
   $: $userConnected ? fetchUserData() : "";
-  $: occupiedWorkers = totalWorkers - availableWorkers;
   $: occupiedSoldiers = totalSoldiers - availableSoldiers - zombieSoldiers;
   $: if (acquiredTargets.length > 0) {
     fetchTargetData(acquiredTargets);
@@ -75,17 +62,6 @@
   };
 
   const fetchUserData = async () => {
-    const workerContract = new ethers.Contract(
-      addr.contractWorker,
-      abiWorker,
-      $networkProvider
-    );
-    totalWorkers = (await workerContract.getWorkers($userAddress)).length;
-    availableWorkers = (await workerContract.getAvailableWorkers($userAddress))
-      .length;
-    workerMissions = await workerContract.getMissions($userAddress);
-    activeWorkerMissions = workerMissions.filter((x) => !x.finalized);
-
     const soldierContract = new ethers.Contract(
       addr.contractSoldier,
       abiSoldier,
@@ -99,8 +75,6 @@
       .length;
     infectedSoldiers = (await soldierContract.getInfectedSoldiers($userAddress))
       .length;
-    claimableFunghi = await workerContract.getClaimableFunghi($userAddress);
-    claimableLarva = await soldierContract.getClaimableLarvaCount($userAddress);
     soldierMissions = await soldierContract.getMissions($userAddress);
     activeSoldierMissions = soldierMissions.filter((x) => !x.finalized);
     const antContract = new ethers.Contract(
@@ -114,7 +88,6 @@
       if (soldierMissions[i].end < now && !soldierMissions[i].finalized) {
         try {
           let reveal = await antContract.revealTarget(i);
-          console.log(reveal);
           let nickname;
           try {
             const tournamentContract = new ethers.Contract(
@@ -122,10 +95,7 @@
               abiTournament,
               $networkSigner
             );
-            nickname = await tournamentContract.getNickname(
-              "0x187549F02D96d94945f2c4Dd206cF58AEed8EBAE"
-            );
-            console.log(nickname);
+            nickname = await tournamentContract.getNickname(reveal);
           } catch (e) {
             console.log(e);
           }
@@ -141,15 +111,6 @@
     }
     acquiredTargets = _acquiredTargets;
     acquiredTargetsNicknames = _acquiredTargetsNicknames;
-
-    const feromonContract = new ethers.Contract(
-      addr.contractFeromon,
-      abiFeromon,
-      $networkProvider
-    );
-    feromonBalance = ethers.utils.formatEther(
-      await feromonContract.balanceOf($userAddress)
-    );
   };
 
   setInterval(() => {
@@ -163,101 +124,6 @@
     now = parseInt(Date.now()) / 1000;
   });
 
-  const expandNest = async () => {
-    missionUpdating = true;
-    const workerContract = new ethers.Contract(
-      addr.contractWorker,
-      abiWorker,
-      $networkSigner
-    );
-    const approved = await workerContract.isApprovedForAll(
-      $userAddress,
-      addr.contractAnt
-    );
-    try {
-      if (!approved) {
-        const approval = await workerContract.setApprovalForAll(
-          addr.contractAnt,
-          true
-        );
-        await approval.wait();
-      }
-    } catch (e) {
-      console.log(e);
-    }
-    const antContract = new ethers.Contract(
-      addr.contractAnt,
-      abiANT,
-      $networkSigner
-    );
-    try {
-      const expand = await antContract.expandNest(workerInput);
-      await expand.wait();
-    } catch (e) {
-      console.log(e);
-    }
-    await fetchUserData().then((missionUpdating = false));
-  };
-  const claimBlocks = async (index) => {
-    claimUpdating = index;
-    const antContract = new ethers.Contract(
-      addr.contractAnt,
-      abiANT,
-      $networkSigner
-    );
-    try {
-      await antContract.claimAndIncreaseSpace(index);
-    } catch (e) {
-      console.log(e);
-    }
-    await fetchUserData().then((claimUpdating = null));
-  };
-  const gatherFood = async () => {
-    missionUpdating = true;
-    const workerContract = new ethers.Contract(
-      addr.contractWorker,
-      abiWorker,
-      $networkSigner
-    );
-    const approved = await workerContract.isApprovedForAll(
-      $userAddress,
-      addr.contractAnt
-    );
-    try {
-      if (!approved) {
-        const approval = await workerContract.setApprovalForAll(
-          addr.contractAnt,
-          true
-        );
-        await approval.wait();
-      }
-    } catch (e) {
-      console.log(e);
-    }
-
-    try {
-      const stake = await workerContract.stakeWorker(workerInput);
-      await stake.wait();
-    } catch (e) {
-      console.log(e);
-    }
-    await fetchUserData().then((missionUpdating = false));
-  };
-  const claimFunghi = async (index) => {
-    claimUpdating = index;
-    const workerContract = new ethers.Contract(
-      addr.contractWorker,
-      abiWorker,
-      $networkSigner
-    );
-    try {
-      const claim = await workerContract.claimFunghi(index);
-      await claim.wait();
-    } catch (e) {
-      console.log(e);
-    }
-    await fetchUserData().then((claimUpdating = null));
-  };
   const sendToRaid = async () => {
     soldierMissionUpdating = true;
     const soldierContract = new ethers.Contract(
@@ -342,114 +208,6 @@
 <div class="container">
   <div style="height:24px" />
   <div class="header">
-    <h3>WORKER ANTS</h3>
-  </div>
-  <div style="height:8px" />
-  <main class="card">
-    <Line title="Total:" value={totalWorkers} />
-    <Line title="Available:" value={availableWorkers} />
-    <Line title="Occupied:" value={occupiedWorkers} />
-
-    <p class="detail">--------------------------------------------</p>
-    <p class="detail">
-      Gathering building parts occupy your worker ants for 7 days. Gathering
-      food occupy your worker ants for 1 day. Each mission reduces worker health
-      points by 2.<br /><br />Soldier can be sent along with worker ants for
-      protection which mitigates 50% of damage taken by worker ants. A soldier
-      can protect up to 10 worker ants.
-    </p>
-    <div class="inputs-container">
-      <input
-        type="text"
-        placeholder="Amount of Workers"
-        bind:value={workerInput}
-        style="margin-top:8px; max-width:320px"
-      />
-    </div>
-    <div class="buttons" style="margin-top:8px">
-      <div
-        class={`button-small ${availableWorkers > 0 ? "green" : ""}`}
-        on:click={expandNest}
-      >
-        build
-      </div>
-      <div class="detail">-> increase nest capacity (10)</div>
-    </div>
-
-    <div class="buttons">
-      <div
-        class={`button-small ${availableWorkers > 0 ? "green" : ""}`}
-        on:click={gatherFood}
-      >
-        farm
-      </div>
-      <div class="detail">-> produce funghi (240)</div>
-    </div>
-    <p class="detail">--------------------------------------------</p>
-    <div class="header">
-      <h3>Worker Missions</h3>
-    </div>
-    {#if missionUpdating}
-      <p class="notification">Deploying new mission...</p>
-    {/if}
-    {#if activeWorkerMissions.length == 0 && !missionUpdating}
-      <p style="width:100%;">No active missions.</p>
-    {:else}
-      {#each workerMissions as m, i}
-        {#if !m.finalized}
-          {#if m.missionType == 1}
-            <div class="buttons" style="justify-content:space-between;">
-              {#if claimUpdating != i}
-                <p>Nest ({m.ids.length} ants)</p>
-                <p>
-                  {m.end > now
-                    ? `${parseInt((m.end - now) / 86400)}d ${parseInt(
-                        ((m.end - now) / 3600) % 24
-                      )}h ${parseInt(((m.end - now) / 60) % 60)}m`
-                    : ""}
-                </p>
-                {#if m.end < now}
-                  <div
-                    class={`button-small green`}
-                    on:click={() => claimBlocks(i)}
-                  >
-                    claim block
-                  </div>
-                {/if}
-              {:else}
-                <p class="notification">Claiming now...</p>
-              {/if}
-            </div>
-          {:else}
-            <div class="buttons" style="justify-content:space-between;">
-              {#if claimUpdating != i}
-                <p>Funghi ({m.ids.length} ants)</p>
-                <p>
-                  {m.end > now
-                    ? `${parseInt((m.end - now) / 86400)}d ${parseInt(
-                        ((m.end - now) / 3600) % 24
-                      )}h ${parseInt(((m.end - now) / 60) % 60)}m`
-                    : ""}
-                </p>
-                {#if m.end < now}
-                  <div
-                    class={`button-small green`}
-                    on:click={() => claimFunghi(i)}
-                  >
-                    claim funghi
-                  </div>
-                {/if}
-              {:else}
-                <p class="notification">Claiming now...</p>
-              {/if}
-            </div>
-          {/if}
-        {/if}
-      {/each}
-    {/if}
-  </main>
-  <div style="height:24px" />
-  <div class="header">
     <h3>SOLDIER ANTS</h3>
   </div>
   <div style="height:8px" />
@@ -515,10 +273,7 @@
             {#if m.end < now}
               <div style="height:8px" />
               <Line title="Target name:" value={acquiredTargetsNicknames[i]} />
-              <Line
-                title="Target address:"
-                value={acquiredTargets[i]?.substring(0, 6)}
-              />
+
               <Line
                 title="Target soldiers:"
                 value={targetSoldiers[i]?.length}

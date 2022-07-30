@@ -1,7 +1,7 @@
 <script>
   import { ethers } from "ethers";
-  import { networkProvider } from "../Stores/Network";
-  import { abiTournament } from "../Stores/ABIs";
+  import { networkProvider } from "../../Stores/Network";
+  import { abiTournament } from "../../Stores/ABIs";
   import First from "./First.svelte";
   import Second from "./Second.svelte";
   import Third from "./Third.svelte";
@@ -22,7 +22,7 @@
 
 <main>
   {#await promise}
-    <p>...waiting</p>
+    <p>...loading</p>
   {:then addr}
     <div class="container">
       <First {addr} tournament={params.tournament} />

@@ -4,7 +4,7 @@
     disconnectWallet,
     userConnected,
     userAddress,
-  } from "../Stores/Network";
+  } from "../../Stores/Network";
   import { onMount, onDestroy } from "svelte";
 
   onMount(() => {
@@ -51,7 +51,6 @@
       href="https://degen-fyi.notion.site/A-N-T-f55111a055c24c69af3b920d129d1d87"
       target="_blank"><p class="nav">notion page</p></a
     >
-    <!-- <a href="#/createlisting"><p class="nav">marketplace</p></a> -->
     <p>|</p>
     <p class="nav" on:click={$userConnected ? disconnectWallet : connectWallet}>
       {#if $userConnected}
@@ -89,9 +88,5 @@
     color: #070707;
     cursor: pointer;
     font-weight: 700;
-  }
-  span {
-    color: #00ff6a;
-    font-weight: 400;
   }
 </style>

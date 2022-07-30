@@ -170,3 +170,23 @@ input {
   flex-direction: row;
   justify-content: space-between;
 }
+
+.notification {
+  width: 100%;
+  color: #00ff6a;
+  animation-name: strobe;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+}
+
+@keyframes strobe {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

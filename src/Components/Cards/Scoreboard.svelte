@@ -2,7 +2,7 @@
   import { ethers } from "ethers";
   import { allMinted } from "../Stores/States";
   import { addr } from "../Stores/Addresses";
-  import Line from "./Line.svelte";
+  import Line from "./UI/Line.svelte";
   import {
     userConnected,
     userAddress,
