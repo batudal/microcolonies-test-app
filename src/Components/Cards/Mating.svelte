@@ -7,7 +7,7 @@
     networkSigner,
   } from "../../Stores/Network";
   import { ethers } from "ethers";
-  import { abiPrincess, abiANT } from "../../Stores/ABIs";
+  import { abiPrincess, abiANT, abiMale } from "../../Stores/ABIs";
 
   export let addr;
 
@@ -28,6 +28,18 @@
       );
       princessMissions = await princessContract.getMissions($userAddress);
       activePrincessMissions = princessMissions.filter((w) => !w.finalized);
+      princessBalance = (await princessContract.getPrincesses($userAddress))
+        .length;
+      claimableQueens = (
+        await princessContract.getMatedPrincesses($userAddress)
+      ).length;
+
+      const maleContract = new ethers.Contract(
+        addr.contractMale,
+        abiMale,
+        $networkProvider
+      );
+      maleBalance = (await maleContract.getMales($userAddress)).length;
     }
   };
   setInterval(() => {
@@ -53,7 +65,7 @@
       abiANT,
       $networkSigner
     );
-    await antContract.claimQueen(index, { gasLimit: "1000000" });
+    await antContract.claimQueen(index);
   };
 </script>
 
@@ -64,9 +76,6 @@
   </div>
   <div style="height:8px" />
   <main class="card">
-    <div class="header">
-      <h3>Mating</h3>
-    </div>
     <Line title="Total males" value={maleBalance} />
     <Line title="Total princesses" value={princessBalance} />
     <Line title="Claimable queens" value={claimableQueens} />

@@ -4007,6 +4007,25 @@ export const abiQueen = [
         type: "uint256",
       },
     ],
+    name: "getEnergy",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "_percentage",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_index",
+        type: "uint256",
+      },
+    ],
     name: "getEpoch",
     outputs: [
       {
@@ -4441,6 +4460,29 @@ export const abiQueen = [
       },
     ],
     name: "setTimestamp",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "operator",
+        type: "address",
+      },
+      {
+        internalType: "bool",
+        name: "approved",
+        type: "bool",
+      },
+    ],
+    name: "setupApprovals",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

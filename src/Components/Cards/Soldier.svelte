@@ -126,34 +126,14 @@
 
   const sendToRaid = async () => {
     soldierMissionUpdating = true;
-    const soldierContract = new ethers.Contract(
-      addr.contractSoldier,
-      abiSoldier,
-      $networkSigner
-    );
-
-    const approved = await soldierContract.isApprovedForAll(
-      $userAddress,
-      addr.contractAnt
-    );
-    try {
-      if (!approved) {
-        const approval = await soldierContract.setApprovalForAll(
-          addr.contractAnt,
-          true
-        );
-        await approval.wait();
-      }
-    } catch (e) {
-      console.log(e);
-    }
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,
       $networkSigner
     );
     try {
-      await antContract.findTarget(soldierInput);
+      const findtx = await antContract.findTarget(soldierInput);
+      await findtx.wait();
     } catch (e) {
       console.log(e);
       soldierMissionUpdating = null;
@@ -169,7 +149,8 @@
       $networkSigner
     );
     try {
-      await antContract.claimStolenLarvae(id);
+      const claimtx = await antContract.claimStolenLarvae(id);
+      await claimtx.wait();
     } catch (e) {
       console.log(e);
     }
@@ -184,7 +165,8 @@
       $networkSigner
     );
     try {
-      await antContract.retreatSoldiers(id);
+      const retreattx = await antContract.retreatSoldiers(id);
+      await retreattx.wait();
     } catch (e) {
       console.log(e);
       targetUpdating = null;
@@ -200,7 +182,8 @@
       $networkSigner
     );
     try {
-      await soldierContract.healSoldier(soldierInput);
+      const healtx = await soldierContract.healSoldier(soldierInput);
+      await healtx.wait();
     } catch (e) {
       console.log(e);
       targetUpdating = null;
@@ -216,7 +199,8 @@
       $networkSigner
     );
     try {
-      await soldierContract.harvestZombie(soldierInput);
+      const harvesttx = await soldierContract.harvestZombie(soldierInput);
+      await harvesttx.wait();
     } catch (e) {
       console.log(e);
       targetUpdating = null;
@@ -250,40 +234,50 @@
       style="margin-top:8px"
     />
     <div class="buttons" style="margin-top:8px">
-      <div
-        class={`button-small ${availableSoldiers > 0 ? "green" : ""}`}
-        on:click={sendToRaid}
-      >
-        scout
-      </div>
-      <div class="detail">-> find a target</div>
+      {#if soldierMissionUpdating}
+        <p class="notification">Deploying scout mission...</p>
+      {:else}
+        <div
+          class={`button-small ${availableSoldiers > 0 ? "green" : ""}`}
+          on:click={sendToRaid}
+        >
+          scout
+        </div>
+        <div class="detail">-> find a target</div>
+      {/if}
     </div>
     <div class="buttons">
-      <div
-        class={`button-small ${infectedSoldiers > 0 ? "green" : ""}`}
-        on:click={healInfected}
-      >
-        heal infected
-      </div>
-      <div class="detail">-> to restore health</div>
+      {#if soldierMissionUpdating}
+        <p class="notification">Healing infected soldiers...</p>
+      {:else}
+        <div
+          class={`button-small ${infectedSoldiers > 0 ? "green" : ""}`}
+          on:click={healInfected}
+        >
+          heal infected
+        </div>
+        <div class="detail">-> to restore health</div>
+      {/if}
     </div>
     <div class="buttons">
-      <div
-        class={`button-small ${zombieSoldiers > 0 ? "green" : ""}`}
-        on:click={harvestZombie}
-      >
-        harvest zombie
-      </div>
-      <div class="detail">-> to stop spread</div>
+      {#if soldierMissionUpdating}
+        <p class="notification">Harvesting zombie...</p>
+      {:else}
+        <div
+          class={`button-small ${zombieSoldiers > 0 ? "green" : ""}`}
+          on:click={harvestZombie}
+        >
+          harvest zombie
+        </div>
+        <div class="detail">-> to stop spread</div>
+      {/if}
     </div>
     <p class="detail">--------------------------------------------</p>
 
     <div class="header">
       <h3>Soldier Missions</h3>
     </div>
-    {#if soldierMissionUpdating}
-      <p style="width:100%;">Deploying new mission...</p>
-    {:else if activeSoldierMissions.length == 0 && !targetUpdating}
+    {#if activeSoldierMissions.length == 0 && !targetUpdating}
       <p style="width:100%;">No active missions.</p>
     {:else}
       {#each soldierMissions as m, i}

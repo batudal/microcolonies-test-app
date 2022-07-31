@@ -24,6 +24,9 @@
   let totalPopulation = "N/A";
   let nestCapacity;
   let nickname = "";
+  let setNickname;
+  let entering = false;
+  let boosting = false;
 
   const fetchUserData = async () => {
     if ($userConnected) {
@@ -56,6 +59,12 @@
       lollipopBalance = await lollipopContract.balanceOf($userAddress);
       totalPopulation = await antContract.getPopulation();
       nestCapacity = await antContract.playerToCapacity($userAddress);
+      const tournamentContract = new ethers.Contract(
+        tournament,
+        abiTournament,
+        $networkProvider
+      );
+      setNickname = await tournamentContract.getNickname($userAddress);
     }
   };
   setInterval(() => {
@@ -64,32 +73,52 @@
   $: $userConnected ? fetchUserData() : "";
 
   const enterTournament = async () => {
+    entering = true;
     const tournamentContract = new ethers.Contract(
       tournament,
       abiTournament,
       $networkSigner
     );
-    await tournamentContract.enterTournament(nickname);
+    try {
+      const entertx = await tournamentContract.enterTournament(nickname);
+      await entertx.wait();
+    } catch (e) {
+      console.log(e);
+      entering = false;
+    }
+    await fetchUserData();
+    entering = false;
   };
   const activateLollipop = async () => {
+    boosting = true;
     const lollipopContract = new ethers.Contract(
       addr.contractLollipop,
       abiLollipop,
       $networkSigner
     );
     try {
-      await lollipopContract.activate($userAddress);
+      const boosttx = await lollipopContract.activate($userAddress);
+      await boosttx.wait();
     } catch (e) {
       console.log(e);
+      boosting = false;
     }
+    await fetchUserData();
+    boosting = false;
   };
 </script>
 
 <div class="container">
   <div style="height:24px" />
-  <div class="header">
-    <h3>GENESIS ROUND</h3>
-  </div>
+  {#if setNickname != ""}
+    <div class="header">
+      <h3>WELCOME {setNickname?.toString().toUpperCase()}</h3>
+    </div>
+  {:else}
+    <div class="header">
+      <h3>GENESIS ROUND</h3>
+    </div>
+  {/if}
   <div style="height:8px" />
   <main class="card">
     <Line title="Funghi" value={funghiBalance} />
@@ -103,26 +132,33 @@
       Welcome Fren. This game is in testing phase. Feel free to mint some larvae
       and start multiplying.
     </p>
-    <input
-      type="text"
-      placeholder="Nickname"
-      style="margin-top:8px"
-      bind:value={nickname}
-    />
+    {#if setNickname == ""}
+      <input
+        type="text"
+        placeholder="Nickname"
+        style="margin-top:8px"
+        bind:value={nickname}
+      />
+    {/if}
     <div class="buttons" style="margin-top:8px">
-      <div class="button-small" on:click={enterTournament}>
-        enter tournament
-      </div>
-      <div class="detail">-> let's go</div>
+      {#if entering}
+        <p class="notification">Entering tournament...</p>
+      {:else if setNickname == ""}
+        <div class={`button-small green`} on:click={enterTournament}>
+          enter tournament
+        </div>
+        <div class="detail">-> let's go</div>
+      {/if}
     </div>
     <div class="buttons">
-      <div
-        class={`button-small ${lollipopBalance > 0 ? "green" : ""}`}
-        on:click={activateLollipop}
-      >
-        use lollipop
-      </div>
-      <div class="detail">-> to speed up missions</div>
+      {#if boosting}
+        <p class="notification">Using lollipop...</p>
+      {:else if lollipopBalance > 0}
+        <div class={`button-small green`} on:click={activateLollipop}>
+          use lollipop
+        </div>
+        <div class="detail">-> to speed up missions</div>
+      {/if}
     </div>
   </main>
 </div>

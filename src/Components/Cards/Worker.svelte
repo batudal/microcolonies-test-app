@@ -17,6 +17,7 @@
   let workerMissions = [];
   let activeWorkerMissions = [];
   let missionUpdating = false;
+  let nestMissionUpdating = false;
   let claimUpdating = null;
 
   $: $userConnected ? fetchUserData() : "";
@@ -47,27 +48,7 @@
   });
 
   const expandNest = async () => {
-    missionUpdating = true;
-    const workerContract = new ethers.Contract(
-      addr.contractWorker,
-      abiWorker,
-      $networkSigner
-    );
-    const approved = await workerContract.isApprovedForAll(
-      $userAddress,
-      addr.contractAnt
-    );
-    try {
-      if (!approved) {
-        const approval = await workerContract.setApprovalForAll(
-          addr.contractAnt,
-          true
-        );
-        await approval.wait();
-      }
-    } catch (e) {
-      console.log(e);
-    }
+    nestMissionUpdating = true;
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,
@@ -78,10 +59,10 @@
       await expand.wait();
     } catch (e) {
       console.log(e);
-      missionUpdating = false;
+      nestMissionUpdating = false;
     }
     await fetchUserData();
-    missionUpdating = false;
+    nestMissionUpdating = false;
   };
   const claimBlocks = async (index) => {
     claimUpdating = index;
@@ -91,7 +72,8 @@
       $networkSigner
     );
     try {
-      await antContract.claimAndIncreaseSpace(index);
+      const claimtx = await antContract.claimAndIncreaseSpace(index);
+      await claimtx.wait();
     } catch (e) {
       console.log(e);
       claimUpdating = null;
@@ -106,22 +88,6 @@
       abiWorker,
       $networkSigner
     );
-    const approved = await workerContract.isApprovedForAll(
-      $userAddress,
-      addr.contractAnt
-    );
-    try {
-      if (!approved) {
-        const approval = await workerContract.setApprovalForAll(
-          addr.contractAnt,
-          true
-        );
-        await approval.wait();
-      }
-    } catch (e) {
-      console.log(e);
-    }
-
     try {
       const stake = await workerContract.stakeWorker(workerInput);
       await stake.wait();
@@ -179,31 +145,37 @@
       />
     </div>
     <div class="buttons" style="margin-top:8px">
-      <div
-        class={`button-small ${availableWorkers > 0 ? "green" : ""}`}
-        on:click={expandNest}
-      >
-        build
-      </div>
-      <div class="detail">-> increase nest capacity (10)</div>
+      {#if nestMissionUpdating}
+        <p class="notification">Deploying build mission...</p>
+      {:else}
+        <div
+          class={`button-small ${availableWorkers > 0 ? "green" : ""}`}
+          on:click={expandNest}
+        >
+          build
+        </div>
+        <div class="detail">-> increase nest capacity (10)</div>
+      {/if}
     </div>
 
     <div class="buttons">
-      <div
-        class={`button-small ${availableWorkers > 0 ? "green" : ""}`}
-        on:click={gatherFood}
-      >
-        farm
-      </div>
-      <div class="detail">-> produce funghi (240)</div>
+      {#if missionUpdating}
+        <p class="notification">Deploying farm mission...</p>
+      {:else}
+        <div
+          class={`button-small ${availableWorkers > 0 ? "green" : ""}`}
+          on:click={gatherFood}
+        >
+          farm
+        </div>
+        <div class="detail">-> produce funghi (240)</div>
+      {/if}
     </div>
     <p class="detail">--------------------------------------------</p>
     <div class="header">
       <h3>Worker Missions</h3>
     </div>
-    {#if missionUpdating}
-      <p class="notification">Deploying new mission...</p>
-    {:else if activeWorkerMissions.length == 0 && !missionUpdating}
+    {#if activeWorkerMissions.length == 0 && !missionUpdating}
       <p style="width:100%;">No active missions.</p>
     {:else}
       {#each workerMissions as m, i}

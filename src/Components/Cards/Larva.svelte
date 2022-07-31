@@ -20,6 +20,7 @@
   let funghiAmount;
   let firstMint = false;
   let hatching = false;
+  let feeding = false;
   let fed;
 
   $: $userConnected ? fetchUserData() : "";
@@ -66,29 +67,25 @@
   }, 10000);
 
   const feedLarva = async () => {
+    feeding = true;
     const funghiContract = new ethers.Contract(
       addr.contractFunghi,
       abiFunghi,
       $networkSigner
     );
-    const approved = parseFloat(
-      ethers.utils.formatEther(
-        await funghiContract.allowance($userAddress, addr.contractAnt)
-      )
-    );
-    if (approved < larvaInput * 80) {
-      const approval = await funghiContract.approve(
-        addr.contractAnt,
-        ethers.constants.MaxUint256
-      );
-      await approval.wait();
-    }
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,
       $networkSigner
     );
-    await antContract.feedLarva(larvaInput);
+    try {
+      await antContract.feedLarva(larvaInput);
+    } catch (e) {
+      console.log(e);
+      feeding = false;
+    }
+    await fetchUserData();
+    feeding = false;
   };
 
   const hatch = async () => {
@@ -103,8 +100,10 @@
       await hatchtx.wait();
     } catch (e) {
       console.log(e);
+      hatching = false;
     }
-    await fetchUserData().then((hatching = false));
+    await fetchUserData();
+    hatching = false;
   };
 </script>
 
@@ -134,15 +133,19 @@
       />
     </div>
     <div class="buttons" style="margin-top:8px">
-      <div
-        class={`button-small ${
-          funghiAmount > 0 && totalLarva > 0 ? "green" : ""
-        }`}
-        on:click={feedLarva}
-      >
-        feed larva
-      </div>
-      <div class="detail">-> for better ants</div>
+      {#if !feeding}
+        <div
+          class={`button-small ${
+            funghiAmount > 0 && totalLarva > 0 ? "green" : ""
+          }`}
+          on:click={feedLarva}
+        >
+          feed larva
+        </div>
+        <div class="detail">-> for better ants</div>
+      {:else}
+        <p class="notification">Feeding larvae...</p>
+      {/if}
     </div>
     <div class="buttons">
       {#if !hatching}
@@ -156,7 +159,7 @@
         </div>
         <div class="detail">-> to get new ants</div>
       {:else}
-        <p style="width:100;">Hatching new ants...</p>
+        <p class="notification">Hatching new ants...</p>
       {/if}
     </div>
   </main>

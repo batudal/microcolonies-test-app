@@ -7,14 +7,7 @@
     networkSigner,
   } from "../../Stores/Network";
   import { ethers } from "ethers";
-  import {
-    abiWorker,
-    abiFunghi,
-    abiQueen,
-    abiLarva,
-    abiANT,
-    abiFeromon,
-  } from "../../Stores/ABIs";
+  import { abiFunghi, abiQueen, abiANT, abiFeromon } from "../../Stores/ABIs";
 
   export let addr;
 
@@ -22,8 +15,13 @@
   let queens = [];
   let queenLevels = [];
   let queenEggs = [];
+  let queenEnergys = [];
   let feromonAmount;
+  let funghiAmount;
   let eggsLayable = 0;
+  let feeding = false;
+  let claiming = false;
+  let upgrading = false;
 
   $: $userConnected ? fetchUserData() : "";
 
@@ -43,29 +41,29 @@
       feromonAmount = await feromonContract.balanceOf($userAddress);
       feromonAmount = parseInt(ethers.utils.formatEther(feromonAmount));
 
+      const funghiContract = new ethers.Contract(
+        addr.contractFunghi,
+        abiFunghi,
+        $networkProvider
+      );
+      funghiAmount = parseInt(
+        ethers.utils.formatEther(await funghiContract.balanceOf($userAddress))
+      );
+
       for (let i = 0; i < queens.length; i++) {
         queenLevels[i] = await queenContract.idToLevel(queens[i]);
-        queenEggs[i] = await queenContract.eggsFormula(queens[i]);
-        queenEggs[i] -= await queenContract.idToEggs(queens[i]);
+        queenEggs[i] =
+          (await queenContract.eggsFormula(queens[i])) -
+          (await queenContract.idToEggs(queens[i]));
+        queenEnergys[i] = await queenContract.getEnergy(queens[i]);
       }
-      await isEggsLayable();
     }
   };
   setInterval(() => {
     fetchUserData();
   }, 10000);
-
-  const isEggsLayable = async () => {
-    if ($userConnected) {
-      eggsLayable = 0;
-      for (let i = 0; i < queenEggs.length; i++) {
-        if (queenEggs[i] > 0) {
-          eggsLayable = eggsLayable + parseInt(queenEggs[i]);
-        }
-      }
-    }
-  };
   const feedQueen = async () => {
+    feeding = true;
     const funghiContract = new ethers.Contract(
       addr.contractFunghi,
       abiFunghi,
@@ -77,11 +75,16 @@
       )
     );
     if (approved < queenInput * 240) {
-      const approval = await funghiContract.approve(
-        addr.contractAnt,
-        ethers.constants.MaxUint256
-      );
-      await approval.wait();
+      try {
+        const approval = await funghiContract.approve(
+          addr.contractAnt,
+          ethers.constants.MaxUint256
+        );
+        await approval.wait();
+      } catch (e) {
+        console.log(e);
+        feeding = false;
+      }
     }
     if (eggsLayable > 0) {
       await layEggs();
@@ -91,7 +94,14 @@
       abiANT,
       $networkSigner
     );
-    await antContract.feedQueen(queenInput);
+    try {
+      await antContract.feedQueen(queenInput);
+    } catch (e) {
+      console.log(e);
+      feeding = false;
+    }
+    await fetchUserData();
+    feeding = false;
   };
   const layEggs = async () => {
     const antContract = new ethers.Contract(
@@ -103,23 +113,6 @@
     await tx.wait();
   };
   const queenLevelUp = async () => {
-    const feromonContract = new ethers.Contract(
-      addr.contractFeromon,
-      abiFeromon,
-      $networkSigner
-    );
-    const approved = parseFloat(
-      ethers.utils.formatEther(
-        await feromonContract.allowance($userAddress, addr.contractAnt)
-      )
-    );
-    if (approved < 100) {
-      const approval = await feromonContract.approve(
-        addr.contractAnt,
-        ethers.constants.MaxUint256
-      );
-      await approval.wait();
-    }
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,
@@ -138,7 +131,7 @@
   <main class="card">
     {#each queens as queen, index}
       <Line
-        title={`Queen #${queen}`}
+        title={`Queen #${queen} (${queenEnergys[index]}% energy)`}
         value={`Level ${queenLevels[index]} -> ${queenEggs[index]} Larvae`}
       />
     {/each}
@@ -154,35 +147,45 @@
       style="margin-top:8px"
     />
     <div class="buttons" style="margin-top:8px">
-      <div
-        class={`button-small ${
-          eggsLayable > 0 && queenEggs.length > 0 ? "green" : ""
-        }`}
-        on:click={feedQueen}
-      >
-        feed queen
-      </div>
-      <div class="detail">-> to increase her fertility</div>
+      {#if feeding}
+        <p class="notification">Feeding queen...</p>
+      {:else}
+        <div
+          class={`button-small ${funghiAmount > 1200 ? "green" : ""}`}
+          on:click={feedQueen}
+        >
+          feed queen
+        </div>
+        <div class="detail">-> to increase her fertility</div>
+      {/if}
     </div>
     <div class="buttons">
-      <div
-        class={`button-small ${eggsLayable > 0 ? "green" : ""}`}
-        on:click={layEggs}
-      >
-        claim larvae
-      </div>
-      <div class="detail">-> to mint larva</div>
+      {#if claiming}
+        <p class="notification">Claiming larvae...</p>
+      {:else}
+        <div
+          class={`button-small ${eggsLayable > 0 ? "green" : ""}`}
+          on:click={layEggs}
+        >
+          claim larvae
+        </div>
+        <div class="detail">-> to mint larva</div>
+      {/if}
     </div>
     <div class="buttons">
-      <div
-        class={`button-small ${
-          queens.length > 0 && feromonAmount > 100 ? "green" : ""
-        }`}
-        on:click={queenLevelUp}
-      >
-        upgrade queen
-      </div>
-      <div class="detail">-> to level her up</div>
+      {#if upgrading}
+        <p class="notification">Upgrading queen...</p>
+      {:else}
+        <div
+          class={`button-small ${
+            queens.length > 0 && feromonAmount > 100 ? "green" : ""
+          }`}
+          on:click={queenLevelUp}
+        >
+          upgrade queen
+        </div>
+        <div class="detail">-> to level her up</div>
+      {/if}
     </div>
   </main>
 </div>

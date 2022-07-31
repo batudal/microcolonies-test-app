@@ -3,11 +3,9 @@
     networkSigner,
     networkProvider,
     userConnected,
-    userAddress,
   } from "../Stores/Network";
-  import { Contract, ethers } from "ethers";
+  import { Contract } from "ethers";
   import { abiTournament, abiTournamentFactory } from "../Stores/ABIs";
-  import { onMount } from "svelte";
 
   let title;
   let participants = "";
@@ -17,11 +15,7 @@
   let tournamentDuration;
   let userTournaments = [];
   let titles = [];
-  let factoryAddress = "0x7DECf292E6F5a3fA724d8424fA852A172fB6B049";
-
-  //   onMount(async () => {
-  //     if ($userConnected) getUserTournaments();
-  //   });
+  let factoryAddress = "0x4Bd9eC8af5a92c2f584F1FdB895f4ffDeF9d2240";
 
   $: if ($userConnected) {
     getUserTournaments();
@@ -48,7 +42,7 @@
   };
 
   const getUserTournaments = async () => {
-    titles = [];
+    let _titles = [];
     const tournamentFactory = new Contract(
       factoryAddress,
       abiTournamentFactory,
@@ -61,14 +55,15 @@
         abiTournament,
         $networkProvider
       );
-      let title;
+      let _title;
       try {
-        title = await tournamentContract.tournamentTitle();
+        _title = await tournamentContract.tournamentTitle();
       } catch (e) {
         console.log(e);
-        title = "";
+        _title = "";
       }
-      titles = [...titles, title];
+      _titles = [..._titles, _title];
+      titles = _titles;
     }
   };
 </script>
