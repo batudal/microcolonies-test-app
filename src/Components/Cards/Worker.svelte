@@ -19,6 +19,7 @@
   let missionUpdating = false;
   let nestMissionUpdating = false;
   let claimUpdating = null;
+  let nestClaimUpdating = null;
 
   $: $userConnected ? fetchUserData() : "";
   $: occupiedWorkers = totalWorkers - availableWorkers;
@@ -65,7 +66,7 @@
     nestMissionUpdating = false;
   };
   const claimBlocks = async (index) => {
-    claimUpdating = index;
+    nestClaimUpdating = index;
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,
@@ -76,10 +77,10 @@
       await claimtx.wait();
     } catch (e) {
       console.log(e);
-      claimUpdating = null;
+      nestClaimUpdating = null;
     }
     await fetchUserData();
-    claimUpdating = null;
+    nestClaimUpdating = null;
   };
   const gatherFood = async () => {
     missionUpdating = true;
@@ -180,7 +181,9 @@
     {:else}
       {#each workerMissions as m, i}
         {#if claimUpdating == i}
-          <p class="notification">Transaction in progress...</p>
+          <p class="notification">Claiming funghi...</p>
+        {:else if nestClaimUpdating == i}
+          <p class="notification">Increasing nest capacity...</p>
         {:else if !m.finalized}
           {#if m.missionType == 1}
             <div class="buttons" style="justify-content:space-between;">
@@ -197,7 +200,7 @@
                   class={`button-small green`}
                   on:click={() => claimBlocks(i)}
                 >
-                  claim block
+                  finalize
                 </div>
               {/if}
             </div>

@@ -26,6 +26,8 @@
   let activeSoldierMissions = [];
   let soldierMissionUpdating = false;
   let targetUpdating = null;
+  let soldierHealing = false;
+  let soldierHarvesting = false;
   let acquiredTargets = [];
   let acquiredTargetsNicknames = [];
   let targetLarvae = [];
@@ -175,7 +177,7 @@
     targetUpdating = null;
   };
   const healInfected = async (id) => {
-    targetUpdating = id;
+    soldierHealing = true;
     const soldierContract = new ethers.Contract(
       addr.contractSoldier,
       abiSoldier,
@@ -186,13 +188,13 @@
       await healtx.wait();
     } catch (e) {
       console.log(e);
-      targetUpdating = null;
+      soldierHealing = false;
     }
     await fetchUserData();
-    targetUpdating = null;
+    soldierHealing = false;
   };
   const harvestZombie = async (id) => {
-    targetUpdating = id;
+    soldierHarvesting = true;
     const soldierContract = new ethers.Contract(
       addr.contractSoldier,
       abiSoldier,
@@ -203,9 +205,9 @@
       await harvesttx.wait();
     } catch (e) {
       console.log(e);
-      targetUpdating = null;
+      soldierHarvesting = false;
     }
-    targetUpdating = null;
+    soldierHarvesting = false;
   };
 </script>
 
@@ -247,7 +249,7 @@
       {/if}
     </div>
     <div class="buttons">
-      {#if soldierMissionUpdating}
+      {#if soldierHealing}
         <p class="notification">Healing infected soldiers...</p>
       {:else}
         <div
@@ -260,7 +262,7 @@
       {/if}
     </div>
     <div class="buttons">
-      {#if soldierMissionUpdating}
+      {#if soldierHarvesting}
         <p class="notification">Harvesting zombie...</p>
       {:else}
         <div
@@ -282,7 +284,7 @@
     {:else}
       {#each soldierMissions as m, i}
         {#if targetUpdating == i}
-          <p class="notification">Transaction in progress...</p>
+          <p class="notification">Attacking {acquiredTargetsNicknames[i]}...</p>
         {:else if !m.finalized}
           {#if m.end < now}
             <div style="height:8px" />
