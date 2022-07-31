@@ -156,8 +156,10 @@
       await antContract.findTarget(soldierInput);
     } catch (e) {
       console.log(e);
+      soldierMissionUpdating = null;
     }
-    await fetchUserData().then((claimSoldierUpdating = null));
+    await fetchUserData();
+    soldierMissionUpdating = null;
   };
   const claimLarva = async (id) => {
     targetUpdating = id;
@@ -171,7 +173,8 @@
     } catch (e) {
       console.log(e);
     }
-    await fetchUserData().then((targetUpdating = null));
+    await fetchUserData();
+    targetUpdating = null;
   };
   const retreat = async (id) => {
     targetUpdating = id;
@@ -184,24 +187,41 @@
       await antContract.retreatSoldiers(id);
     } catch (e) {
       console.log(e);
+      targetUpdating = null;
     }
-    await fetchUserData().then((targetUpdating = null));
+    await fetchUserData();
+    targetUpdating = null;
   };
-  const healInfected = async () => {
+  const healInfected = async (id) => {
+    targetUpdating = id;
     const soldierContract = new ethers.Contract(
       addr.contractSoldier,
       abiSoldier,
       $networkSigner
     );
-    await soldierContract.healSoldier(soldierInput);
+    try {
+      await soldierContract.healSoldier(soldierInput);
+    } catch (e) {
+      console.log(e);
+      targetUpdating = null;
+    }
+    await fetchUserData();
+    targetUpdating = null;
   };
-  const harvestZombie = async () => {
+  const harvestZombie = async (id) => {
+    targetUpdating = id;
     const soldierContract = new ethers.Contract(
       addr.contractSoldier,
       abiSoldier,
       $networkSigner
     );
-    await soldierContract.harvestZombie(soldierInput);
+    try {
+      await soldierContract.harvestZombie(soldierInput);
+    } catch (e) {
+      console.log(e);
+      targetUpdating = null;
+    }
+    targetUpdating = null;
   };
 </script>
 
@@ -254,7 +274,7 @@
       >
         harvest zombie
       </div>
-      <div class="detail">-> to stop spread and get $funghi rewards</div>
+      <div class="detail">-> to stop spread</div>
     </div>
     <p class="detail">--------------------------------------------</p>
 
@@ -263,53 +283,44 @@
     </div>
     {#if soldierMissionUpdating}
       <p style="width:100%;">Deploying new mission...</p>
-    {/if}
-    {#if activeSoldierMissions.length == 0 && !targetUpdating}
+    {:else if activeSoldierMissions.length == 0 && !targetUpdating}
       <p style="width:100%;">No active missions.</p>
     {:else}
       {#each soldierMissions as m, i}
-        {#if !m.finalized}
-          {#if targetUpdating != i}
-            {#if m.end < now}
-              <div style="height:8px" />
-              <Line title="Target name:" value={acquiredTargetsNicknames[i]} />
+        {#if targetUpdating == i}
+          <p class="notification">Transaction in progress...</p>
+        {:else if !m.finalized}
+          {#if m.end < now}
+            <div style="height:8px" />
+            <Line title="Target name:" value={acquiredTargetsNicknames[i]} />
 
-              <Line
-                title="Target soldiers:"
-                value={targetSoldiers[i]?.length}
-              />
-              <Line title="Target larvae:" value={targetLarvae[i]?.length} />
-              <p class="detail">--------------------------------------------</p>
+            <Line title="Target soldiers:" value={targetSoldiers[i]?.length} />
+            <Line title="Target larvae:" value={targetLarvae[i]?.length} />
+            <p class="detail">--------------------------------------------</p>
 
-              <div class="buttons">
-                <div
-                  class={`button-small green`}
-                  on:click={() => claimLarva(i)}
-                >
-                  attack
-                </div>
-                <div class="detail">-> for the glory</div>
+            <div class="buttons">
+              <div class={`button-small green`} on:click={() => claimLarva(i)}>
+                attack
               </div>
-              <div class="buttons">
-                <div class={`button-small green`} on:click={() => retreat(i)}>
-                  retreat
-                </div>
-                <div class="detail">-> and waste your time</div>
+              <div class="detail">-> for the glory</div>
+            </div>
+            <div class="buttons">
+              <div class={`button-small green`} on:click={() => retreat(i)}>
+                retreat
               </div>
-            {:else}
-              <div class="buttons" style="justify-content:space-between;">
-                <p>Scout ({m.ids.length} ants)</p>
-                <p>
-                  {m.end > now
-                    ? `${parseInt((m.end - now) / 86400)}d ${parseInt(
-                        ((m.end - now) / 3600) % 24
-                      )}h ${parseInt(((m.end - now) / 60) % 60)}  m`
-                    : ""}
-                </p>
-              </div>
-            {/if}
+              <div class="detail">-> and waste your time</div>
+            </div>
           {:else}
-            <p class="notification">Transaction in progress...</p>
+            <div class="buttons" style="justify-content:space-between;">
+              <p>Scout ({m.ids.length} ants)</p>
+              <p>
+                {m.end > now
+                  ? `${parseInt((m.end - now) / 86400)}d ${parseInt(
+                      ((m.end - now) / 3600) % 24
+                    )}h ${parseInt(((m.end - now) / 60) % 60)}  m`
+                  : ""}
+              </p>
+            </div>
           {/if}
         {/if}
       {/each}

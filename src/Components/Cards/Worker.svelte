@@ -78,8 +78,10 @@
       await expand.wait();
     } catch (e) {
       console.log(e);
+      missionUpdating = false;
     }
-    await fetchUserData().then((missionUpdating = false));
+    await fetchUserData();
+    missionUpdating = false;
   };
   const claimBlocks = async (index) => {
     claimUpdating = index;
@@ -92,8 +94,10 @@
       await antContract.claimAndIncreaseSpace(index);
     } catch (e) {
       console.log(e);
+      claimUpdating = null;
     }
-    await fetchUserData().then((claimUpdating = null));
+    await fetchUserData();
+    claimUpdating = null;
   };
   const gatherFood = async () => {
     missionUpdating = true;
@@ -123,8 +127,10 @@
       await stake.wait();
     } catch (e) {
       console.log(e);
+      missionUpdating = false;
     }
-    await fetchUserData().then((missionUpdating = false));
+    await fetchUserData();
+    missionUpdating = false;
   };
   const claimFunghi = async (index) => {
     claimUpdating = index;
@@ -138,8 +144,10 @@
       await claim.wait();
     } catch (e) {
       console.log(e);
+      claimUpdating = null;
     }
-    await fetchUserData().then((claimUpdating = null));
+    await fetchUserData();
+    claimUpdating = null;
   };
 </script>
 
@@ -195,56 +203,49 @@
     </div>
     {#if missionUpdating}
       <p class="notification">Deploying new mission...</p>
-    {/if}
-    {#if activeWorkerMissions.length == 0 && !missionUpdating}
+    {:else if activeWorkerMissions.length == 0 && !missionUpdating}
       <p style="width:100%;">No active missions.</p>
     {:else}
       {#each workerMissions as m, i}
-        {#if !m.finalized}
+        {#if claimUpdating == i}
+          <p class="notification">Transaction in progress...</p>
+        {:else if !m.finalized}
           {#if m.missionType == 1}
             <div class="buttons" style="justify-content:space-between;">
-              {#if claimUpdating != i}
-                <p>Nest ({m.ids.length} ants)</p>
-                <p>
-                  {m.end > now
-                    ? `${parseInt((m.end - now) / 86400)}d ${parseInt(
-                        ((m.end - now) / 3600) % 24
-                      )}h ${parseInt(((m.end - now) / 60) % 60)}m`
-                    : ""}
-                </p>
-                {#if m.end < now}
-                  <div
-                    class={`button-small green`}
-                    on:click={() => claimBlocks(i)}
-                  >
-                    claim block
-                  </div>
-                {/if}
-              {:else}
-                <p class="notification">Claiming now...</p>
+              <p>Nest ({m.ids.length} ants)</p>
+              <p>
+                {m.end > now
+                  ? `${parseInt((m.end - now) / 86400)}d ${parseInt(
+                      ((m.end - now) / 3600) % 24
+                    )}h ${parseInt(((m.end - now) / 60) % 60)}m`
+                  : ""}
+              </p>
+              {#if m.end < now}
+                <div
+                  class={`button-small green`}
+                  on:click={() => claimBlocks(i)}
+                >
+                  claim block
+                </div>
               {/if}
             </div>
           {:else}
             <div class="buttons" style="justify-content:space-between;">
-              {#if claimUpdating != i}
-                <p>Funghi ({m.ids.length} ants)</p>
-                <p>
-                  {m.end > now
-                    ? `${parseInt((m.end - now) / 86400)}d ${parseInt(
-                        ((m.end - now) / 3600) % 24
-                      )}h ${parseInt(((m.end - now) / 60) % 60)}m`
-                    : ""}
-                </p>
-                {#if m.end < now}
-                  <div
-                    class={`button-small green`}
-                    on:click={() => claimFunghi(i)}
-                  >
-                    claim funghi
-                  </div>
-                {/if}
-              {:else}
-                <p class="notification">Claiming now...</p>
+              <p>Funghi ({m.ids.length} ants)</p>
+              <p>
+                {m.end > now
+                  ? `${parseInt((m.end - now) / 86400)}d ${parseInt(
+                      ((m.end - now) / 3600) % 24
+                    )}h ${parseInt(((m.end - now) / 60) % 60)}m`
+                  : ""}
+              </p>
+              {#if m.end < now}
+                <div
+                  class={`button-small green`}
+                  on:click={() => claimFunghi(i)}
+                >
+                  claim funghi
+                </div>
               {/if}
             </div>
           {/if}
