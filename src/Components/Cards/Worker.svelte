@@ -20,6 +20,7 @@
   let nestMissionUpdating = false;
   let claimUpdating = null;
   let nestClaimUpdating = null;
+  let converting = false;
 
   $: $userConnected ? fetchUserData() : "";
   $: occupiedWorkers = totalWorkers - availableWorkers;
@@ -116,6 +117,24 @@
     await fetchUserData();
     claimUpdating = null;
   };
+  const convertWorker = async () => {
+    converting = true;
+    const antContract = new ethers.Contract(
+      addr.contractAnt,
+      abiANT,
+      $networkSigner
+    );
+    try {
+      const converttx = await antContract.convertFromWorkerToSoldier(
+        workerInput
+      );
+      await converttx.wait();
+    } catch (e) {
+      console.log(e);
+      converting = false;
+    }
+    converting = false;
+  };
 </script>
 
 <div class="container">
@@ -156,6 +175,19 @@
           build
         </div>
         <div class="detail">-> increase nest capacity (10)</div>
+      {/if}
+    </div>
+    <div class="buttons">
+      {#if converting}
+        <p class="notification">Converting worker to soldier...</p>
+      {:else}
+        <div
+          class={`button-small ${availableWorkers > 0 ? "green" : ""}`}
+          on:click={convertWorker}
+        >
+          convert
+        </div>
+        <div class="detail">-> to soldier for 10 feromon each</div>
       {/if}
     </div>
 

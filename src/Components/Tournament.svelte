@@ -15,7 +15,8 @@
   let tournamentDuration;
   let userTournaments = [];
   let titles = [];
-  let factoryAddress = "0x3Dd74d8a5AA137e7f7Cbb2EA085777085cA0E46e";
+  let creating = false;
+  let factoryAddress = "0x90F0960EDc4aC019EaaeC61Cf6F14986dDb6033C";
 
   $: if ($userConnected) {
     getUserTournaments();
@@ -26,19 +27,27 @@
   }, 10000);
 
   const createTournament = async () => {
+    creating = true;
     const tournamentFactory = new Contract(
       factoryAddress,
       abiTournamentFactory,
       $networkSigner
     );
-    await tournamentFactory.createTournament(
-      title,
-      participants.split("\n"),
-      entranceFee,
-      currencyToken,
-      epochDuration,
-      tournamentDuration
-    );
+    try {
+      const createtx = await tournamentFactory.createTournament(
+        title,
+        participants.split("\n"),
+        entranceFee,
+        currencyToken,
+        epochDuration,
+        tournamentDuration
+      );
+      await createtx.wait();
+    } catch (e) {
+      console.log(e);
+      creating = false;
+    }
+    creating = false;
   };
 
   const getUserTournaments = async () => {
@@ -100,10 +109,14 @@
       bind:value={tournamentDuration}
     />
     <div class="buttons" style="margin-top:8px">
-      <div class="button-small" on:click={createTournament}>
-        create tournament
-      </div>
-      <div class="detail">-> do it</div>
+      {#if creating}
+        <p class="notification">Creating new tournament...</p>
+      {:else}
+        <div class="button-small" on:click={createTournament}>
+          create tournament
+        </div>
+        <div class="detail">-> do it</div>
+      {/if}
     </div>
   </main>
   <div style="height: 20px" />
