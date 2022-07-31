@@ -15,7 +15,7 @@
   let tournamentDuration;
   let userTournaments = [];
   let titles = [];
-  let factoryAddress = "0x4Bd9eC8af5a92c2f584F1FdB895f4ffDeF9d2240";
+  let factoryAddress = "0x3Dd74d8a5AA137e7f7Cbb2EA085777085cA0E46e";
 
   $: if ($userConnected) {
     getUserTournaments();

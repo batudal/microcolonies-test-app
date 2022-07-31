@@ -176,7 +176,7 @@
     <div class="header">
       <h3>Worker Missions</h3>
     </div>
-    {#if activeWorkerMissions.length == 0 && !missionUpdating}
+    {#if activeWorkerMissions.length == 0}
       <p style="width:100%;">No active missions.</p>
     {:else}
       {#each workerMissions as m, i}

@@ -140,26 +140,28 @@
         bind:value={nickname}
       />
     {/if}
-    <div class="buttons" style="margin-top:8px">
-      {#if entering}
-        <p class="notification">Entering tournament...</p>
-      {:else if setNickname == ""}
-        <div class={`button-small green`} on:click={enterTournament}>
-          enter tournament
-        </div>
-        <div class="detail">-> let's go</div>
-      {/if}
-    </div>
-    <div class="buttons">
-      {#if boosting}
-        <p class="notification">Using lollipop...</p>
-      {:else if lollipopBalance > 0}
-        <div class={`button-small green`} on:click={activateLollipop}>
-          use lollipop
-        </div>
-        <div class="detail">-> to speed up missions</div>
-      {/if}
-    </div>
+    {#if setNickname == "" || lollipopBalance > 0}
+      <div class="buttons" style="margin-top:8px">
+        {#if entering}
+          <p class="notification">Entering tournament...</p>
+        {:else if setNickname == ""}
+          <div class={`button-small green`} on:click={enterTournament}>
+            enter tournament
+          </div>
+          <div class="detail">-> let's go</div>
+        {/if}
+      </div>
+      <div class="buttons">
+        {#if boosting}
+          <p class="notification">Using lollipop...</p>
+        {:else if lollipopBalance > 0}
+          <div class={`button-small green`} on:click={activateLollipop}>
+            use lollipop
+          </div>
+          <div class="detail">-> to speed up missions</div>
+        {/if}
+      </div>
+    {/if}
   </main>
 </div>
 

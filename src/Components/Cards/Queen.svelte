@@ -18,7 +18,7 @@
   let queenEnergys = [];
   let feromonAmount;
   let funghiAmount;
-  let eggsLayable = 0;
+  let totalEggs = 0;
   let feeding = false;
   let claiming = false;
   let upgrading = false;
@@ -50,13 +50,16 @@
         ethers.utils.formatEther(await funghiContract.balanceOf($userAddress))
       );
 
+      let _totalEggs = 0;
       for (let i = 0; i < queens.length; i++) {
         queenLevels[i] = await queenContract.idToLevel(queens[i]);
         queenEggs[i] =
           (await queenContract.eggsFormula(queens[i])) -
           (await queenContract.idToEggs(queens[i]));
+        _totalEggs += queenEggs[i];
         queenEnergys[i] = await queenContract.getEnergy(queens[i]);
       }
+      totalEggs = _totalEggs;
     }
   };
   setInterval(() => {
@@ -64,38 +67,14 @@
   }, 10000);
   const feedQueen = async () => {
     feeding = true;
-    const funghiContract = new ethers.Contract(
-      addr.contractFunghi,
-      abiFunghi,
-      $networkSigner
-    );
-    const approved = parseFloat(
-      ethers.utils.formatEther(
-        await funghiContract.allowance($userAddress, addr.contractAnt)
-      )
-    );
-    if (approved < queenInput * 240) {
-      try {
-        const approval = await funghiContract.approve(
-          addr.contractAnt,
-          ethers.constants.MaxUint256
-        );
-        await approval.wait();
-      } catch (e) {
-        console.log(e);
-        feeding = false;
-      }
-    }
-    if (eggsLayable > 0) {
-      await layEggs();
-    }
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,
       $networkSigner
     );
     try {
-      await antContract.feedQueen(queenInput);
+      const feedtx = await antContract.feedQueen(queenInput);
+      await feedtx.wait();
     } catch (e) {
       console.log(e);
       feeding = false;
@@ -104,21 +83,36 @@
     feeding = false;
   };
   const layEggs = async () => {
+    claiming = true;
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,
       $networkSigner
     );
-    const tx = await antContract.layEggs(queenInput);
-    await tx.wait();
+    try {
+      const tx = await antContract.layEggs(queenInput);
+      await tx.wait();
+    } catch (e) {
+      console.log(e);
+      claiming = false;
+    }
+    claiming = false;
   };
   const queenLevelUp = async () => {
+    upgrading = true;
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,
       $networkSigner
     );
-    await antContract.queenLevelUp(queenInput);
+    try {
+      const leveltx = await antContract.queenLevelUp(queenInput);
+      await leveltx.wait();
+    } catch (e) {
+      console.log(e);
+      upgrading = false;
+    }
+    upgrading = false;
   };
 </script>
 
@@ -156,7 +150,7 @@
         >
           feed queen
         </div>
-        <div class="detail">-> to increase her fertility</div>
+        <div class="detail">-> also claims larvae</div>
       {/if}
     </div>
     <div class="buttons">
@@ -164,7 +158,7 @@
         <p class="notification">Claiming larvae...</p>
       {:else}
         <div
-          class={`button-small ${eggsLayable > 0 ? "green" : ""}`}
+          class={`button-small ${totalEggs > 0 ? "green" : ""}`}
           on:click={layEggs}
         >
           claim larvae
@@ -184,7 +178,7 @@
         >
           upgrade queen
         </div>
-        <div class="detail">-> to level her up</div>
+        <div class="detail">-> also claims & feeds</div>
       {/if}
     </div>
   </main>

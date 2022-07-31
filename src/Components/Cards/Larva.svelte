@@ -68,18 +68,14 @@
 
   const feedLarva = async () => {
     feeding = true;
-    const funghiContract = new ethers.Contract(
-      addr.contractFunghi,
-      abiFunghi,
-      $networkSigner
-    );
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,
       $networkSigner
     );
     try {
-      await antContract.feedLarva(larvaInput);
+      const feedtx = await antContract.feedLarva(larvaInput);
+      await feedtx.wait();
     } catch (e) {
       console.log(e);
       feeding = false;

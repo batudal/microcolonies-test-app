@@ -26,6 +26,7 @@
   let activeSoldierMissions = [];
   let soldierMissionUpdating = false;
   let targetUpdating = null;
+  let retreatUpdating = null;
   let soldierHealing = false;
   let soldierHarvesting = false;
   let acquiredTargets = [];
@@ -160,7 +161,7 @@
     targetUpdating = null;
   };
   const retreat = async (id) => {
-    targetUpdating = id;
+    retreatUpdating = id;
     const antContract = new ethers.Contract(
       addr.contractAnt,
       abiANT,
@@ -171,10 +172,10 @@
       await retreattx.wait();
     } catch (e) {
       console.log(e);
-      targetUpdating = null;
+      retreatUpdating = null;
     }
     await fetchUserData();
-    targetUpdating = null;
+    retreatUpdating = null;
   };
   const healInfected = async (id) => {
     soldierHealing = true;
@@ -279,12 +280,16 @@
     <div class="header">
       <h3>Soldier Missions</h3>
     </div>
-    {#if activeSoldierMissions.length == 0 && !targetUpdating}
+    {#if activeSoldierMissions.length == 0}
       <p style="width:100%;">No active missions.</p>
     {:else}
       {#each soldierMissions as m, i}
         {#if targetUpdating == i}
           <p class="notification">Attacking {acquiredTargetsNicknames[i]}...</p>
+        {:else if retreatUpdating == i}
+          <p class="notification">
+            Leaving {acquiredTargetsNicknames[i]} alone...
+          </p>
         {:else if !m.finalized}
           {#if m.end < now}
             <div style="height:8px" />
