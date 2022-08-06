@@ -27,7 +27,7 @@
     <div class="container">
       <First {addr} tournament={params.tournament} />
       <Second {addr} tournament={params.tournament} />
-      <Third {addr} />
+      <Third {addr} tournament={params.tournament}/>
       <div style="height: 120px; width:100%" />
     </div>
   {:catch error}

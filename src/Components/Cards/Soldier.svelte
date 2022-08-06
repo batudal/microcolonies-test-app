@@ -125,7 +125,7 @@
   let now;
   setInterval(() => {
     now = parseInt(Date.now()) / 1000;
-  });
+  },1000);
 
   const sendToRaid = async () => {
     soldierMissionUpdating = true;

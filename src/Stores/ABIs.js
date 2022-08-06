@@ -74,7 +74,7 @@ export const abiANT = [
     inputs: [
       {
         internalType: "uint256",
-        name: "_index",
+        name: "_amount",
         type: "uint256",
       },
     ],
@@ -213,6 +213,19 @@ export const abiANT = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "getNextSeason",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "address",
@@ -238,6 +251,19 @@ export const abiANT = [
       {
         internalType: "uint256",
         name: "count",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getSeasonBonus",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "bonus",
         type: "uint256",
       },
     ],
@@ -348,6 +374,16 @@ export const abiANT = [
         internalType: "address",
         name: "_feromonAddress",
         type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_tournamentDuration",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_startDate",
+        type: "uint256",
       },
     ],
     name: "initialize",
@@ -644,6 +680,19 @@ export const abiANT = [
         internalType: "contract ISoldierANT",
         name: "",
         type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "tournamentDuration",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -8133,6 +8182,11 @@ export const abiTournamentFactory = [
         name: "tournamentDuration",
         type: "uint256",
       },
+      {
+        internalType: "uint256",
+        name: "startDate",
+        type: "uint256",
+      },
     ],
     name: "createTournament",
     outputs: [],
@@ -8157,9 +8211,9 @@ export const abiTournamentFactory = [
     name: "getUserTournaments",
     outputs: [
       {
-        internalType: "uint256[]",
+        internalType: "address[]",
         name: "",
-        type: "uint256[]",
+        type: "address[]",
       },
     ],
     stateMutability: "view",
@@ -8219,9 +8273,9 @@ export const abiTournamentFactory = [
     name: "userTournaments",
     outputs: [
       {
-        internalType: "uint256",
+        internalType: "address",
         name: "",
-        type: "uint256",
+        type: "address",
       },
     ],
     stateMutability: "view",

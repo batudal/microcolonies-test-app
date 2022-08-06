@@ -27,6 +27,14 @@
   let setNickname;
   let entering = false;
   let boosting = false;
+  let startDate = 0;
+
+  $: secondsUntilStart = startDate - now;
+
+  let now;
+  setInterval(() => {
+    now = parseInt(Date.now() / 1000);
+  },1000);
 
   const fetchUserData = async () => {
     if ($userConnected) {
@@ -65,6 +73,7 @@
         $networkProvider
       );
       setNickname = await tournamentContract.getNickname($userAddress);
+      startDate = parseInt(await tournamentContract.startDate());
     }
   };
   setInterval(() => {
@@ -116,7 +125,11 @@
     </div>
   {:else}
     <div class="header">
-      <h3>GENESIS ROUND</h3>
+      <h3>{`${secondsUntilStart > 0 ? 
+        parseInt(secondsUntilStart / 3600) + "H " + 
+        parseInt(secondsUntilStart / 60) % 60 + "M " + 
+        parseInt(secondsUntilStart % 60) + "S UNTIL START" 
+        : "YOU MAY ENTER ANON"}`}</h3>
     </div>
   {/if}
   <div style="height:8px" />

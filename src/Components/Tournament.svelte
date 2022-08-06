@@ -1,9 +1,5 @@
 <script>
-  import {
-    networkSigner,
-    networkProvider,
-    userConnected,
-  } from "../Stores/Network";
+  import { networkSigner, networkProvider, userConnected } from "../Stores/Network";
   import { Contract } from "ethers";
   import { abiTournament, abiTournamentFactory } from "../Stores/ABIs";
 
@@ -16,7 +12,8 @@
   let userTournaments = [];
   let titles = [];
   let creating = false;
-  let factoryAddress = "0x90F0960EDc4aC019EaaeC61Cf6F14986dDb6033C";
+  let factoryAddress = "0xC5793f32BE606A58E6431729Abb0fd3abfDbb4D6";
+  let startDate = "";
 
   $: if ($userConnected) {
     getUserTournaments();
@@ -28,11 +25,7 @@
 
   const createTournament = async () => {
     creating = true;
-    const tournamentFactory = new Contract(
-      factoryAddress,
-      abiTournamentFactory,
-      $networkSigner
-    );
+    const tournamentFactory = new Contract(factoryAddress, abiTournamentFactory, $networkSigner);
     try {
       const createtx = await tournamentFactory.createTournament(
         title,
@@ -40,7 +33,8 @@
         entranceFee,
         currencyToken,
         epochDuration,
-        tournamentDuration
+        tournamentDuration,
+        startDate
       );
       await createtx.wait();
     } catch (e) {
@@ -52,18 +46,10 @@
 
   const getUserTournaments = async () => {
     let _titles = [];
-    const tournamentFactory = new Contract(
-      factoryAddress,
-      abiTournamentFactory,
-      $networkSigner
-    );
+    const tournamentFactory = new Contract(factoryAddress, abiTournamentFactory, $networkSigner);
     userTournaments = await tournamentFactory.getUserTournaments();
     for (let i = 0; i < userTournaments.length; i++) {
-      const tournamentContract = new Contract(
-        userTournaments[i]._hex,
-        abiTournament,
-        $networkProvider
-      );
+      const tournamentContract = new Contract(userTournaments[i], abiTournament, $networkProvider);
       let _title;
       try {
         _title = await tournamentContract.tournamentTitle();
@@ -93,28 +79,15 @@
       bind:value={participants}
     />
     <input type="text" placeholder="Entrance Fee" bind:value={entranceFee} />
-    <input
-      type="text"
-      placeholder="Currency Token"
-      bind:value={currencyToken}
-    />
-    <input
-      type="text"
-      placeholder="Epoch Duration"
-      bind:value={epochDuration}
-    />
-    <input
-      type="text"
-      placeholder="Tournament Duration"
-      bind:value={tournamentDuration}
-    />
+    <input type="text" placeholder="Currency Token" bind:value={currencyToken} />
+    <input type="text" placeholder="Epoch Duration" bind:value={epochDuration} />
+    <input type="text" placeholder="Tournament Duration" bind:value={tournamentDuration} />
+    <input type="text" placeholder="Starting Date (unix seconds)" bind:value={startDate} />
     <div class="buttons" style="margin-top:8px">
       {#if creating}
         <p class="notification">Creating new tournament...</p>
       {:else}
-        <div class="button-small" on:click={createTournament}>
-          create tournament
-        </div>
+        <div class="button-small" on:click={createTournament}>create tournament</div>
         <div class="detail">-> do it</div>
       {/if}
     </div>
@@ -125,7 +98,7 @@
       <div style="height:8px" />
       <div class="tournaments">
         <p class="small">{titles[i]}</p>
-        <a href="#/dashboard/{t?._hex}">
+        <a href="#/dashboard/{t}">
           <div class="button-small">enter tournament</div>
         </a>
       </div>

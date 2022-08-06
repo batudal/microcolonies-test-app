@@ -1,11 +1,6 @@
 <script>
   import Line from "../UI/Line.svelte";
-  import {
-    userConnected,
-    userAddress,
-    networkProvider,
-    networkSigner,
-  } from "../../Stores/Network";
+  import { userConnected, userAddress, networkProvider, networkSigner } from "../../Stores/Network";
   import { ethers } from "ethers";
   import { abiPrincess, abiANT, abiMale } from "../../Stores/ABIs";
 
@@ -20,28 +15,34 @@
   let activePrincessMissions = [];
   let mating = false;
   let claiming = false;
+  let nextSeason;
+  let matingSeason = false;
+  let tillNext;
+
+  setInterval(() => {
+    tillNext -= 1;
+  }, 1000);
 
   const fetchUserData = async () => {
     if ($userConnected) {
-      const princessContract = new ethers.Contract(
-        addr.contractPrincess,
-        abiPrincess,
-        $networkProvider
-      );
+      const princessContract = new ethers.Contract(addr.contractPrincess, abiPrincess, $networkProvider);
       princessMissions = await princessContract.getMissions($userAddress);
       activePrincessMissions = princessMissions.filter((w) => !w.finalized);
-      princessBalance = (await princessContract.getPrincesses($userAddress))
-        .length;
-      claimableQueens = (
-        await princessContract.getMatedPrincesses($userAddress)
-      ).length;
+      princessBalance = (await princessContract.getPrincesses($userAddress)).length;
+      claimableQueens = (await princessContract.getMatedPrincesses($userAddress)).length;
 
-      const maleContract = new ethers.Contract(
-        addr.contractMale,
-        abiMale,
-        $networkProvider
-      );
+      const maleContract = new ethers.Contract(addr.contractMale, abiMale, $networkProvider);
       maleBalance = (await maleContract.getMales($userAddress)).length;
+
+      const antContract = new ethers.Contract(addr.contractAnt, abiANT, $networkSigner);
+      let bonus = parseInt(await antContract.getSeasonBonus());
+      console.log("Bonus:", bonus);
+      if (bonus == 60) {
+        matingSeason = true;
+      } else {
+        matingSeason = false;
+      }
+      tillNext = parseInt(await antContract.getNextSeason());
     }
   };
   setInterval(() => {
@@ -55,11 +56,7 @@
 
   const mate = async () => {
     mating = true;
-    const antContract = new ethers.Contract(
-      addr.contractAnt,
-      abiANT,
-      $networkSigner
-    );
+    const antContract = new ethers.Contract(addr.contractAnt, abiANT, $networkSigner);
     try {
       const matetx = await antContract.mateMalePrincess();
       await matetx.wait();
@@ -71,11 +68,7 @@
   };
   const claimQueen = async (index) => {
     claiming = true;
-    const antContract = new ethers.Contract(
-      addr.contractAnt,
-      abiANT,
-      $networkSigner
-    );
+    const antContract = new ethers.Contract(addr.contractAnt, abiANT, $networkSigner);
     try {
       const claimtx = await antContract.claimQueen(index);
       await claimtx.wait();
@@ -91,6 +84,11 @@
   <div style="height:24px" />
   <div class="header">
     <h3>PRINCESS & DRONE ANTS</h3>
+    <p class="detail">
+      {matingSeason
+        ? "it's mating season! ❤️❤️❤️"
+        : `${parseInt(tillNext / 3600) + "h " + parseInt((tillNext / 60) % 60) + "m "}till next season`}
+    </p>
   </div>
   <div style="height:8px" />
   <main class="card">
@@ -98,20 +96,14 @@
     <Line title="Total princesses" value={princessBalance} />
     <Line title="Claimable queens" value={claimableQueens} />
     <p class="detail">--------------------------------------------</p>
-    <p class="detail">
-      Burn a pair of male & princess to mate them. Mating takes 1 day and mints
-      a Queen Ant.
-    </p>
+    <p class="detail">Burn a pair of male & princess to mate them. Mating takes 1 day and mints a Queen Ant.</p>
     <div class="buttons" style="margin-top:8px">
       {#if mating}
         <p class="notification">Initiating mating session...</p>
       {:else}
         <div
           class={`button-small ${
-            (princessBalance - matingPrincesses &&
-              maleBalance - matingPrincesses) > 0
-              ? "green"
-              : ""
+            (princessBalance - matingPrincesses && maleBalance - matingPrincesses) > 0 ? "green" : ""
           }`}
           on:click={mate}
         >
@@ -135,17 +127,12 @@
             <p>
               Mission #{i + 1}
               {m.end > now
-                ? `- ${parseInt((m.end - now) / 86400)}d ${parseInt(
-                    ((m.end - now) / 3600) % 24
-                  )}h ${parseInt(((m.end - now) / 60) % 60)}m`
+                ? `- ${parseInt((m.end - now) / 86400)}d ${parseInt(((m.end - now) / 3600) % 24)}h ${parseInt(
+                    ((m.end - now) / 60) % 60
+                  )}m`
                 : ""}
             </p>
-            <div
-              class={`button-small ${now > m.end ? "green" : ""}`}
-              on:click={() => claimQueen(i)}
-            >
-              claim
-            </div>
+            <div class={`button-small ${now > m.end ? "green" : ""}`} on:click={() => claimQueen(i)}>claim</div>
           </div>
         {/if}
       {/each}
@@ -161,5 +148,10 @@
     align-items: center;
     justify-content: flex-start;
     max-width: 320px;
+  }
+  .header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
   }
 </style>
