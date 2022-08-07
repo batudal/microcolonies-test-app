@@ -96,7 +96,7 @@
     scoreboard.sort((a, b) => b.value - a.value);
   };
   const getFeromonBalance = async (user) => {
-    const feromonContract = new ethers.Contract(addr.feromon, abiFeromon, $networkProvider);
+    const feromonContract = new ethers.Contract(addr.contractFeromon, abiFeromon, $networkProvider);
     const userBalance = ethers.utils.formatEther(await feromonContract.balanceOf(user));
     return userBalance;
   };
@@ -117,7 +117,7 @@
     balance += await getWorkerPopulation(user);
     balance += await getSoldierPopulation(user);
     balance += await getQueenPopulation(user);
-    balance += await getLarvaPopulation(user);
+    // balance += await getLarvaPopulation(user);
     balance += await getMalePopulation(user);
     balance += await getPrincessPopulation(user);
     return balance;
@@ -165,27 +165,27 @@
     scoreboard.sort((a, b) => b.value - a.value);
   };
   const getLarvaPopulation = async (user) => {
-    const larvaContract = new ethers.Contract(addr.larva, abiLarva, $networkProvider);
+    const larvaContract = new ethers.Contract(addr.contractLarva, abiLarva, $networkProvider);
     return (await larvaContract.getLarvae(user)).length;
   };
   const getQueenPopulation = async (user) => {
-    const queenContract = new ethers.Contract(addr.queen, abiQueen, $networkProvider);
+    const queenContract = new ethers.Contract(addr.contractQueen, abiQueen, $networkProvider);
     return (await queenContract.getQueens(user)).length;
   };
   const getWorkerPopulation = async (user) => {
-    const workerContract = new ethers.Contract(addr.worker, abiWorker, $networkProvider);
+    const workerContract = new ethers.Contract(addr.contractWorker, abiWorker, $networkProvider);
     return (await workerContract.getWorkers(user)).length;
   };
   const getSoldierPopulation = async (user) => {
-    const soldierContract = new ethers.Contract(addr.soldier, abiSoldier, $networkProvider);
+    const soldierContract = new ethers.Contract(addr.contractSoldier, abiSoldier, $networkProvider);
     return (await soldierContract.getSoldiers(user)).length;
   };
   const getMalePopulation = async (user) => {
-    const maleContract = new ethers.Contract(addr.male, abiMale, $networkProvider);
+    const maleContract = new ethers.Contract(addr.contractMale, abiMale, $networkProvider);
     return (await maleContract.getMales(user)).length;
   };
   const getPrincessPopulation = async (user) => {
-    const princessContract = new ethers.Contract(addr.princess, abiPrincess, $networkProvider);
+    const princessContract = new ethers.Contract(addr.contractPrincess, abiPrincess, $networkProvider);
     return (await princessContract.getPrincesses(user)).length;
   };
 </script>
