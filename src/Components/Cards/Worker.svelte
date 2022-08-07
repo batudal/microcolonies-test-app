@@ -143,7 +143,7 @@
         <p class="notification">Metamorphosing into soldier...</p>
       {:else}
         <div class={`button-small ${availableWorkers > 0 ? "green" : ""}`} on:click={convertWorker}>metamorphose</div>
-        <div class="detail">-> into soldier (-10 feromon)</div>
+        <div class="detail">-> into soldier (-10fer)</div>
       {/if}
     </div>
 

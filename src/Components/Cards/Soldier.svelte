@@ -1,18 +1,8 @@
 <script>
   import Line from "../UI/Line.svelte";
-  import {
-    userConnected,
-    userAddress,
-    networkProvider,
-    networkSigner,
-  } from "../../Stores/Network";
+  import { userConnected, userAddress, networkProvider, networkSigner } from "../../Stores/Network";
   import { ethers } from "ethers";
-  import {
-    abiSoldier,
-    abiANT,
-    abiLarva,
-    abiTournament,
-  } from "../../Stores/ABIs";
+  import { abiSoldier, abiANT, abiLarva, abiTournament } from "../../Stores/ABIs";
 
   export let addr;
   export let tournament;
@@ -41,22 +31,12 @@
   }
 
   const fetchTargetData = async (targets) => {
-    const larvaContract = new ethers.Contract(
-      addr.contractLarva,
-      abiLarva,
-      $networkProvider
-    );
-    const soldierContract = new ethers.Contract(
-      addr.contractSoldier,
-      abiSoldier,
-      $networkProvider
-    );
+    const larvaContract = new ethers.Contract(addr.contractLarva, abiLarva, $networkProvider);
+    const soldierContract = new ethers.Contract(addr.contractSoldier, abiSoldier, $networkProvider);
     for (let i = 0; i < targets.length; i++) {
       if (targets[i] != "") {
         targetLarvae[i] = await larvaContract.getLarvae(targets[i]);
-        targetSoldiers[i] = await soldierContract.getAvailableSoldiers(
-          targets[i]
-        );
+        targetSoldiers[i] = await soldierContract.getAvailableSoldiers(targets[i]);
       } else {
         targetLarvae[i] = [];
         targetSoldiers[i] = [];
@@ -65,26 +45,14 @@
   };
 
   const fetchUserData = async () => {
-    const soldierContract = new ethers.Contract(
-      addr.contractSoldier,
-      abiSoldier,
-      $networkProvider
-    );
+    const soldierContract = new ethers.Contract(addr.contractSoldier, abiSoldier, $networkProvider);
     totalSoldiers = (await soldierContract.getSoldiers($userAddress)).length;
-    availableSoldiers = (
-      await soldierContract.getAvailableSoldiers($userAddress)
-    ).length;
-    zombieSoldiers = (await soldierContract.getZombieSoldiers($userAddress))
-      .length;
-    infectedSoldiers = (await soldierContract.getInfectedSoldiers($userAddress))
-      .length;
+    availableSoldiers = (await soldierContract.getAvailableSoldiers($userAddress)).length;
+    zombieSoldiers = (await soldierContract.getZombieSoldiers($userAddress)).length;
+    infectedSoldiers = (await soldierContract.getInfectedSoldiers($userAddress)).length;
     soldierMissions = await soldierContract.getMissions($userAddress);
     activeSoldierMissions = soldierMissions.filter((x) => !x.finalized);
-    const antContract = new ethers.Contract(
-      addr.contractAnt,
-      abiANT,
-      $networkSigner
-    );
+    const antContract = new ethers.Contract(addr.contractAnt, abiANT, $networkSigner);
     let _acquiredTargets = [];
     let _acquiredTargetsNicknames = [];
     for (let i = 0; i < soldierMissions.length; i++) {
@@ -93,11 +61,7 @@
           let reveal = await antContract.revealTarget(i);
           let nickname;
           try {
-            const tournamentContract = new ethers.Contract(
-              tournament,
-              abiTournament,
-              $networkSigner
-            );
+            const tournamentContract = new ethers.Contract(tournament, abiTournament, $networkSigner);
             nickname = await tournamentContract.getNickname(reveal);
           } catch (e) {
             console.log(e);
@@ -125,15 +89,11 @@
   let now;
   setInterval(() => {
     now = parseInt(Date.now()) / 1000;
-  },1000);
+  }, 1000);
 
   const sendToRaid = async () => {
     soldierMissionUpdating = true;
-    const antContract = new ethers.Contract(
-      addr.contractAnt,
-      abiANT,
-      $networkSigner
-    );
+    const antContract = new ethers.Contract(addr.contractAnt, abiANT, $networkSigner);
     try {
       const findtx = await antContract.findTarget(soldierInput);
       await findtx.wait();
@@ -146,11 +106,7 @@
   };
   const claimLarva = async (id) => {
     targetUpdating = id;
-    const antContract = new ethers.Contract(
-      addr.contractAnt,
-      abiANT,
-      $networkSigner
-    );
+    const antContract = new ethers.Contract(addr.contractAnt, abiANT, $networkSigner);
     try {
       const claimtx = await antContract.claimStolenLarvae(id);
       await claimtx.wait();
@@ -162,11 +118,7 @@
   };
   const retreat = async (id) => {
     retreatUpdating = id;
-    const antContract = new ethers.Contract(
-      addr.contractAnt,
-      abiANT,
-      $networkSigner
-    );
+    const antContract = new ethers.Contract(addr.contractAnt, abiANT, $networkSigner);
     try {
       const retreattx = await antContract.retreatSoldiers(id);
       await retreattx.wait();
@@ -179,11 +131,7 @@
   };
   const healInfected = async (id) => {
     soldierHealing = true;
-    const soldierContract = new ethers.Contract(
-      addr.contractSoldier,
-      abiSoldier,
-      $networkSigner
-    );
+    const soldierContract = new ethers.Contract(addr.contractSoldier, abiSoldier, $networkSigner);
     try {
       const healtx = await soldierContract.healSoldier(soldierInput);
       await healtx.wait();
@@ -196,11 +144,7 @@
   };
   const harvestZombie = async (id) => {
     soldierHarvesting = true;
-    const soldierContract = new ethers.Contract(
-      addr.contractSoldier,
-      abiSoldier,
-      $networkSigner
-    );
+    const soldierContract = new ethers.Contract(addr.contractSoldier, abiSoldier, $networkSigner);
     try {
       const harvesttx = await soldierContract.harvestZombie(soldierInput);
       await harvesttx.wait();
@@ -227,25 +171,15 @@
 
     <p class="detail">--------------------------------------------</p>
     <p class="detail">
-      You can heal infected soldiers but if you ignore them more than 3 days,
-      they will turn into zombie ants, only to be harvested as $FUNGHI.
+      You can heal infected soldiers but if you ignore them more than 3 days, they will turn into zombie ants, only to
+      be harvested as $FUNGHI.
     </p>
-    <input
-      type="text"
-      placeholder="Amount of Soldiers"
-      bind:value={soldierInput}
-      style="margin-top:8px"
-    />
+    <input type="text" placeholder="Amount of Soldiers" bind:value={soldierInput} style="margin-top:8px" />
     <div class="buttons" style="margin-top:8px">
       {#if soldierMissionUpdating}
         <p class="notification">Deploying scout mission...</p>
       {:else}
-        <div
-          class={`button-small ${availableSoldiers > 0 ? "green" : ""}`}
-          on:click={sendToRaid}
-        >
-          scout
-        </div>
+        <div class={`button-small ${availableSoldiers > 0 ? "green" : ""}`} on:click={sendToRaid}>scout</div>
         <div class="detail">-> find a target</div>
       {/if}
     </div>
@@ -253,12 +187,7 @@
       {#if soldierHealing}
         <p class="notification">Healing infected soldiers...</p>
       {:else}
-        <div
-          class={`button-small ${infectedSoldiers > 0 ? "green" : ""}`}
-          on:click={healInfected}
-        >
-          heal infected
-        </div>
+        <div class={`button-small ${infectedSoldiers > 0 ? "green" : ""}`} on:click={healInfected}>heal infected</div>
         <div class="detail">-> to restore health</div>
       {/if}
     </div>
@@ -266,12 +195,7 @@
       {#if soldierHarvesting}
         <p class="notification">Harvesting zombie...</p>
       {:else}
-        <div
-          class={`button-small ${zombieSoldiers > 0 ? "green" : ""}`}
-          on:click={harvestZombie}
-        >
-          harvest zombie
-        </div>
+        <div class={`button-small ${zombieSoldiers > 0 ? "green" : ""}`} on:click={harvestZombie}>harvest zombie</div>
         <div class="detail">-> to stop spread</div>
       {/if}
     </div>
@@ -300,15 +224,11 @@
             <p class="detail">--------------------------------------------</p>
 
             <div class="buttons">
-              <div class={`button-small green`} on:click={() => claimLarva(i)}>
-                attack
-              </div>
+              <div class={`button-small green`} on:click={() => claimLarva(i)}>attack</div>
               <div class="detail">-> for the glory</div>
             </div>
             <div class="buttons">
-              <div class={`button-small green`} on:click={() => retreat(i)}>
-                retreat
-              </div>
+              <div class={`button-small green`} on:click={() => retreat(i)}>retreat</div>
               <div class="detail">-> and waste your time</div>
             </div>
           {:else}
@@ -316,9 +236,9 @@
               <p>Scout ({m.ids.length} ants)</p>
               <p>
                 {m.end > now
-                  ? `${parseInt((m.end - now) / 86400)}d ${parseInt(
-                      ((m.end - now) / 3600) % 24
-                    )}h ${parseInt(((m.end - now) / 60) % 60)}  m`
+                  ? `${parseInt((m.end - now) / 86400)}d ${parseInt(((m.end - now) / 3600) % 24)}h ${parseInt(
+                      ((m.end - now) / 60) % 60
+                    )}m`
                   : ""}
               </p>
             </div>

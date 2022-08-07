@@ -1,14 +1,8 @@
 <script>
   import { ethers } from "ethers";
-  import { allMinted } from "../Stores/States";
-  import { addr } from "../Stores/Addresses";
-  import Line from "./UI/Line.svelte";
-  import {
-    userConnected,
-    userAddress,
-    networkProvider,
-    networkSigner,
-  } from "../Stores/Network";
+  import { allMinted } from "../../Stores/States";
+  import Line from "../UI/Line.svelte";
+  import { userConnected, userAddress, networkProvider, networkSigner } from "../../Stores/Network";
   import {
     abiFunghi,
     abiFeromon,
@@ -18,21 +12,14 @@
     abiPrincess,
     abiQueen,
     abiLarva,
-  } from "../Stores/ABIs";
+  } from "../../Stores/ABIs";
 
   export let type;
+  export let addr;
+
+  $: console.log("type: ", type);
 
   let scoreboard = [
-    {
-      address: "0xbC1f51b74Ad7754839a1fCB4a86a3E75A6E1F544",
-      title: "hakan: ",
-      value: "",
-    },
-    {
-      address: "0xCa953b66E2372714C2DCF13d0970aBe1077D521D",
-      title: "tolunay: ",
-      value: "",
-    },
     {
       address: "0x6bF075861cC6c478baF22bB0C71179fF5F830cBC",
       title: "umut: ",
@@ -44,18 +31,13 @@
       value: "",
     },
     {
-      address: "0xb9Eb8B4CbdaDBf0eD7a3E65b10F8A31B4a7671eF",
-      title: "ege: ",
-      value: "",
-    },
-    {
-      address: "0xC370b50eC6101781ed1f1690A00BF91cd27D77c4",
-      title: "zeynep: ",
+      address: "0xfB1C2FF46962B452C1731d44F0789bFb3607e63f",
+      title: "batu: ",
       value: "",
     },
     {
       address: "0x187549F02D96d94945f2c4Dd206cF58AEed8EBAE",
-      title: "batu: ",
+      title: "zeynep: ",
       value: "",
     },
     {
@@ -102,14 +84,8 @@
     scoreboard.sort((a, b) => b.value - a.value);
   };
   const getFunghiBalance = async (user) => {
-    const funghiContract = new ethers.Contract(
-      addr.funghi,
-      abiFunghi,
-      $networkProvider
-    );
-    const userBalance = ethers.utils.formatEther(
-      await funghiContract.balanceOf(user)
-    );
+    const funghiContract = new ethers.Contract(addr.contractFunghi, abiFunghi, $networkProvider);
+    const userBalance = ethers.utils.formatEther(await funghiContract.balanceOf(user));
     return userBalance;
   };
   const getFeromonBalances = async () => {
@@ -120,14 +96,8 @@
     scoreboard.sort((a, b) => b.value - a.value);
   };
   const getFeromonBalance = async (user) => {
-    const feromonContract = new ethers.Contract(
-      addr.feromon,
-      abiFeromon,
-      $networkProvider
-    );
-    const userBalance = ethers.utils.formatEther(
-      await feromonContract.balanceOf(user)
-    );
+    const feromonContract = new ethers.Contract(addr.feromon, abiFeromon, $networkProvider);
+    const userBalance = ethers.utils.formatEther(await feromonContract.balanceOf(user));
     return userBalance;
   };
   const getPopulations = async () => {
@@ -195,55 +165,32 @@
     scoreboard.sort((a, b) => b.value - a.value);
   };
   const getLarvaPopulation = async (user) => {
-    const larvaContract = new ethers.Contract(
-      addr.larva,
-      abiLarva,
-      $networkProvider
-    );
+    const larvaContract = new ethers.Contract(addr.larva, abiLarva, $networkProvider);
     return (await larvaContract.getLarvae(user)).length;
   };
   const getQueenPopulation = async (user) => {
-    const queenContract = new ethers.Contract(
-      addr.queen,
-      abiQueen,
-      $networkProvider
-    );
+    const queenContract = new ethers.Contract(addr.queen, abiQueen, $networkProvider);
     return (await queenContract.getQueens(user)).length;
   };
   const getWorkerPopulation = async (user) => {
-    const workerContract = new ethers.Contract(
-      addr.worker,
-      abiWorker,
-      $networkProvider
-    );
+    const workerContract = new ethers.Contract(addr.worker, abiWorker, $networkProvider);
     return (await workerContract.getWorkers(user)).length;
   };
   const getSoldierPopulation = async (user) => {
-    const soldierContract = new ethers.Contract(
-      addr.soldier,
-      abiSoldier,
-      $networkProvider
-    );
+    const soldierContract = new ethers.Contract(addr.soldier, abiSoldier, $networkProvider);
     return (await soldierContract.getSoldiers(user)).length;
   };
   const getMalePopulation = async (user) => {
-    const maleContract = new ethers.Contract(
-      addr.male,
-      abiMale,
-      $networkProvider
-    );
+    const maleContract = new ethers.Contract(addr.male, abiMale, $networkProvider);
     return (await maleContract.getMales(user)).length;
   };
   const getPrincessPopulation = async (user) => {
-    const princessContract = new ethers.Contract(
-      addr.princess,
-      abiPrincess,
-      $networkProvider
-    );
+    const princessContract = new ethers.Contract(addr.princess, abiPrincess, $networkProvider);
     return (await princessContract.getPrincesses(user)).length;
   };
 </script>
 
+<div style="height:24px" />
 <div class="header">
   <h3>
     {type.toUpperCase()} SCOREBOARD

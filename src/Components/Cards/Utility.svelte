@@ -43,8 +43,6 @@
       startDate = parseInt(await tournamentContract.startDate());
       speed = parseInt(await antContract.getSpeed($userAddress));
       lollipopTimeleft = parseInt(await lollipopContract.getTimeLeft($userAddress));
-      console.log("timeleft:", lollipopTimeleft);
-      console.log("speed", speed);
     }
   };
   setInterval(() => {

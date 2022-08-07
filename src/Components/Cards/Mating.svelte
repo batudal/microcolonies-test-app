@@ -36,7 +36,6 @@
 
       const antContract = new ethers.Contract(addr.contractAnt, abiANT, $networkSigner);
       let bonus = parseInt(await antContract.getSeasonBonus());
-      console.log("Bonus:", bonus);
       if (bonus == 60) {
         matingSeason = true;
       } else {
