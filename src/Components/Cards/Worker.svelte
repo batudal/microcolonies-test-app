@@ -1,11 +1,6 @@
 <script>
   import Line from "../UI/Line.svelte";
-  import {
-    userConnected,
-    userAddress,
-    networkProvider,
-    networkSigner,
-  } from "../../Stores/Network";
+  import { userConnected, userAddress, networkProvider, networkSigner } from "../../Stores/Network";
   import { ethers } from "ethers";
   import { abiWorker, abiANT } from "../../Stores/ABIs";
 
@@ -26,14 +21,9 @@
   $: occupiedWorkers = totalWorkers - availableWorkers;
 
   const fetchUserData = async () => {
-    const workerContract = new ethers.Contract(
-      addr.contractWorker,
-      abiWorker,
-      $networkProvider
-    );
+    const workerContract = new ethers.Contract(addr.contractWorker, abiWorker, $networkProvider);
     totalWorkers = (await workerContract.getWorkers($userAddress)).length;
-    availableWorkers = (await workerContract.getAvailableWorkers($userAddress))
-      .length;
+    availableWorkers = (await workerContract.getAvailableWorkers($userAddress)).length;
     workerMissions = await workerContract.getMissions($userAddress);
     activeWorkerMissions = workerMissions.filter((x) => !x.finalized);
   };
@@ -51,11 +41,7 @@
 
   const expandNest = async () => {
     nestMissionUpdating = true;
-    const antContract = new ethers.Contract(
-      addr.contractAnt,
-      abiANT,
-      $networkSigner
-    );
+    const antContract = new ethers.Contract(addr.contractAnt, abiANT, $networkSigner);
     try {
       const expand = await antContract.expandNest(workerInput);
       await expand.wait();
@@ -68,11 +54,7 @@
   };
   const claimBlocks = async (index) => {
     nestClaimUpdating = index;
-    const antContract = new ethers.Contract(
-      addr.contractAnt,
-      abiANT,
-      $networkSigner
-    );
+    const antContract = new ethers.Contract(addr.contractAnt, abiANT, $networkSigner);
     try {
       const claimtx = await antContract.claimAndIncreaseSpace(index);
       await claimtx.wait();
@@ -85,11 +67,7 @@
   };
   const gatherFood = async () => {
     missionUpdating = true;
-    const workerContract = new ethers.Contract(
-      addr.contractWorker,
-      abiWorker,
-      $networkSigner
-    );
+    const workerContract = new ethers.Contract(addr.contractWorker, abiWorker, $networkSigner);
     try {
       const stake = await workerContract.stakeWorker(workerInput);
       await stake.wait();
@@ -102,11 +80,7 @@
   };
   const claimFunghi = async (index) => {
     claimUpdating = index;
-    const workerContract = new ethers.Contract(
-      addr.contractWorker,
-      abiWorker,
-      $networkSigner
-    );
+    const workerContract = new ethers.Contract(addr.contractWorker, abiWorker, $networkSigner);
     try {
       const claim = await workerContract.claimFunghi(index);
       await claim.wait();
@@ -119,15 +93,9 @@
   };
   const convertWorker = async () => {
     converting = true;
-    const antContract = new ethers.Contract(
-      addr.contractAnt,
-      abiANT,
-      $networkSigner
-    );
+    const antContract = new ethers.Contract(addr.contractAnt, abiANT, $networkSigner);
     try {
-      const converttx = await antContract.convertFromWorkerToSoldier(
-        workerInput
-      );
+      const converttx = await antContract.convertFromWorkerToSoldier(workerInput);
       await converttx.wait();
     } catch (e) {
       console.log(e);
@@ -150,11 +118,9 @@
 
     <p class="detail">--------------------------------------------</p>
     <p class="detail">
-      Gathering building parts occupy your worker ants for 7 days. Gathering
-      food occupy your worker ants for 1 day. Each mission reduces worker health
-      points by 2.<br /><br />Soldier can be sent along with worker ants for
-      protection which mitigates 50% of damage taken by worker ants. A soldier
-      can protect up to 10 worker ants.
+      Gathering building parts occupy your worker ants for 7 days. Gathering food occupy your worker ants for 1 day.
+      Each mission reduces worker health points by 2.<br /><br />Soldier can be sent along with worker ants for
+      protection which mitigates 50% of damage taken by worker ants. A soldier can protect up to 10 worker ants.
     </p>
     <div class="inputs-container">
       <input
@@ -168,26 +134,16 @@
       {#if nestMissionUpdating}
         <p class="notification">Deploying build mission...</p>
       {:else}
-        <div
-          class={`button-small ${availableWorkers > 0 ? "green" : ""}`}
-          on:click={expandNest}
-        >
-          build
-        </div>
+        <div class={`button-small ${availableWorkers > 0 ? "green" : ""}`} on:click={expandNest}>build</div>
         <div class="detail">-> increase nest capacity (10)</div>
       {/if}
     </div>
     <div class="buttons">
       {#if converting}
-        <p class="notification">Converting worker to soldier...</p>
+        <p class="notification">Metamorphosing into soldier...</p>
       {:else}
-        <div
-          class={`button-small ${availableWorkers > 0 ? "green" : ""}`}
-          on:click={convertWorker}
-        >
-          convert
-        </div>
-        <div class="detail">-> to soldier for 10 feromon each</div>
+        <div class={`button-small ${availableWorkers > 0 ? "green" : ""}`} on:click={convertWorker}>metamorphose</div>
+        <div class="detail">-> into soldier (10 feromon)</div>
       {/if}
     </div>
 
@@ -195,12 +151,7 @@
       {#if missionUpdating}
         <p class="notification">Deploying farm mission...</p>
       {:else}
-        <div
-          class={`button-small ${availableWorkers > 0 ? "green" : ""}`}
-          on:click={gatherFood}
-        >
-          farm
-        </div>
+        <div class={`button-small ${availableWorkers > 0 ? "green" : ""}`} on:click={gatherFood}>farm</div>
         <div class="detail">-> produce funghi (240)</div>
       {/if}
     </div>
@@ -222,18 +173,13 @@
               <p>Nest ({m.ids.length} ants)</p>
               <p>
                 {m.end > now
-                  ? `${parseInt((m.end - now) / 86400)}d ${parseInt(
-                      ((m.end - now) / 3600) % 24
-                    )}h ${parseInt(((m.end - now) / 60) % 60)}m`
+                  ? `${parseInt((m.end - now) / 86400)}d ${parseInt(((m.end - now) / 3600) % 24)}h ${parseInt(
+                      ((m.end - now) / 60) % 60
+                    )}m`
                   : ""}
               </p>
               {#if m.end < now}
-                <div
-                  class={`button-small green`}
-                  on:click={() => claimBlocks(i)}
-                >
-                  finalize
-                </div>
+                <div class={`button-small green`} on:click={() => claimBlocks(i)}>finalize</div>
               {/if}
             </div>
           {:else}
@@ -241,18 +187,13 @@
               <p>Funghi ({m.ids.length} ants)</p>
               <p>
                 {m.end > now
-                  ? `${parseInt((m.end - now) / 86400)}d ${parseInt(
-                      ((m.end - now) / 3600) % 24
-                    )}h ${parseInt(((m.end - now) / 60) % 60)}m`
+                  ? `${parseInt((m.end - now) / 86400)}d ${parseInt(((m.end - now) / 3600) % 24)}h ${parseInt(
+                      ((m.end - now) / 60) % 60
+                    )}m`
                   : ""}
               </p>
               {#if m.end < now}
-                <div
-                  class={`button-small green`}
-                  on:click={() => claimFunghi(i)}
-                >
-                  claim funghi
-                </div>
+                <div class={`button-small green`} on:click={() => claimFunghi(i)}>claim funghi</div>
               {/if}
             </div>
           {/if}
