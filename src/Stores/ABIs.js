@@ -7224,19 +7224,6 @@ export const abiLollipop = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_user",
-        type: "address",
-      },
-    ],
-    name: "burn",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
     inputs: [],
     name: "duration",
     outputs: [
@@ -7263,6 +7250,25 @@ export const abiLollipop = [
         internalType: "address",
         name: "",
         type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getTimeLeft",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "timeleft",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -7473,6 +7479,29 @@ export const abiLollipop = [
       },
     ],
     name: "setApprovalForAll",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "operator",
+        type: "address",
+      },
+      {
+        internalType: "bool",
+        name: "approved",
+        type: "bool",
+      },
+    ],
+    name: "setupApprovals",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

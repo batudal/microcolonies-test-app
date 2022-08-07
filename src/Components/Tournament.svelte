@@ -12,7 +12,7 @@
   let userTournaments = [];
   let titles = [];
   let creating = false;
-  let factoryAddress = "0xC5793f32BE606A58E6431729Abb0fd3abfDbb4D6";
+  let factoryAddress = "0x3F06B72eac5E81d0d78629F0fd49f6d3e9ADa858";
   let startDate = "";
 
   $: if ($userConnected) {
