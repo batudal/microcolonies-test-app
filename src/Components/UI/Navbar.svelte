@@ -1,10 +1,5 @@
 <script>
-  import {
-    connectWallet,
-    disconnectWallet,
-    userConnected,
-    userAddress,
-  } from "../../Stores/Network";
+  import { connectWallet, disconnectWallet, userConnected, userAddress } from "../../Stores/Network";
   import { onMount, onDestroy } from "svelte";
 
   onMount(() => {
@@ -47,9 +42,8 @@
       Tournament ends in: <span>{days}d {hours}h {minutes}m {seconds}s</span>
     </p> -->
     <div class="filler" />
-    <a
-      href="https://degen-fyi.notion.site/A-N-T-f55111a055c24c69af3b920d129d1d87"
-      target="_blank"><p class="nav">notion page</p></a
+    <a href="https://www.notion.so/decoded-labs/Microcolonies-f55111a055c24c69af3b920d129d1d87" target="_blank"
+      ><p class="nav">notion page</p></a
     >
     <p>|</p>
     <p class="nav" on:click={$userConnected ? disconnectWallet : connectWallet}>
