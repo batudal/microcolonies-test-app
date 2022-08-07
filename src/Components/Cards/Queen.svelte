@@ -106,7 +106,7 @@
         <p class="notification">Feeding queen...</p>
       {:else}
         <div class={`button-small ${funghiAmount > 1200 ? "green" : ""}`} on:click={feedQueen}>feed queen</div>
-        <div class="detail">-> also claims larvae</div>
+        <div class="detail">-> 240fu per epoch</div>
       {/if}
     </div>
     <div class="buttons">
@@ -124,7 +124,7 @@
         <div class={`button-small ${queens.length > 0 && feromonAmount > 100 ? "green" : ""}`} on:click={queenLevelUp}>
           upgrade queen
         </div>
-        <div class="detail">-> also claims & feeds</div>
+        <div class="detail">-> 100/300fer for levels 1/2</div>
       {/if}
     </div>
   </main>

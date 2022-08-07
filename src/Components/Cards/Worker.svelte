@@ -135,7 +135,7 @@
         <p class="notification">Deploying build mission...</p>
       {:else}
         <div class={`button-small ${availableWorkers > 0 ? "green" : ""}`} on:click={expandNest}>build</div>
-        <div class="detail">-> increase nest capacity (10)</div>
+        <div class="detail">-> increase nest capacity (5)</div>
       {/if}
     </div>
     <div class="buttons">
@@ -143,7 +143,7 @@
         <p class="notification">Metamorphosing into soldier...</p>
       {:else}
         <div class={`button-small ${availableWorkers > 0 ? "green" : ""}`} on:click={convertWorker}>metamorphose</div>
-        <div class="detail">-> into soldier (10 feromon)</div>
+        <div class="detail">-> into soldier (-10 feromon)</div>
       {/if}
     </div>
 
@@ -152,7 +152,7 @@
         <p class="notification">Deploying farm mission...</p>
       {:else}
         <div class={`button-small ${availableWorkers > 0 ? "green" : ""}`} on:click={gatherFood}>farm</div>
-        <div class="detail">-> produce funghi (240)</div>
+        <div class="detail">-> produce funghi (80)</div>
       {/if}
     </div>
     <p class="detail">--------------------------------------------</p>
